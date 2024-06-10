@@ -70,7 +70,14 @@ st.divider()
 # Precio del combustible diésel
 st.markdown("<h4 style='text-align: center;'>Precio del Combustible Diésel</h4>", unsafe_allow_html=True)
 diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=1.2, min_value=0.01)
-diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=diesel_trucks[selected_model]["km_per_liter"], min_value=0.01)
+
+# Ajuste para el valor de km/litro
+try:
+    diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=diesel_trucks[selected_model]["km_per_liter"], min_value=0.01)
+except KeyError:
+    st.error(f"El modelo seleccionado '{selected_model}' no tiene especificado el valor de kilómetros por litro.")
+    diesel_km_per_liter = 1  # Valor predeterminado para evitar errores en el cálculo
+
 diesel_consumption = 1 / diesel_km_per_liter
 
 st.divider()
