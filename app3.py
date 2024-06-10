@@ -21,10 +21,10 @@ electric_data = {
 
 # Opciones de camiones diésel
 diesel_trucks = {
-    "Hino J05E-US": {"cost_initial": 1320000, "consumption_l_per_km": 1 / 8.2, "maintenance_annual": 0},
-    "JAC X350": {"cost_initial": 600000, "consumption_l_per_km": 1 / 8, "maintenance_annual": 0},  # Actualizado
-    "VolksWagen Delivery 6.160": {"cost_initial": 560000, "consumption_l_per_km": 0.28, "maintenance_annual": 0},
-    "ISUZU ELF600": {"cost_initial": 1050000, "consumption_l_per_km": 1 / 10, "maintenance_annual": 0}
+    "Hino J05E-US": {"cost_initial": 1320000, "km_per_liter": 8.2, "maintenance_annual": 0, "capacidad_combustible": 200},
+    "JAC X350": {"cost_initial": 600000, "km_per_liter": 6, "maintenance_annual": 0, "capacidad_combustible": 100},
+    "VolksWagen Delivery 6.160": {"cost_initial": 560000, "km_per_liter": 3.57, "maintenance_annual": 0, "capacidad_combustible": 150},
+    "ISUZU ELF600": {"cost_initial": 1050000, "km_per_liter": 10, "maintenance_annual": 0, "capacidad_combustible": 140}
 }
 
 # Título de la aplicación y nombre de la empresa
@@ -70,7 +70,8 @@ st.divider()
 # Precio del combustible diésel
 st.markdown("<h4 style='text-align: center;'>Precio del Combustible Diésel</h4>", unsafe_allow_html=True)
 diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=1.2, min_value=0.01)
-diesel_consumption = st.number_input("Consumo de combustible del camión diésel seleccionado (litros/km):", value=diesel_trucks[selected_model]["consumption_l_per_km"], min_value=0.01)
+diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=diesel_trucks[selected_model]["km_per_liter"], min_value=0.01)
+diesel_consumption = 1 / diesel_km_per_liter
 
 st.divider()
 
@@ -222,6 +223,8 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
+
 
 
 
