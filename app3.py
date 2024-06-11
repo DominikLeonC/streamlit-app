@@ -25,7 +25,7 @@ diesel_trucks = {
     "Hino J05E-US": {"cost_initial": 1320000, "km_per_liter": 8.2, "maintenance_annual": 0, "capacidad_combustible": 200},
     "JAC X350": {"cost_initial": 600000, "km_per_liter": 6, "maintenance_annual": 0, "capacidad_combustible": 100},
     "VolksWagen Delivery 6.160": {"cost_initial": 560000, "km_per_liter": 3.57, "maintenance_annual": 0, "capacidad_combustible": 150},
-    "ISUZU ELF600": {"cost_initial": 1050000, "km_per_liter": 6, "maintenance_annual": 0, "capacidad_combustible": 140}  # Actualizado a 8 km/l
+    "ISUZU ELF600": {"cost_initial": 1050000, "km_per_liter": 8, "maintenance_annual": 0, "capacidad_combustible": 140}  # Actualizado a 8 km/l
 }
 
 # Título de la aplicación y nombre de la empresa
@@ -177,6 +177,61 @@ st.divider()
 # Mostrar ahorro anual
 st.markdown("<h4 style='text-align: center;'>Ahorro Anual</h4>", unsafe_allow_html=True)
 st.table(savings_df)
+
+st.divider()
+
+# Tabla comparativa final
+comparison_data = {
+    "Concepto": [
+        "Valor del Auto",
+        "Seguro anual",
+        "Placas",
+        "Tenencia",
+        "Mantenimiento (Anual o cada 40K km)",
+        "Verificación anual",
+        "Combustible anual promedio"
+    ],
+    "Año 1 (Diésel)": [
+        diesel_trucks[selected_model]["cost_initial"] * num_trucks_diesel,
+        insurance_cost * num_trucks_diesel,
+        tax_cost * num_trucks_diesel,
+        verification_cost * num_trucks_diesel,
+        maintenance_40k_cost * num_trucks_diesel,
+        maintenance_80k_cost * num_trucks_diesel,
+        diesel_annual_costs[0]
+    ],
+    "Año 1 (Eléctrico)": [
+        electric_data["cost_initial"] * num_trucks_electric,
+        electric_data["insurance_annual"] * num_trucks_electric,
+        tax_cost * num_trucks_electric,
+        verification_cost * num_trucks_electric,
+        maintenance_40k_cost * num_trucks_electric,
+        maintenance_80k_cost * num_trucks_electric,
+        electric_annual_costs[0]
+    ],
+    "Acumulado (Diésel)": [
+        diesel_trucks[selected_model]["cost_initial"] * num_trucks_diesel,
+        insurance_cost * num_trucks_diesel * 4,
+        tax_cost * num_trucks_diesel * 4,
+        verification_cost * num_trucks_diesel * 4,
+        maintenance_40k_cost * num_trucks_diesel * 4,
+        maintenance_80k_cost * num_trucks_diesel * 4,
+        sum(diesel_annual_costs)
+    ],
+    "Acumulado (Eléctrico)": [
+        electric_data["cost_initial"] * num_trucks_electric,
+        electric_data["insurance_annual"] * num_trucks_electric * 4,
+        tax_cost * num_trucks_electric * 4,
+        verification_cost * num_trucks_electric * 4,
+        maintenance_40k_cost * num_trucks_electric * 4,
+        maintenance_80k_cost * num_trucks_electric * 4,
+        sum(electric_annual_costs)
+    ]
+}
+
+comparison_df = pd.DataFrame(comparison_data)
+st.markdown("<h4 style='text-align: center;'>Tabla Comparativa Final</h4>", unsafe_allow_html=True)
+st.table(comparison_df)
 
 st.divider()
 
