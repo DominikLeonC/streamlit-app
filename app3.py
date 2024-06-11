@@ -22,10 +22,10 @@ electric_data = {
 
 # Opciones de camiones diésel (Incluyendo IVA)
 diesel_trucks = {
-    "Hino J05E-US": {"cost_initial": 1320000 * 1.16, "km_per_liter": 7, "maintenance_annual": 0, "capacidad_combustible": 200},
+    "Hino J05E-US": {"cost_initial": 1320000 * 1.16, "km_per_liter": 8.2, "maintenance_annual": 0, "capacidad_combustible": 200},
     "JAC X350": {"cost_initial": 600000 * 1.16, "km_per_liter": 6, "maintenance_annual": 0, "capacidad_combustible": 100},
     "VolksWagen Delivery 6.160": {"cost_initial": 560000 * 1.16, "km_per_liter": 3.57, "maintenance_annual": 0, "capacidad_combustible": 150},
-    "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 7, "maintenance_annual": 0, "capacidad_combustible": 140}  # Actualizado a 8 km/l
+    "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 8, "maintenance_annual": 0, "capacidad_combustible": 140}  # Actualizado a 8 km/l
 }
 
 # Título de la aplicación y nombre de la empresa
@@ -127,59 +127,6 @@ st.table(df)
 
 st.divider()
 
-# Cálculo del ahorro
-total_diesel_cost = df["Costo Acumulado - Diésel"].iloc[-1]
-total_electric_cost = df["Costo Acumulado - Eléctrico"].iloc[-1]
-savings = total_diesel_cost - total_electric_cost
-
-# Cálculo del ahorro anual
-annual_savings = [d - e for d, e in zip(diesel_annual_costs, electric_annual_costs)]
-
-# Crear DataFrame para mostrar el ahorro anual
-savings_df = pd.DataFrame({
-    "Año": [1, 2, 3, 4],
-    "Ahorro Anual ($)": annual_savings
-})
-
-if savings > 0:
-    st.success(f"El camión eléctrico ahorra ${savings:,.2f} en comparación con el camión diésel seleccionado en 4 años.")
-else:
-    st.warning(f"El camión diésel seleccionado es más económico por ${-savings:,.2f} en comparación con el camión eléctrico en 4 años.")
-
-st.divider()
-
-# Gráfico de costos acumulados
-st.markdown("<h4 style='text-align: center;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
-fig, ax = plt.subplots()
-ax.plot(df["Año"], df["Costo Acumulado - Diésel"], label="Diésel", color='blue', marker='o')
-ax.plot(df["Año"], df["Costo Acumulado - Eléctrico"], label="Eléctrico", color='green', marker='o')
-ax.set_ylabel("Costo Acumulado ($)")
-ax.set_xlabel("Año")
-ax.set_title("Comparación de Costos Acumulados")
-ax.legend()
-
-st.pyplot(fig)
-
-st.divider()
-
-# Resumen de Costos Totales
-st.markdown("<h4 style='text-align: center;'>Resumen de Costos Totales</h4>", unsafe_allow_html=True)
-summary_data = {
-    "Concepto": ["Costo Total - Diésel", "Costo Total - Eléctrico", "Ahorro"],
-    "Valor ($)": [total_diesel_cost, total_electric_cost, savings]
-}
-summary_df = pd.DataFrame(summary_data)
-
-st.table(summary_df)
-
-st.divider()
-
-# Mostrar ahorro anual
-st.markdown("<h4 style='text-align: center;'>Ahorro Anual</h4>", unsafe_allow_html=True)
-st.table(savings_df)
-
-st.divider()
-
 # Tabla comparativa final
 comparison_data = {
     "Concepto": [
@@ -232,6 +179,59 @@ comparison_data = {
 comparison_df = pd.DataFrame(comparison_data)
 st.markdown("<h4 style='text-align: center;'>Tabla Comparativa Final</h4>", unsafe_allow_html=True)
 st.table(comparison_df)
+
+st.divider()
+
+# Cálculo del ahorro
+total_diesel_cost = df["Costo Acumulado - Diésel"].iloc[-1]
+total_electric_cost = df["Costo Acumulado - Eléctrico"].iloc[-1]
+savings = total_diesel_cost - total_electric_cost
+
+# Cálculo del ahorro anual
+annual_savings = [d - e for d, e in zip(diesel_annual_costs, electric_annual_costs)]
+
+# Crear DataFrame para mostrar el ahorro anual
+savings_df = pd.DataFrame({
+    "Año": [1, 2, 3, 4],
+    "Ahorro Anual ($)": annual_savings
+})
+
+if savings > 0:
+    st.success(f"El camión eléctrico ahorra ${savings:,.2f} en comparación con el camión diésel seleccionado en 4 años.")
+else:
+    st.warning(f"El camión diésel seleccionado es más económico por ${-savings:,.2f} en comparación con el camión eléctrico en 4 años.")
+
+st.divider()
+
+# Gráfico de costos acumulados
+st.markdown("<h4 style='text-align: center;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
+fig, ax = plt.subplots()
+ax.plot(df["Año"], df["Costo Acumulado - Diésel"], label="Diésel", color='blue', marker='o')
+ax.plot(df["Año"], df["Costo Acumulado - Eléctrico"], label="Eléctrico", color='green', marker='o')
+ax.set_ylabel("Costo Acumulado ($)")
+ax.set_xlabel("Año")
+ax.set_title("Comparación de Costos Acumulados")
+ax.legend()
+
+st.pyplot(fig)
+
+st.divider()
+
+# Resumen de Costos Totales
+st.markdown("<h4 style='text-align: center;'>Resumen de Costos Totales</h4>", unsafe_allow_html=True)
+summary_data = {
+    "Concepto": ["Costo Total - Diésel", "Costo Total - Eléctrico", "Ahorro"],
+    "Valor ($)": [total_diesel_cost, total_electric_cost, savings]
+}
+summary_df = pd.DataFrame(summary_data)
+
+st.table(summary_df)
+
+st.divider()
+
+# Mostrar ahorro anual
+st.markdown("<h4 style='text-align: center;'>Ahorro Anual</h4>", unsafe_allow_html=True)
+st.table(savings_df)
 
 st.divider()
 
