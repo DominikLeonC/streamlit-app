@@ -18,7 +18,7 @@ electric_data = {
     "battery_replacement_cost": 10000,
     "battery_replacement_frequency_years": 5,
     "insurance_annual": 53000,  # Seguro anual para camión eléctrico
-    "distance_per_charge_km": 200  # Distancia por carga completa
+    "distance_per_charge_km": 200  # Kilómetros por carga completa del camión eléctrico
 }
 
 # Opciones de camiones diésel (Incluyendo IVA)
@@ -26,7 +26,7 @@ diesel_trucks = {
     "Hino J05E-US": {"cost_initial": 1320000 * 1.16, "km_per_liter": 7, "maintenance_annual": 0, "capacidad_combustible": 200},
     "JAC X350": {"cost_initial": 600000 * 1.16, "km_per_liter": 6, "maintenance_annual": 0, "capacidad_combustible": 100},
     "VolksWagen Delivery 6.160": {"cost_initial": 560000 * 1.16, "km_per_liter": 3.57, "maintenance_annual": 0, "capacidad_combustible": 150},
-    "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 7, "maintenance_annual": 0, "capacidad_combustible": 140}  # Actualizado a 8 km/l
+    "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 8, "maintenance_annual": 0, "capacidad_combustible": 140}  # Actualizado a 8 km/l
 }
 
 # Título de la aplicación y nombre de la empresa
@@ -51,28 +51,28 @@ st.divider()
 
 # Datos de operación
 st.markdown("<h4 style='text-align: center;'>Datos de Operación</h4>", unsafe_allow_html=True)
-daily_kilometers = st.number_input("Kilómetros recorridos diariamente por camión:", value=50, min_value=1)
-annual_kilometers = st.number_input("Kilómetros recorridos anualmente por camión:", value=daily_kilometers * 365, min_value=1)
-num_trucks_electric = st.number_input("Cantidad de camiones eléctricos:", value=1, min_value=1)
-num_trucks_diesel = st.number_input("Cantidad de camiones diésel:", value=1, min_value=1)
+daily_kilometers = st.number_input("Kilómetros recorridos diariamente por camión:", value=50, min_value=1, format="%d")
+annual_kilometers = st.number_input("Kilómetros recorridos anualmente por camión:", value=daily_kilometers * 365, min_value=1, format="%d")
+num_trucks_electric = st.number_input("Cantidad de camiones eléctricos:", value=1, min_value=1, format="%d")
+num_trucks_diesel = st.number_input("Cantidad de camiones diésel:", value=1, min_value=1, format="%d")
 st.write(f"Kilómetros recorridos anualmente por camión: {annual_kilometers} km")
 
 st.divider()
 
 # Costos fijos
 st.markdown("<h4 style='text-align: center;'>Costos Fijos</h4>", unsafe_allow_html=True)
-verification_cost = st.number_input("Costo de verificación vehicular por camión ($):", value=687, min_value=0)
-insurance_cost = st.number_input("Costo de seguro por camión ($):", value=13500, min_value=0)
-tax_cost = st.number_input("Costo de tenencia por camión ($):", value=698, min_value=0)
-maintenance_40k_cost = st.number_input("Mantenimiento anual o a los 40km por camión ($):", value=9000, min_value=0)
-maintenance_80k_cost = st.number_input("Mantenimiento anual o a los 80km por camión ($):", value=12500, min_value=0)
+verification_cost = st.number_input("Costo de verificación vehicular por camión ($):", value=687, min_value=0, format="%d")
+insurance_cost = st.number_input("Costo de seguro por camión ($):", value=13500, min_value=0, format="%d")
+tax_cost = st.number_input("Costo de tenencia por camión ($):", value=698, min_value=0, format="%d")
+maintenance_40k_cost = st.number_input("Mantenimiento anual o a los 40km por camión ($):", value=9000, min_value=0, format="%d")
+maintenance_80k_cost = st.number_input("Mantenimiento anual o a los 80km por camión ($):", value=12500, min_value=0, format="%d")
 
 st.divider()
 
 # Precio del combustible diésel
 st.markdown("<h4 style='text-align: center;'>Precio del Combustible Diésel</h4>", unsafe_allow_html=True)
-diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=25.3, min_value=0.01)
-diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(diesel_trucks[selected_model]["km_per_liter"]), min_value=0.01)
+diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=25.30, min_value=0.01)
+diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(diesel_trucks[selected_model]["km_per_liter"]), min_value=0.01, format="%f")
 diesel_consumption = 1 / diesel_km_per_liter
 
 st.divider()
@@ -82,8 +82,7 @@ st.markdown("<h4 style='text-align: center;'>Precio de la Electricidad</h4>", un
 cost_per_kwh = st.number_input("Costo de la electricidad ($/kWh):", value=1.071, min_value=0.01)
 
 # Kilómetros por carga completa del camión eléctrico
-st.markdown("<h4 style='text-align: center;'>Rendimiento del Camión Eléctrico</h4>", unsafe_allow_html=True)
-electric_distance_per_charge = st.number_input("Kilómetros por carga completa del camión eléctrico:", value=electric_data["distance_per_charge_km"], min_value=0.01)
+electric_distance_per_charge = st.number_input("Kilómetros por carga completa del camión eléctrico:", value=float(electric_data["distance_per_charge_km"]), min_value=0.01, format="%f")
 
 st.divider()
 
@@ -103,9 +102,9 @@ for year in range(1, 5):
 # Calcular costos anuales del camión eléctrico
 electric_annual_costs = []
 for year in range(1, 5):
-    electricity_cost = (annual_kilometers / electric_distance_per_charge) * (cost_per_kwh * electric_data["battery_capacity_kwh"])
+    electricity_cost = (annual_kilometers / electric_distance_per_charge) * electric_data["battery_capacity_kwh"] * cost_per_kwh
     maintenance_cost = electric_data["maintenance_annual"]
-    fixed_costs = verification_cost + electric_data["insurance_annual"]
+    fixed_costs = verification_cost + electric_data["insurance_annual"] + tax_cost
     if annual_kilometers * year >= 40000:
         fixed_costs += maintenance_40k_cost
     if annual_kilometers * year >= 80000:
@@ -153,9 +152,9 @@ comparison_data = {
     "Año 1 (Eléctrico)": [
         electric_data["cost_initial"] * num_trucks_electric,
         electric_data["insurance_annual"] * num_trucks_electric,
-        0,  # No tenencia para camiones eléctricos
-        verification_cost * num_trucks_electric,
+        0,  # No hay tenencia para camiones eléctricos
         maintenance_40k_cost * num_trucks_electric,
+        verification_cost * num_trucks_electric,
         electric_annual_costs[0]
     ],
     "Acumulado (Diésel)": [
@@ -169,9 +168,9 @@ comparison_data = {
     "Acumulado (Eléctrico)": [
         electric_data["cost_initial"] * num_trucks_electric,
         electric_data["insurance_annual"] * num_trucks_electric * 4,
-        0,  # No tenencia para camiones eléctricos
-        verification_cost * num_trucks_electric * 4,
+        0,  # No hay tenencia para camiones eléctricos
         maintenance_40k_cost * num_trucks_electric * 4,
+        verification_cost * num_trucks_electric * 4,
         sum(electric_annual_costs)
     ]
 }
@@ -279,6 +278,7 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
