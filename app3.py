@@ -13,19 +13,20 @@ electric_data = {
     "model": "Sany FE601",
     "cost_initial": 1350000 * 1.16,  # Incluyendo IVA
     "battery_capacity_kwh": 84.48,
-    "distance_per_charge_km": 200.0,  # Kilómetros por carga completa, debe ser flotante
+    "consumption_percentage_per_km": 2.33 / 100,
     "maintenance_annual": 1000,
     "battery_replacement_cost": 10000,
     "battery_replacement_frequency_years": 5,
-    "insurance_annual": 53000  # Seguro anual para camión eléctrico
+    "insurance_annual": 53000,  # Seguro anual para camión eléctrico
+    "distance_per_charge_km": 200
 }
 
 # Opciones de camiones diésel (Incluyendo IVA)
 diesel_trucks = {
-    "Hino J05E-US": {"cost_initial": 1320000 * 1.16, "km_per_liter": 7.0, "maintenance_annual": 0, "capacidad_combustible": 200},
-    "JAC X350": {"cost_initial": 600000 * 1.16, "km_per_liter": 6.0, "maintenance_annual": 0, "capacidad_combustible": 100},
+    "Hino J05E-US": {"cost_initial": 1320000 * 1.16, "km_per_liter": 7, "maintenance_annual": 0, "capacidad_combustible": 200},
+    "JAC X350": {"cost_initial": 600000 * 1.16, "km_per_liter": 6, "maintenance_annual": 0, "capacidad_combustible": 100},
     "VolksWagen Delivery 6.160": {"cost_initial": 560000 * 1.16, "km_per_liter": 3.57, "maintenance_annual": 0, "capacidad_combustible": 150},
-    "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 8.0, "maintenance_annual": 0, "capacidad_combustible": 140}  # Actualizado a 8 km/l
+    "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 8, "maintenance_annual": 0, "capacidad_combustible": 140}
 }
 
 # Título de la aplicación y nombre de la empresa
@@ -61,16 +62,15 @@ st.divider()
 # Costos fijos
 st.markdown("<h4 style='text-align: center;'>Costos Fijos</h4>", unsafe_allow_html=True)
 verification_cost = st.number_input("Costo de verificación vehicular por camión ($):", value=687, min_value=0)
-insurance_cost = st.number_input("Costo de seguro por camión ($):", value=53500, min_value=0)  # Seguro corregido
+insurance_cost = st.number_input("Costo de seguro por camión ($):", value=53500, min_value=0)
 tax_cost = st.number_input("Costo de tenencia por camión ($):", value=698, min_value=0)
 maintenance_40k_cost = st.number_input("Mantenimiento anual o a los 40km por camión ($):", value=9000, min_value=0)
-maintenance_80k_cost = st.number_input("Mantenimiento anual o a los 80km por camión ($):", value=12500, min_value=0)
 
 st.divider()
 
 # Precio del combustible diésel
 st.markdown("<h4 style='text-align: center;'>Precio del Combustible Diésel</h4>", unsafe_allow_html=True)
-diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=25.3, min_value=0.01)  # Actualizado a 25.30
+diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=25.30, min_value=0.01)
 diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(diesel_trucks[selected_model]["km_per_liter"]), min_value=0.01)
 diesel_consumption = 1 / diesel_km_per_liter
 
@@ -91,24 +91,20 @@ for year in range(1, 5):
     fixed_costs = verification_cost + insurance_cost + tax_cost
     if annual_kilometers * year >= 40000:
         fixed_costs += maintenance_40k_cost
-    if annual_kilometers * year >= 80000:
-        fixed_costs += maintenance_80k_cost
     annual_cost = (fuel_cost + maintenance_cost + fixed_costs) * num_trucks_diesel
     diesel_annual_costs.append(annual_cost)
 
 # Calcular costos anuales del camión eléctrico
 electric_annual_costs = []
 for year in range(1, 5):
-    electricity_cost = (cost_per_kwh * electric_data["battery_capacity_kwh"] * (annual_kilometers / electric_distance_per_charge)) * num_trucks_electric
+    electricity_cost = (annual_kilometers / electric_distance_per_charge) * (cost_per_kwh * electric_data["battery_capacity_kwh"])
     maintenance_cost = electric_data["maintenance_annual"]
-    fixed_costs = verification_cost + electric_data["insurance_annual"]  # Tenencia removida
+    fixed_costs = electric_data["insurance_annual"] + tax_cost
     if annual_kilometers * year >= 40000:
         fixed_costs += maintenance_40k_cost
-    if annual_kilometers * year >= 80000:
-        fixed_costs += maintenance_80k_cost
     if year % electric_data["battery_replacement_frequency_years"] == 0:
         fixed_costs += electric_data["battery_replacement_cost"]
-    annual_cost = (electricity_cost + maintenance_cost + fixed_costs)
+    annual_cost = (electricity_cost + maintenance_cost + fixed_costs) * num_trucks_electric
     electric_annual_costs.append(annual_cost)
 
 # Crear DataFrame para mostrar los resultados
@@ -143,15 +139,15 @@ comparison_data = {
         insurance_cost * num_trucks_diesel,
         tax_cost * num_trucks_diesel,
         maintenance_40k_cost * num_trucks_diesel,
-        verification_cost * num_trucks_diesel,  # Corrección de mantenimiento y verificación
+        verification_cost * num_trucks_diesel,
         diesel_annual_costs[0]
     ],
     "Año 1 (Eléctrico)": [
         electric_data["cost_initial"] * num_trucks_electric,
         electric_data["insurance_annual"] * num_trucks_electric,
-        0,  # Tenencia removida
+        0,
         maintenance_40k_cost * num_trucks_electric,
-        verification_cost * num_trucks_electric,  # Corrección de mantenimiento y verificación
+        0,
         electric_annual_costs[0]
     ],
     "Acumulado (Diésel)": [
@@ -159,15 +155,15 @@ comparison_data = {
         insurance_cost * num_trucks_diesel * 4,
         tax_cost * num_trucks_diesel * 4,
         maintenance_40k_cost * num_trucks_diesel * 4,
-        verification_cost * num_trucks_diesel * 4,  # Corrección de mantenimiento y verificación
+        verification_cost * num_trucks_diesel * 4,
         sum(diesel_annual_costs)
     ],
     "Acumulado (Eléctrico)": [
         electric_data["cost_initial"] * num_trucks_electric,
         electric_data["insurance_annual"] * num_trucks_electric * 4,
-        0,  # Tenencia removida
+        0,
         maintenance_40k_cost * num_trucks_electric * 4,
-        verification_cost * num_trucks_electric * 4,  # Corrección de mantenimiento y verificación
+        0,
         sum(electric_annual_costs)
     ]
 }
@@ -258,7 +254,7 @@ st.markdown("""
 <p>Para calcular los costos anuales y acumulados, se realizaron los siguientes pasos:</p>
 <ol style='text-align: left;'>
     <li><b>Costo Anual de Diésel:</b> Se calculó multiplicando el consumo de combustible (litros/km) por el costo del combustible (pesos/litro) y el kilometraje anual. Luego se sumaron los costos fijos anuales y los costos de mantenimiento.</li>
-    <li><b>Costo Anual de Eléctrico:</b> Se calculó multiplicando el costo por carga completa (pesos) por la cantidad de cargas necesarias para el kilometraje anual. Luego se sumaron los costos fijos anuales, los costos de mantenimiento y los costos de reemplazo de batería si aplica.</li>
+    <li><b>Costo Anual de Eléctrico:</b> Se calculó multiplicando el consumo de energía (% por km) por la capacidad de la batería (kWh) y el costo de la electricidad (pesos/kWh) y el kilometraje anual. Luego se sumaron los costos fijos anuales, los costos de mantenimiento y los costos de reemplazo de batería si aplica.</li>
     <li><b>Costo Acumulado:</b> Se calcularon sumando los costos anuales acumulados a lo largo de los 4 años.</li>
     <li><b>Ahorro Anual:</b> Se calculó restando el costo anual del camión eléctrico al costo anual del camión diésel para cada año.</li>
     <li><b>Ahorro Total:</b> Se calculó restando el costo acumulado del camión eléctrico al costo acumulado del camión diésel.</li>
