@@ -11,7 +11,7 @@ st.set_page_config(
 # Datos fijos del camión eléctrico (actualizados)
 electric_data = {
     "model": "Sany FE601",
-    "cost_initial": 1350000,  # Incluyendo IVA
+    "cost_initial": 1350000 * 1.16,  # Incluyendo IVA
     "battery_capacity_kwh": 84.48,
     "distance_per_charge_km": 200,  # Distancia que se puede recorrer con una carga completa
     "maintenance_annual": 1000,
@@ -79,6 +79,7 @@ st.divider()
 # Precio del kWh
 st.markdown("<h4 style='text-align: center;'>Precio de la Electricidad</h4>", unsafe_allow_html=True)
 cost_per_kwh = st.number_input("Costo de la electricidad ($/kWh):", value=1.071, min_value=0.01)
+electric_distance_per_charge = st.number_input("Kilómetros por carga completa del camión eléctrico:", value=electric_data["distance_per_charge_km"], min_value=0.01)
 
 st.divider()
 
@@ -97,11 +98,9 @@ for year in range(1, 5):
 
 # Calcular costos anuales del camión eléctrico
 electric_annual_costs = []
-cost_per_full_charge = cost_per_kwh * electric_data["battery_capacity_kwh"]
-charges_needed_annually = annual_kilometers / electric_data["distance_per_charge_km"]
-
 for year in range(1, 5):
-    electricity_cost = cost_per_full_charge * charges_needed_annually
+    num_charges = annual_kilometers / electric_distance_per_charge
+    electricity_cost = num_charges * electric_data["battery_capacity_kwh"] * cost_per_kwh
     maintenance_cost = electric_data["maintenance_annual"]
     fixed_costs = verification_cost + electric_data["insurance_annual"] + tax_cost
     if annual_kilometers * year >= 40000:
@@ -265,7 +264,7 @@ st.markdown("""
 <p>Para calcular los costos anuales y acumulados, se realizaron los siguientes pasos:</p>
 <ol style='text-align: left;'>
     <li><b>Costo Anual de Diésel:</b> Se calculó multiplicando el consumo de combustible (litros/km) por el costo del combustible (pesos/litro) y el kilometraje anual. Luego se sumaron los costos fijos anuales y los costos de mantenimiento.</li>
-    <li><b>Costo Anual de Eléctrico:</b> Se calculó multiplicando el costo por carga completa por el número de cargas necesarias al año y luego sumando los costos fijos anuales, los costos de mantenimiento y los costos de reemplazo de batería si aplica.</li>
+    <li><b>Costo Anual de Eléctrico:</b> Se calculó multiplicando el consumo de energía (% por km) por la capacidad de la batería (kWh) y el costo de la electricidad (pesos/kWh) y el kilometraje anual. Luego se sumaron los costos fijos anuales, los costos de mantenimiento y los costos de reemplazo de batería si aplica.</li>
     <li><b>Costo Acumulado:</b> Se calcularon sumando los costos anuales acumulados a lo largo de los 4 años.</li>
     <li><b>Ahorro Anual:</b> Se calculó restando el costo anual del camión eléctrico al costo anual del camión diésel para cada año.</li>
     <li><b>Ahorro Total:</b> Se calculó restando el costo acumulado del camión eléctrico al costo acumulado del camión diésel.</li>
