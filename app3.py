@@ -43,10 +43,7 @@ st.divider()
 
 # Selección de modelo de camión diésel
 st.markdown("<h4 style='text-align: center;'>Seleccione el modelo de camión diésel</h4>", unsafe_allow_html=True)
-selected_model = st.selectbox("Modelo de Camión Diésel", list(diesel_trucks.keys()))
-
-# Mostrar la capacidad de combustible del camión seleccionado
-st.markdown(f"**Capacidad de Combustible del Camión Seleccionado: {diesel_trucks[selected_model]['capacidad_combustible']} litros**")
+selected_model = st.selectbox("", list(diesel_trucks.keys()))
 
 st.divider()
 
@@ -72,18 +69,15 @@ st.divider()
 
 # Precio del combustible diésel
 st.markdown("<h4 style='text-align: center;'>Precio del Combustible Diésel</h4>", unsafe_allow_html=True)
-diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=1.2, min_value=0.01, format="%.2f")
-
-# Ajuste para el valor de km/litro
-diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(diesel_trucks[selected_model]["km_per_liter"]), min_value=0.01, format="%.2f")
-
+diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=1.2, min_value=0.01)
+diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(diesel_trucks[selected_model]["km_per_liter"]), min_value=0.01)
 diesel_consumption = 1 / diesel_km_per_liter
 
 st.divider()
 
 # Precio del kWh
 st.markdown("<h4 style='text-align: center;'>Precio de la Electricidad</h4>", unsafe_allow_html=True)
-cost_per_kwh = st.number_input("Costo de la electricidad ($/kWh):", value=1.071, min_value=0.01, format="%.2f")
+cost_per_kwh = st.number_input("Costo de la electricidad ($/kWh):", value=1.071, min_value=0.01)
 
 st.divider()
 
@@ -229,6 +223,7 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
