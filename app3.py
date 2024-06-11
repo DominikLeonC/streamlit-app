@@ -80,6 +80,23 @@ st.divider()
 st.markdown("<h4 style='text-align: center;'>Precio de la Electricidad</h4>", unsafe_allow_html=True)
 cost_per_kwh = st.number_input("Costo de la electricidad ($/kWh):", value=1.071, min_value=0.01)
 electric_distance_per_charge = st.number_input("Kilómetros por carga completa del camión eléctrico:", value=float(electric_data["distance_per_charge_km"]), min_value=0.01)
+# Información del camión Sany FE601
+st.markdown("<h4 style='text-align: center;'>Ficha Técnica del Camión Sany FE601</h4>", unsafe_allow_html=True)
+st.markdown("""
+<div style='text-align: center;'>
+<table>
+    <tr><th>Modelo</th><td>Sany FE601</td></tr>
+    <tr><th>Capacidad de Batería</th><td>84.48 kWh</td></tr>
+    <tr><th>Consumo por Kilómetro</th><td>2.33%</td></tr>
+    <tr><th>Distancia por Carga Completa</th><td>200 km</td></tr>
+    <tr><th>Costo Inicial</th><td>$1,566,000 (incluye IVA)</td></tr>
+    <tr><th>Mantenimiento Anual</th><td>$1,000</td></tr>
+    <tr><th>Costo de Reemplazo de Batería</th><td>$10,000</td></tr>
+    <tr><th>Frecuencia de Reemplazo de Batería</th><td>5 años</td></tr>
+    <tr><th>Seguro Anual</th><td>$53,000</td></tr>
+</table>
+</div>
+""", unsafe_allow_html=True)
 
 st.divider()
 
