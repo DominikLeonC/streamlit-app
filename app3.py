@@ -121,22 +121,19 @@ df = pd.DataFrame({
 # Crear DataFrame para la tabla comparativa
 comparison_df = pd.DataFrame({
     "Concepto": ["Valor del Auto", "Seguro anual", "Placas (Edo Mex/CDMX)", "Tenencia", "Mantenimiento (Anual o cada 40K km)", "Verificación anual", "Costo de Combustible/Electricidad"],
-    "Año 1 - Diésel": [diesel_trucks[selected_model]["cost_initial"], insurance_cost, tax_cost, maintenance_40k_cost if annual_kilometers > 40000 else 0, verification_cost, diesel_consumption * diesel_fuel_cost * annual_kilometers],
-    "Año 1 - Eléctrico": [electric_data["cost_initial"], insurance_cost, tax_cost, maintenance_40k_cost if annual_kilometers > 40000 else 0, verification_cost, electric_data["consumption_percentage_per_km"] * electric_data["battery_capacity_kwh"] * cost_per_kwh * annual_kilometers]
+    "Año 1 - Diésel": [diesel_trucks[selected_model]["cost_initial"], insurance_cost, tax_cost, 0, maintenance_40k_cost if annual_kilometers > 40000 else 0, verification_cost, diesel_consumption * diesel_fuel_cost * annual_kilometers],
+    "Año 1 - Eléctrico": [electric_data["cost_initial"], insurance_cost, tax_cost, 0, maintenance_40k_cost if annual_kilometers > 40000 else 0, verification_cost, electric_data["consumption_percentage_per_km"] * electric_data["battery_capacity_kwh"] * cost_per_kwh * annual_kilometers]
 })
 
-# Calcular costos totales acumulados
-comparison_df["Acumulado - Diésel"] = comparison_df["Año 1 - Diésel"].cumsum()
-comparison_df["Acumulado - Eléctrico"] = comparison_df["Año 1 - Eléctrico"].cumsum()
+# Asegurarse de que todas las listas en comparison_df tengan la misma longitud
+if len(comparison_df["Concepto"]) == len(comparison_df["Año 1 - Diésel"]) == len(comparison_df["Año 1 - Eléctrico"]):
+    # Calcular costos totales acumulados
+    comparison_df["Acumulado - Diésel"] = comparison_df["Año 1 - Diésel"].cumsum()
+    comparison_df["Acumulado - Eléctrico"] = comparison_df["Año 1 - Eléctrico"].cumsum()
 
-# Mostrar resultados
-st.markdown("<h4 style='text-align: center;'>Resultados Comparativos</h4>", unsafe_allow_html=True)
+# Mostrar tabla comparativa
+st.markdown("<h4 style='text-align: center;'>Tabla Comparativa de Costos</h4>", unsafe_allow_html=True)
 st.table(comparison_df)
-
-# Mostrar la tabla de costos anuales y acumulados
-st.divider()
-st.markdown("<h4 style='text-align: center;'>Costos Anuales y Acumulados</h4>", unsafe_allow_html=True)
-st.table(df)
 
 st.divider()
 
@@ -158,7 +155,7 @@ st.divider()
 st.markdown("<h4 style='text-align: center;'>Resumen de Costos Totales</h4>", unsafe_allow_html=True)
 summary_data = {
     "Concepto": ["Costo Total - Diésel", "Costo Total - Eléctrico", "Ahorro"],
-    "Valor ($)": [total_diesel_cost, total_electric_cost, savings]
+    "Valor ($)": [df["Costo Acumulado - Diésel"].iloc[-1], df["Costo Acumulado - Eléctrico"].iloc[-1], df["Costo Acumulado - Diésel"].iloc[-1] - df["Costo Acumulado - Eléctrico"].iloc[-1]]
 }
 summary_df = pd.DataFrame(summary_data)
 
@@ -168,7 +165,10 @@ st.divider()
 
 # Mostrar ahorro anual
 st.markdown("<h4 style='text-align: center;'>Ahorro Anual</h4>", unsafe_allow_html=True)
-st.table(savings_df)
+st.table(pd.DataFrame({
+    "Año": [1, 2, 3, 4],
+    "Ahorro Anual ($)": [d - e for d, e in zip(diesel_annual_costs, electric_annual_costs)]
+}))
 
 st.divider()
 
@@ -184,9 +184,9 @@ st.markdown(f"""
 <div style='text-align: center;'>
 <h4>Interpretación de Resultados</h4>
 <p>La gráfica de costos acumulados muestra la diferencia en los costos totales entre el camión diésel y el camión eléctrico a lo largo de 4 años.</p>
-<p><b>Costo Total - Diésel</b>: ${total_diesel_cost:,.2f}</p>
-<p><b>Costo Total - Eléctrico</b>: ${total_electric_cost:,.2f}</p>
-<p><b>Ahorro</b>: ${savings:,.2f}</p>
+<p><b>Costo Total - Diésel</b>: ${df["Costo Acumulado - Diésel"].iloc[-1]:,.2f}</p>
+<p><b>Costo Total - Eléctrico</b>: ${df["Costo Acumulado - Eléctrico"].iloc[-1]:,.2f}</p>
+<p><b>Ahorro</b>: ${df["Costo Acumulado - Diésel"].iloc[-1] - df["Costo Acumulado - Eléctrico"].iloc[-1]:,.2f}</p>
 <p>El ahorro anual muestra cuánto se ahorra cada año al usar el camión eléctrico en lugar del camión diésel. En general, si el ahorro es positivo, significa que el camión eléctrico es más económico a largo plazo. Si el ahorro es negativo, el camión diésel resulta ser más económico en el período de 4 años evaluado.</p>
 <p>Además, al cambiarse a camiones eléctricos, el cliente estaría reduciendo las emisiones de CO2 en aproximadamente un {percentage_reduction:.2f}% en 4 años, lo cual contribuye significativamente a la reducción de la contaminación y apoya un futuro más sostenible.</p>
 </div>
@@ -216,7 +216,6 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
-
 
 
 
