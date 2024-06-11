@@ -181,6 +181,41 @@ comparison_df = pd.DataFrame(comparison_data)
 st.markdown("<h4 style='text-align: center;'>Tabla Comparativa Final</h4>", unsafe_allow_html=True)
 st.table(comparison_df)
 
+# Tabla de diferencias de costos
+difference_data = {
+    "Concepto": [
+        "Valor del Auto",
+        "Seguro anual",
+        "Placas",
+        "Tenencia",
+        "Mantenimiento (Anual o cada 40K km)",
+        "Verificación anual",
+        "Combustible anual promedio"
+    ],
+    "Diferencia Año 1": [
+        diesel_trucks[selected_model]["cost_initial"] * num_trucks_diesel - electric_data["cost_initial"] * num_trucks_electric,
+        insurance_cost * num_trucks_diesel - electric_data["insurance_annual"] * num_trucks_electric,
+        tax_cost * num_trucks_diesel - tax_cost * num_trucks_electric,
+        verification_cost * num_trucks_diesel - verification_cost * num_trucks_electric,
+        maintenance_40k_cost * num_trucks_diesel - maintenance_40k_cost * num_trucks_electric,
+        maintenance_80k_cost * num_trucks_diesel - maintenance_80k_cost * num_trucks_electric,
+        diesel_annual_costs[0] - electric_annual_costs[0]
+    ],
+    "Diferencia Acumulada": [
+        diesel_trucks[selected_model]["cost_initial"] * num_trucks_diesel - electric_data["cost_initial"] * num_trucks_electric,
+        insurance_cost * num_trucks_diesel * 4 - electric_data["insurance_annual"] * num_trucks_electric * 4,
+        tax_cost * num_trucks_diesel * 4 - tax_cost * num_trucks_electric * 4,
+        verification_cost * num_trucks_diesel * 4 - verification_cost * num_trucks_electric * 4,
+        maintenance_40k_cost * num_trucks_diesel * 4 - maintenance_40k_cost * num_trucks_electric * 4,
+        maintenance_80k_cost * num_trucks_diesel * 4 - maintenance_80k_cost * num_trucks_electric * 4,
+        sum(diesel_annual_costs) - sum(electric_annual_costs)
+    ]
+}
+
+difference_df = pd.DataFrame(difference_data)
+st.markdown("<h4 style='text-align: center;'>Diferencias de Costos</h4>", unsafe_allow_html=True)
+st.table(difference_df)
+
 st.divider()
 
 # Cálculo del ahorro
