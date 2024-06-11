@@ -45,6 +45,9 @@ st.divider()
 st.markdown("<h4 style='text-align: center;'>Seleccione el modelo de camión diésel</h4>", unsafe_allow_html=True)
 selected_model = st.selectbox("Modelo de Camión Diésel", list(diesel_trucks.keys()))
 
+# Mostrar la capacidad de combustible del camión seleccionado
+st.markdown(f"**Capacidad de Combustible del Camión Seleccionado: {diesel_trucks[selected_model]['capacidad_combustible']} litros**")
+
 st.divider()
 
 # Datos de operación
@@ -226,9 +229,6 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
-
-
-
 
 
 
