@@ -81,6 +81,23 @@ st.markdown("<h4 style='text-align: center;'>Precio de la Electricidad</h4>", un
 cost_per_kwh = st.number_input("Costo de la electricidad ($/kWh):", value=1.071, min_value=0.01)
 electric_distance_per_charge = st.number_input("Kilómetros por carga completa del camión eléctrico:", value=float(electric_data["distance_per_charge_km"]), min_value=0.01)
 
+# Información del camión Sany FE601
+st.markdown("<h4 style='text-align: center;'>Ficha Técnica del Camión Sany FE601</h4>", unsafe_allow_html=True)
+st.markdown("""
+<div style='display: flex; justify-content: center;'>
+<table style='border-collapse: collapse; width: 60%; text-align: left;'>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Modelo</th><td style='border: 1px solid black; padding: 8px;'>Sany FE601</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Capacidad de Batería</th><td style='border: 1px solid black; padding: 8px;'>84.48 kWh</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Consumo por Kilómetro</th><td style='border: 1px solid black; padding: 8px;'>2.33%</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Distancia por Carga Completa</th><td style='border: 1px solid black; padding: 8px;'>200 km</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Costo Inicial</th><td style='border: 1px solid black; padding: 8px;'>$1,566,000 (incluye IVA)</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Mantenimiento Anual</th><td style='border: 1px solid black; padding: 8px;'>$1,000</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Frecuencia de Reemplazo de Batería</th><td style='border: 1px solid black; padding: 8px;'>5 años</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Seguro Anual</th><td style='border: 1px solid black; padding: 8px;'>$53,000</td></tr>
+</table>
+</div>
+""", unsafe_allow_html=True)
+
 st.divider()
 
 # Calcular costos anuales del camión diésel seleccionado
