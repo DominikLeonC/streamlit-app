@@ -25,7 +25,7 @@ diesel_trucks = {
     "Hino J05E-US": {"cost_initial": 1320000 * 1.16, "km_per_liter": 7, "maintenance_annual": 0, "capacidad_combustible": 200},
     "JAC X350": {"cost_initial": 600000 * 1.16, "km_per_liter": 6, "maintenance_annual": 0, "capacidad_combustible": 100},
     "VolksWagen Delivery 6.160": {"cost_initial": 560000 * 1.16, "km_per_liter": 3.57, "maintenance_annual": 0, "capacidad_combustible": 150},
-    "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 7, "maintenance_annual": 0, "capacidad_combustible": 140}  # Actualizado a 8 km/l
+    "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 8, "maintenance_annual": 0, "capacidad_combustible": 140}  # Actualizado a 8 km/l
 }
 
 # Título de la aplicación y nombre de la empresa
@@ -70,16 +70,16 @@ st.divider()
 
 # Precio del combustible diésel
 st.markdown("<h4 style='text-align: center;'>Precio del Combustible Diésel</h4>", unsafe_allow_html=True)
-diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=1.2, min_value=0.01)
-diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(diesel_trucks[selected_model]["km_per_liter"]), min_value=0.01)
+diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=1.2, min_value=0.01, step=0.01, format="%.2f")
+diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(diesel_trucks[selected_model]["km_per_liter"]), min_value=0.01, step=0.01, format="%.2f")
 diesel_consumption = 1 / diesel_km_per_liter
 
 st.divider()
 
-# Precio del kWh
+# Precio del kWh y rendimiento del camión eléctrico
 st.markdown("<h4 style='text-align: center;'>Precio de la Electricidad</h4>", unsafe_allow_html=True)
-cost_per_kwh = st.number_input("Costo de la electricidad ($/kWh):", value=1.07, min_value=0.01)
-electric_distance_per_charge = st.number_input("Kilómetros por carga completa del camión eléctrico:", value=electric_data["distance_per_charge_km"], min_value=0.01)
+cost_per_kwh = st.number_input("Costo de la electricidad ($/kWh):", value=1.07, min_value=0.01, step=0.01, format="%.2f")
+electric_distance_per_charge = st.number_input("Kilómetros por carga completa del camión eléctrico:", value=float(electric_data["distance_per_charge_km"]), min_value=0.01, step=0.01, format="%.2f")
 
 # Calcular costo por km del camión eléctrico
 electric_cost_per_km = (cost_per_kwh * electric_data["battery_capacity_kwh"]) / electric_distance_per_charge
@@ -278,6 +278,7 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
