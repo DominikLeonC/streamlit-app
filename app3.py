@@ -118,36 +118,29 @@ df = pd.DataFrame({
     "Costo Acumulado - Eléctrico": pd.Series(electric_annual_costs).cumsum()
 })
 
-st.divider()
+# Crear DataFrame para la tabla comparativa
+comparison_df = pd.DataFrame({
+    "Concepto": ["Valor del Auto", "Seguro anual", "Placas (Edo Mex/CDMX)", "Tenencia", "Mantenimiento (Anual o cada 40K km)", "Verificación anual", "Costo de Combustible/Electricidad"],
+    "Año 1 - Diésel": [diesel_trucks[selected_model]["cost_initial"], insurance_cost, tax_cost, maintenance_40k_cost if annual_kilometers > 40000 else 0, verification_cost, diesel_consumption * diesel_fuel_cost * annual_kilometers],
+    "Año 1 - Eléctrico": [electric_data["cost_initial"], insurance_cost, tax_cost, maintenance_40k_cost if annual_kilometers > 40000 else 0, verification_cost, electric_data["consumption_percentage_per_km"] * electric_data["battery_capacity_kwh"] * cost_per_kwh * annual_kilometers]
+})
+
+# Calcular costos totales acumulados
+comparison_df["Acumulado - Diésel"] = comparison_df["Año 1 - Diésel"].cumsum()
+comparison_df["Acumulado - Eléctrico"] = comparison_df["Año 1 - Eléctrico"].cumsum()
 
 # Mostrar resultados
 st.markdown("<h4 style='text-align: center;'>Resultados Comparativos</h4>", unsafe_allow_html=True)
+st.table(comparison_df)
+
+# Mostrar la tabla de costos anuales y acumulados
+st.divider()
+st.markdown("<h4 style='text-align: center;'>Costos Anuales y Acumulados</h4>", unsafe_allow_html=True)
 st.table(df)
 
 st.divider()
 
-# Cálculo del ahorro
-total_diesel_cost = df["Costo Acumulado - Diésel"].iloc[-1]
-total_electric_cost = df["Costo Acumulado - Eléctrico"].iloc[-1]
-savings = total_diesel_cost - total_electric_cost
-
-# Cálculo del ahorro anual
-annual_savings = [d - e for d, e in zip(diesel_annual_costs, electric_annual_costs)]
-
-# Crear DataFrame para mostrar el ahorro anual
-savings_df = pd.DataFrame({
-    "Año": [1, 2, 3, 4],
-    "Ahorro Anual ($)": annual_savings
-})
-
-if savings > 0:
-    st.success(f"El camión eléctrico ahorra ${savings:,.2f} en comparación con el camión diésel seleccionado en 4 años.")
-else:
-    st.warning(f"El camión diésel seleccionado es más económico por ${-savings:,.2f} en comparación con el camión eléctrico en 4 años.")
-
-st.divider()
-
-# Gráfico de costos acumulados
+# Mostrar gráfico de costos acumulados
 st.markdown("<h4 style='text-align: center;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
 fig, ax = plt.subplots()
 ax.plot(df["Año"], df["Costo Acumulado - Diésel"], label="Diésel", color='blue', marker='o')
