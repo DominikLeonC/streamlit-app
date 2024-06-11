@@ -14,19 +14,16 @@ electric_data = {
     "cost_initial": 1350000 * 1.16,  # Incluyendo IVA
     "battery_capacity_kwh": 84.48,
     "consumption_percentage_per_km": 2.33 / 100,
-    "maintenance_annual": 1000,
-    "battery_replacement_cost": 10000,
-    "battery_replacement_frequency_years": 5,
-    "insurance_annual": 53000,  # Seguro anual para camión eléctrico
-    "distance_per_charge_km": 200
+    "maintenance_annual": 4000,
+    "insurance_annual": 53000  # Seguro anual para camión eléctrico
 }
 
 # Opciones de camiones diésel (Incluyendo IVA)
 diesel_trucks = {
-    "Hino J05E-US": {"cost_initial": 1320000 * 1.16, "km_per_liter": 7, "maintenance_annual": 0, "capacidad_combustible": 200},
-    "JAC X350": {"cost_initial": 600000 * 1.16, "km_per_liter": 6, "maintenance_annual": 0, "capacidad_combustible": 100},
-    "VolksWagen Delivery 6.160": {"cost_initial": 560000 * 1.16, "km_per_liter": 3.57, "maintenance_annual": 0, "capacidad_combustible": 150},
-    "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 8, "maintenance_annual": 0, "capacidad_combustible": 140}
+    "Hino J05E-US": {"cost_initial": 1320000 * 1.16, "km_per_liter": 7, "maintenance_annual": 7000, "capacidad_combustible": 200},
+    "JAC X350": {"cost_initial": 600000 * 1.16, "km_per_liter": 6, "maintenance_annual": 7000, "capacidad_combustible": 100},
+    "VolksWagen Delivery 6.160": {"cost_initial": 560000 * 1.16, "km_per_liter": 3.57, "maintenance_annual": 7000, "capacidad_combustible": 150},
+    "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 7, "maintenance_annual": 7000, "capacidad_combustible": 140}
 }
 
 # Título de la aplicación y nombre de la empresa
@@ -79,23 +76,20 @@ st.divider()
 # Precio del kWh
 st.markdown("<h4 style='text-align: center;'>Precio de la Electricidad</h4>", unsafe_allow_html=True)
 cost_per_kwh = st.number_input("Costo de la electricidad ($/kWh):", value=1.071, min_value=0.01)
-electric_distance_per_charge = st.number_input("Kilómetros por carga completa del camión eléctrico:", value=float(electric_data["distance_per_charge_km"]), min_value=0.01)
-# Información del camión Sany FE601
-st.markdown("<h4 style='text-align: center;'>Ficha Técnica del Camión Sany FE601</h4>", unsafe_allow_html=True)
-st.markdown("""
-<div style='display: flex; justify-content: center;'>
-<table style='border-collapse: collapse; width: 60%; text-align: left;'>
-    <tr><th style='border: 1px solid black; padding: 8px;'>Modelo</th><td style='border: 1px solid black; padding: 8px;'>Sany FE601</td></tr>
-    <tr><th style='border: 1px solid black; padding: 8px;'>Capacidad de Batería</th><td style='border: 1px solid black; padding: 8px;'>84.48 kWh</td></tr>
-    <tr><th style='border: 1px solid black; padding: 8px;'>Consumo por Kilómetro</th><td style='border: 1px solid black; padding: 8px;'>0.42 kwh</td></tr>
-    <tr><th style='border: 1px solid black; padding: 8px;'>Distancia por Carga Completa</th><td style='border: 1px solid black; padding: 8px;'>200 km</td></tr>
-    <tr><th style='border: 1px solid black; padding: 8px;'>Costo Inicial</th><td style='border: 1px solid black; padding: 8px;'>$1,566,000 (incluye IVA)</td></tr>
-    <tr><th style='border: 1px solid black; padding: 8px;'>Mantenimiento Anual</th><td style='border: 1px solid black; padding: 8px;'>$4,000</td></tr>
-    <tr><th style='border: 1px solid black; padding: 8px;'>Seguro Anual</th><td style='border: 1px solid black; padding: 8px;'>$53,000</td></tr>
-</table>
-</div>
-""", unsafe_allow_html=True)
 
+# Información del camión eléctrico Sany
+st.divider()
+st.markdown("<h4 style='text-align: center;'>Información del Camión Eléctrico Sany FE601</h4>", unsafe_allow_html=True)
+sany_info = {
+    "Modelo": "Sany FE601",
+    "Capacidad de la batería (kWh)": 84.48,
+    "Consumo de energía (% por km)": 2.33,
+    "Autonomía por carga completa (km)": 200,
+    "Costo inicial (incl. IVA)": 1350000 * 1.16,
+    "Costo de mantenimiento anual ($)": 4000,
+    "Seguro anual ($)": 53000
+}
+st.table(pd.DataFrame(sany_info, index=[0]).T)
 
 st.divider()
 
@@ -113,13 +107,11 @@ for year in range(1, 5):
 # Calcular costos anuales del camión eléctrico
 electric_annual_costs = []
 for year in range(1, 5):
-    electricity_cost = (annual_kilometers / electric_distance_per_charge) * (cost_per_kwh * electric_data["battery_capacity_kwh"])
+    electricity_cost = (cost_per_kwh * electric_data["battery_capacity_kwh"] * annual_kilometers) / electric_data["distance_per_charge_km"]
     maintenance_cost = electric_data["maintenance_annual"]
     fixed_costs = electric_data["insurance_annual"] + tax_cost
     if annual_kilometers * year >= 40000:
         fixed_costs += maintenance_40k_cost
-    if year % electric_data["battery_replacement_frequency_years"] == 0:
-        fixed_costs += electric_data["battery_replacement_cost"]
     annual_cost = (electricity_cost + maintenance_cost + fixed_costs) * num_trucks_electric
     electric_annual_costs.append(annual_cost)
 
@@ -145,6 +137,7 @@ comparison_data = {
     "Concepto": [
         "Valor del Auto",
         "Seguro anual",
+        "Placas",
         "Tenencia",
         "Mantenimiento (Anual o cada 40K km)",
         "Verificación anual",
@@ -154,13 +147,15 @@ comparison_data = {
         diesel_trucks[selected_model]["cost_initial"] * num_trucks_diesel,
         insurance_cost * num_trucks_diesel,
         tax_cost * num_trucks_diesel,
-        maintenance_40k_cost * num_trucks_diesel,
         verification_cost * num_trucks_diesel,
+        maintenance_40k_cost * num_trucks_diesel,
+        0,
         diesel_annual_costs[0]
     ],
     "Año 1 (Eléctrico)": [
         electric_data["cost_initial"] * num_trucks_electric,
         electric_data["insurance_annual"] * num_trucks_electric,
+        0,
         0,
         maintenance_40k_cost * num_trucks_electric,
         0,
@@ -170,13 +165,15 @@ comparison_data = {
         diesel_trucks[selected_model]["cost_initial"] * num_trucks_diesel,
         insurance_cost * num_trucks_diesel * 4,
         tax_cost * num_trucks_diesel * 4,
-        maintenance_40k_cost * num_trucks_diesel * 4,
         verification_cost * num_trucks_diesel * 4,
+        maintenance_40k_cost * num_trucks_diesel * 4,
+        0,
         sum(diesel_annual_costs)
     ],
     "Acumulado (Eléctrico)": [
         electric_data["cost_initial"] * num_trucks_electric,
         electric_data["insurance_annual"] * num_trucks_electric * 4,
+        0,
         0,
         maintenance_40k_cost * num_trucks_electric * 4,
         0,
