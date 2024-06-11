@@ -13,7 +13,7 @@ electric_data = {
     "model": "Sany FE601",
     "cost_initial": 1350000 * 1.16,  # Incluyendo IVA
     "battery_capacity_kwh": 84.5,
-    "distance_per_charge_km": 200,
+    "distance_per_charge_km": 200,  # Distancia recorrida por carga completa
     "maintenance_annual": 1000,
     "battery_replacement_cost": 10000,
     "battery_replacement_frequency_years": 5,
@@ -22,7 +22,7 @@ electric_data = {
 
 # Opciones de camiones diésel (Incluyendo IVA)
 diesel_trucks = {
-    "Hino J05E-US": {"cost_initial": 1320000 * 1.16, "km_per_liter": 7, "maintenance_annual": 0, "capacidad_combustible": 200},
+    "Hino J05E-US": {"cost_initial": 1320000 * 1.16, "km_per_liter": 8.2, "maintenance_annual": 0, "capacidad_combustible": 200},
     "JAC X350": {"cost_initial": 600000 * 1.16, "km_per_liter": 6, "maintenance_annual": 0, "capacidad_combustible": 100},
     "VolksWagen Delivery 6.160": {"cost_initial": 560000 * 1.16, "km_per_liter": 3.57, "maintenance_annual": 0, "capacidad_combustible": 150},
     "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 8, "maintenance_annual": 0, "capacidad_combustible": 140}  # Actualizado a 8 km/l
@@ -50,7 +50,7 @@ st.divider()
 
 # Datos de operación
 st.markdown("<h4 style='text-align: center;'>Datos de Operación</h4>", unsafe_allow_html=True)
-daily_kilometers = st.number_input("Kilómetros recorridos diariamente por camión:", value=50, min_value=1)
+daily_kilometers = st.number_input("Kilómetros recorridos diariamente por camión:", value=1, min_value=1)
 annual_kilometers = st.number_input("Kilómetros recorridos anualmente por camión:", value=daily_kilometers * 365, min_value=1)
 num_trucks_electric = st.number_input("Cantidad de camiones eléctricos:", value=1, min_value=1)
 num_trucks_diesel = st.number_input("Cantidad de camiones diésel:", value=1, min_value=1)
@@ -70,19 +70,15 @@ st.divider()
 
 # Precio del combustible diésel
 st.markdown("<h4 style='text-align: center;'>Precio del Combustible Diésel</h4>", unsafe_allow_html=True)
-diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=1.2, min_value=0.01, step=0.01, format="%.2f")
-diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(diesel_trucks[selected_model]["km_per_liter"]), min_value=0.01, step=0.01, format="%.2f")
+diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=1.2, min_value=0.01)
+diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(diesel_trucks[selected_model]["km_per_liter"]), min_value=0.01)
 diesel_consumption = 1 / diesel_km_per_liter
 
 st.divider()
 
-# Precio del kWh y rendimiento del camión eléctrico
+# Precio del kWh
 st.markdown("<h4 style='text-align: center;'>Precio de la Electricidad</h4>", unsafe_allow_html=True)
-cost_per_kwh = st.number_input("Costo de la electricidad ($/kWh):", value=1.07, min_value=0.01, step=0.01, format="%.2f")
-electric_distance_per_charge = st.number_input("Kilómetros por carga completa del camión eléctrico:", value=float(electric_data["distance_per_charge_km"]), min_value=0.01, step=0.01, format="%.2f")
-
-# Calcular costo por km del camión eléctrico
-electric_cost_per_km = (cost_per_kwh * electric_data["battery_capacity_kwh"]) / electric_distance_per_charge
+cost_per_kwh = st.number_input("Costo de la electricidad ($/kWh):", value=1.071, min_value=0.01)
 
 st.divider()
 
@@ -102,7 +98,7 @@ for year in range(1, 5):
 # Calcular costos anuales del camión eléctrico
 electric_annual_costs = []
 for year in range(1, 5):
-    electricity_cost = electric_cost_per_km * annual_kilometers
+    electricity_cost = (annual_kilometers / electric_data["distance_per_charge_km"]) * electric_data["battery_capacity_kwh"] * cost_per_kwh
     maintenance_cost = electric_data["maintenance_annual"]
     fixed_costs = verification_cost + electric_data["insurance_annual"]
     if annual_kilometers * year >= 40000:
@@ -152,25 +148,25 @@ comparison_data = {
     "Año 1 (Eléctrico)": [
         electric_data["cost_initial"] * num_trucks_electric,
         electric_data["insurance_annual"] * num_trucks_electric,
-        0,  # No hay tenencia para camiones eléctricos
-        maintenance_40k_cost * num_trucks_electric,
+        0,
         verification_cost * num_trucks_electric,
+        maintenance_40k_cost * num_trucks_electric,
         electric_annual_costs[0]
     ],
     "Acumulado (Diésel)": [
         diesel_trucks[selected_model]["cost_initial"] * num_trucks_diesel,
         insurance_cost * num_trucks_diesel * 4,
         tax_cost * num_trucks_diesel * 4,
-        maintenance_40k_cost * num_trucks_diesel * 4,
         verification_cost * num_trucks_diesel * 4,
+        maintenance_40k_cost * num_trucks_diesel * 4,
         sum(diesel_annual_costs)
     ],
     "Acumulado (Eléctrico)": [
         electric_data["cost_initial"] * num_trucks_electric,
         electric_data["insurance_annual"] * num_trucks_electric * 4,
-        0,  # No hay tenencia para camiones eléctricos
-        maintenance_40k_cost * num_trucks_electric * 4,
+        0,
         verification_cost * num_trucks_electric * 4,
+        maintenance_40k_cost * num_trucks_electric * 4,
         sum(electric_annual_costs)
     ]
 }
@@ -278,6 +274,7 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
