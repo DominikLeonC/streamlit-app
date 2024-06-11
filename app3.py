@@ -13,7 +13,7 @@ electric_data = {
     "model": "Sany FE601",
     "cost_initial": 1350000 * 1.16,  # Incluyendo IVA
     "battery_capacity_kwh": 84.48,
-    "distance_per_charge_km": 200,  # Distancia que se puede recorrer con una carga completa
+    "distance_per_charge_km": 200.0,  # Distancia que se puede recorrer con una carga completa (flotante)
     "maintenance_annual": 1000,
     "battery_replacement_cost": 10000,
     "battery_replacement_frequency_years": 5,
@@ -99,8 +99,7 @@ for year in range(1, 5):
 # Calcular costos anuales del camión eléctrico
 electric_annual_costs = []
 for year in range(1, 5):
-    num_charges = annual_kilometers / electric_distance_per_charge
-    electricity_cost = num_charges * electric_data["battery_capacity_kwh"] * cost_per_kwh
+    electricity_cost = (annual_kilometers / electric_distance_per_charge) * electric_data["battery_capacity_kwh"] * cost_per_kwh
     maintenance_cost = electric_data["maintenance_annual"]
     fixed_costs = verification_cost + electric_data["insurance_annual"] + tax_cost
     if annual_kilometers * year >= 40000:
@@ -281,7 +280,6 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
-
 
 
 
