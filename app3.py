@@ -104,7 +104,7 @@ electric_annual_costs = []
 for year in range(1, 5):
     electricity_cost = electric_cost_per_km * annual_kilometers
     maintenance_cost = electric_data["maintenance_annual"]
-    fixed_costs = verification_cost + electric_data["insurance_annual"] + tax_cost
+    fixed_costs = verification_cost + electric_data["insurance_annual"]
     if annual_kilometers * year >= 40000:
         fixed_costs += maintenance_40k_cost
     if annual_kilometers * year >= 80000:
@@ -145,8 +145,8 @@ comparison_data = {
         diesel_trucks[selected_model]["cost_initial"] * num_trucks_diesel,
         insurance_cost * num_trucks_diesel,
         tax_cost * num_trucks_diesel,
-        maintenance_40k_cost * num_trucks_diesel,
         verification_cost * num_trucks_diesel,
+        maintenance_40k_cost * num_trucks_diesel,
         diesel_annual_costs[0]
     ],
     "Año 1 (Eléctrico)": [
@@ -278,9 +278,6 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
-
-
-
 
 
 
