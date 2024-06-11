@@ -11,7 +11,7 @@ st.set_page_config(
 # Datos fijos del camión eléctrico (actualizados)
 electric_data = {
     "model": "Sany FE601",
-    "cost_initial": 1350000 * 1.16,  # Incluyendo IVA
+    "cost_initial": 1350000,  # Incluyendo IVA
     "battery_capacity_kwh": 84.48,
     "distance_per_charge_km": 200,  # Distancia que se puede recorrer con una carga completa
     "maintenance_annual": 1000,
