@@ -60,7 +60,7 @@ st.write(f"Kilómetros recorridos anualmente por camión: {annual_kilometers} km
 st.divider()
 
 # Costos fijos
-st.markdown("<h4 style='text-align: center;'>Costos Fijos</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center;'>Costos Fijos Camión Diesel</h4>", unsafe_allow_html=True)
 verification_cost = st.number_input("Costo de verificación vehicular por camión ($):", value=687, min_value=0)
 insurance_cost = st.number_input("Costo de seguro por camión ($):", value=53500, min_value=0)
 tax_cost = st.number_input("Costo de tenencia por camión ($):", value=698, min_value=0)
