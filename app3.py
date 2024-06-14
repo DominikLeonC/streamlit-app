@@ -280,18 +280,6 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Explicación del cálculo
-st.markdown("""
-<div style='text-align: center;'>
-<h4>Explicación del Cálculo</h4>
-<p>Para calcular los costos anuales y acumulados, se realizaron los siguientes pasos:</p>
-<ol style='text-align: left;'>
-    <li><b>Costo Anual de Diésel:</b> Se calculó multiplicando el consumo de combustible (litros/km) por el costo del combustible (pesos/litro) y el kilometraje anual. Luego se sumaron los costos fijos anuales y los costos de mantenimiento.</li>
-    <li><b>Costo Anual de Eléctrico:</b> Se calculó multiplicando el consumo de energía (% por km) por la capacidad de la batería (kWh) y el costo de la electricidad (pesos/kWh) y el kilometraje anual. Luego se sumaron los costos fijos anuales, los costos de mantenimiento y los costos de reemplazo de batería si aplica.</li>
-    <li><b>Costo Acumulado:</b> Se calcularon sumando los costos anuales acumulados a lo largo de los 4 años.</li>
-    <li><b>Ahorro Anual:</b> Se calculó restando el costo anual del camión eléctrico al costo anual del camión diésel para cada año.</li>
-    <li><b>Ahorro Total:</b> Se calculó restando el costo acumulado del camión eléctrico al costo acumulado del camión diésel.</li>
-</ol>
-<p>Estos cálculos permiten obtener una visión clara y detallada de los costos y ahorros asociados con cada tipo de camión a lo largo del tiempo &#8203;:citation[oaicite:0]{index=0}&#8203;
 
 
 
