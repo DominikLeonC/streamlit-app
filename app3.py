@@ -2,6 +2,29 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# Datos de ejemplo sobre el comportamiento del precio del diésel en México durante 2023
+data = {
+    "Fecha": ["2023-01", "2023-02", "2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11"],
+    "Precio_Diesel": [24.00, 24.20, 24.30, 24.40, 24.50, 24.60, 24.70, 24.80, 24.90, 25.00, 25.10]
+}
+
+df = pd.DataFrame(data)
+
+# Generar la gráfica
+plt.figure(figsize=(10, 5))
+plt.plot(df["Fecha"], df["Precio_Diesel"], marker='o', linestyle='-', color='b')
+plt.title('Comportamiento del Precio del Diésel en México (2023)')
+plt.xlabel('Fecha')
+plt.ylabel('Precio (MXN/Litro)')
+plt.grid(True)
+plt.xticks(rotation=45)
+plt.tight_layout()
+
+# Guardar la gráfica como una imagen
+plt.savefig('/mnt/data/diesel_price_trend_updated.png')
+
+plt.show()
+
 # Configuración de la página
 st.set_page_config(
     page_title="Comparación de Costos: Camión Diésel vs. Camión Eléctrico",
@@ -52,7 +75,7 @@ st.divider()
 # Datos de operación
 st.markdown("<h4 style='text-align: center;'>Datos de Operación</h4>", unsafe_allow_html=True)
 daily_kilometers = st.number_input("Kilómetros recorridos diariamente por camión:", value=50, min_value=1)
-annual_kilometers = st.number_input("Kilómetros recorridos anualmente por camión:", value=daily_kilometers * 365, min_value=1)
+annual_kilometers = st.number_input("Kilómetros recorridos anualmente por camión:", value=daily_kilometers * 312, min_value=1)
 num_trucks_electric = st.number_input("Cantidad de camiones eléctricos:", value=1, min_value=1)
 num_trucks_diesel = st.number_input("Cantidad de camiones diésel:", value=1, min_value=1)
 st.write(f"Kilómetros recorridos anualmente por camión: {annual_kilometers} km")
@@ -77,7 +100,7 @@ st.divider()
 
 # Precio del kWh
 st.markdown("<h4 style='text-align: center;'>Precio de la Electricidad</h4>", unsafe_allow_html=True)
-cost_per_kwh = st.number_input("Costo de la electricidad ($/kWh):", value=1.071, min_value=0.01)
+cost_per_kwh = st.number_input("Costo de la electricidad ($/kWh):", value=3.00, min_value=0.01)
 electric_distance_per_charge = st.number_input("Kilómetros por carga completa del camión eléctrico:", value=float(electric_data["distance_per_charge_km"]), min_value=0.01)
 
 # Información del camión Sany FE601
@@ -268,18 +291,8 @@ st.markdown("""
     <li><b>Ahorro Anual:</b> Se calculó restando el costo anual del camión eléctrico al costo anual del camión diésel para cada año.</li>
     <li><b>Ahorro Total:</b> Se calculó restando el costo acumulado del camión eléctrico al costo acumulado del camión diésel.</li>
 </ol>
-<p>Estos cálculos permiten obtener una visión clara y detallada de los costos y ahorros asociados con cada tipo de camión a lo largo del tiempo.</p>
-</div>
-""", unsafe_allow_html=True)
+<p>Estos cálculos permiten obtener una visión clara y detallada de los costos y ahorros asociados con cada tipo de camión a lo largo del tiempo &#8203;:citation[oaicite:0]{index=0}&#8203;
 
-st.divider()
-
-# Pie de página
-st.markdown("""
-<div style='text-align: center;'>
-<p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
-</div>
-""", unsafe_allow_html=True)
 
 
        
