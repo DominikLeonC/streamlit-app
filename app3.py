@@ -55,6 +55,15 @@ def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num
         costs.append(annual_cost * ((1 + inflation_rate) ** (year - 1)))
     return costs
 
+# Función para calcular el retorno de inversión
+def calculate_roi(initial_investment, annual_savings):
+    accumulated_savings = 0
+    for year, savings in enumerate(annual_savings, start=1):
+        accumulated_savings += savings
+        if accumulated_savings >= initial_investment:
+            return year, accumulated_savings
+    return None, accumulated_savings
+
 # Título de la aplicación y nombre de la empresa
 st.markdown("<h1 style='text-align: center; color: #FF4B4B; font-size: 60px;'>Comercializadora Sany</h1>", unsafe_allow_html=True)
 st.markdown("<h2 style='text-align: center; color: black; font-size: 36px;'>Comparación de Costos: Camión Diésel vs. Camión Eléctrico</h2>", unsafe_allow_html=True)
@@ -79,7 +88,7 @@ st.divider()
 st.markdown("<h4 style='text-align: center;'>Datos de Operación</h4>", unsafe_allow_html=True)
 daily_kilometers = st.number_input("Kilómetros recorridos diariamente por camión:", value=50, min_value=1)
 annual_kilometers = st.number_input("Kilómetros recorridos anualmente por camión:", value=daily_kilometers * 312, min_value=1)
-num_trucks_electric = st.number_input("Cantidad de camiones eléctricos:", value=1, min_value=1)
+num_trucks_electric = st.number_input("Cantidad de camiones eléctricos:", value=10, min_value=1)
 num_trucks_diesel = st.number_input("Cantidad de camiones diésel:", value=1, min_value=1)
 st.write(f"Kilómetros recorridos anualmente por camión: {annual_kilometers} km")
 
@@ -242,6 +251,18 @@ st.pyplot(fig)
 
 st.divider()
 
+# Cálculo del ROI
+initial_investment = electric_data["cost_initial"] * num_trucks_electric
+roi_year, accumulated_savings = calculate_roi(initial_investment, annual_savings)
+
+# Mostrar el ROI
+if roi_year:
+    st.success(f"El cliente recuperará su inversión inicial de ${initial_investment:,.2f} en {roi_year} años, con un ahorro acumulado de ${accumulated_savings:,.2f}.")
+else:
+    st.warning(f"El cliente no recuperará su inversión inicial de ${initial_investment:,.2f} en los 4 años proyectados. Ahorro acumulado: ${accumulated_savings:,.2f}.")
+
+st.divider()
+
 # Resumen de Costos Totales
 st.markdown("<h4 style='text-align: center;'>Resumen de Costos Totales</h4>", unsafe_allow_html=True)
 summary_data = {
@@ -304,6 +325,7 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
