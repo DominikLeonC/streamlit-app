@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 
 # Configuración de la página
 st.set_page_config(
@@ -219,6 +220,13 @@ else:
 
 st.divider()
 
+# Formateador de moneda
+def currency(x, pos):
+    'The two args are the value and tick position'
+    return "${:,.0f}".format(x)
+
+formatter = FuncFormatter(currency)
+
 # Gráfico de costos acumulados
 st.markdown("<h4 style='text-align: center;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
 fig, ax = plt.subplots()
@@ -228,6 +236,7 @@ ax.set_ylabel("Costo Acumulado ($)")
 ax.set_xlabel("Año")
 ax.set_title("Comparación de Costos Acumulados")
 ax.legend()
+ax.yaxis.set_major_formatter(formatter)
 
 st.pyplot(fig)
 
