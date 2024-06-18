@@ -294,8 +294,6 @@ st.markdown(f"""
 <p><b>Costo Total - Diésel</b>: ${total_diesel_cost:,.2f}</p>
 <p><b>Costo Total - Eléctrico</b>: ${total_electric_cost:,.2f}</p>
 <p><b>Ahorro</b>: ${savings:,.2f}</p>
-<p>El ahorro anual muestra cuánto se ahorra cada año al usar el camión eléctrico en lugar del camión diésel. En general, si el ahorro es positivo, significa que el camión eléctrico es más económico a largo plazo. Si el ahorro es negativo, el camión diésel resulta ser más económico en el período de 5 años evaluado.</p>
-<p>Además, al cambiarse a camiones eléctricos, el cliente estaría reduciendo las emisiones de CO2 en aproximadamente un {percentage_reduction:.2f}% en 5 años, lo cual contribuye significativamente a la reducción de la contaminación y apoya un futuro más sostenible.</p>
 </div>
 """, unsafe_allow_html=True)
 
