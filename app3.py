@@ -33,7 +33,7 @@ diesel_trucks = {
 # Función para calcular costos anuales del camión diésel seleccionado
 def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, verification_cost, insurance_cost, tax_cost, inflation_rate, fuel_increase_rate):
     costs = []
-    for year in range(1, 5):
+    for year in range(1, 11):
         adjusted_fuel_cost = diesel_fuel_cost * ((1 + fuel_increase_rate) ** (year - 1))
         fuel_cost = (1 / diesel_trucks[selected_model]["km_per_liter"]) * adjusted_fuel_cost * annual_kilometers
         maintenance_cost = diesel_trucks[selected_model]["maintenance_annual"]
@@ -45,7 +45,7 @@ def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, 
 # Función para calcular costos anuales del camión eléctrico
 def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks, inflation_rate, electric_increase_rate):
     costs = []
-    for year in range(1, 5):
+    for year in range(1, 11):
         adjusted_cost_per_kwh = cost_per_kwh * ((1 + electric_increase_rate) ** (year - 1))
         electricity_cost = (annual_kilometers / electric_data["distance_per_charge_km"]) * (adjusted_cost_per_kwh * electric_data["battery_capacity_kwh"])
         maintenance_cost = electric_data["maintenance_annual"]
@@ -143,7 +143,7 @@ electric_annual_costs = calculate_electric_costs(electric_data, cost_per_kwh, an
 
 # Crear DataFrame para mostrar los resultados
 df = pd.DataFrame({
-    "Año": [1, 2, 3, 4],
+    "Año": list(range(1, 11)),
     "Costo Anual - Diésel": diesel_annual_costs,
     "Costo Anual - Eléctrico": electric_annual_costs,
     "Costo Acumulado - Diésel": pd.Series(diesel_annual_costs).cumsum(),
@@ -218,7 +218,7 @@ annual_savings = [d - e for d, e in zip(diesel_annual_costs, electric_annual_cos
 
 # Crear DataFrame para mostrar el ahorro anual
 savings_df = pd.DataFrame({
-    "Año": [1, 2, 3, 4],
+    "Año": list(range(1, 11)),
     "Ahorro Anual ($)": annual_savings
 })
 
@@ -259,7 +259,7 @@ roi_year, accumulated_savings = calculate_roi(initial_investment, annual_savings
 if roi_year:
     st.success(f"El cliente recuperará su inversión inicial de ${initial_investment:,.2f} en {roi_year} años, con un ahorro acumulado de ${accumulated_savings:,.2f}.")
 else:
-    st.warning(f"El cliente no recuperará su inversión inicial de ${initial_investment:,.2f} en los 4 años proyectados. Ahorro acumulado: ${accumulated_savings:,.2f}.")
+    st.warning(f"El cliente no recuperará su inversión inicial de ${initial_investment:,.2f} en los 10 años proyectados. Ahorro acumulado: ${accumulated_savings:,.2f}.")
 
 st.divider()
 
