@@ -33,7 +33,7 @@ diesel_trucks = {
 # Función para calcular costos anuales del camión diésel seleccionado
 def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, verification_cost, insurance_cost, tax_cost, inflation_rate, fuel_increase_rate):
     costs = []
-    for year in range(1, 5):
+    for year in range(1, 6):
         adjusted_fuel_cost = diesel_fuel_cost * ((1 + fuel_increase_rate) ** (year - 1))
         fuel_cost = (1 / diesel_trucks[selected_model]["km_per_liter"]) * adjusted_fuel_cost * annual_kilometers
         maintenance_cost = diesel_trucks[selected_model]["maintenance_annual"]
@@ -45,7 +45,7 @@ def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, 
 # Función para calcular costos anuales del camión eléctrico
 def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks, inflation_rate, electric_increase_rate):
     costs = []
-    for year in range(1, 5):
+    for year in range(1, 6):
         adjusted_cost_per_kwh = cost_per_kwh * ((1 + electric_increase_rate) ** (year - 1))
         electricity_cost = (annual_kilometers / electric_data["distance_per_charge_km"]) * (adjusted_cost_per_kwh * electric_data["battery_capacity_kwh"])
         maintenance_cost = electric_data["maintenance_annual"]
@@ -134,7 +134,7 @@ electric_annual_costs = calculate_electric_costs(electric_data, cost_per_kwh, an
 
 # Crear DataFrame para mostrar los resultados
 df = pd.DataFrame({
-    "Año": list(range(1, 5)),
+    "Año": list(range(1, 6)),
     "Costo Anual - Diésel": diesel_annual_costs,
     "Costo Anual - Eléctrico": electric_annual_costs,
     "Costo Acumulado - Diésel": pd.Series(diesel_annual_costs).cumsum(),
@@ -177,17 +177,17 @@ comparison_data = {
     ],
     "Acumulado (Diésel)": [
         diesel_trucks[selected_model]["cost_initial"] * num_trucks_diesel,
-        insurance_cost * num_trucks_diesel * 4,
-        tax_cost * num_trucks_diesel * 4,
-        diesel_trucks[selected_model]["maintenance_annual"] * num_trucks_diesel * 4,
-        verification_cost * num_trucks_diesel * 4,
+        insurance_cost * num_trucks_diesel * 5,
+        tax_cost * num_trucks_diesel * 5,
+        diesel_trucks[selected_model]["maintenance_annual"] * num_trucks_diesel * 5,
+        verification_cost * num_trucks_diesel * 5,
         sum(diesel_annual_costs)
     ],
     "Acumulado (Eléctrico)": [
         electric_data["cost_initial"] * num_trucks_electric,
-        electric_data["insurance_annual"] * num_trucks_electric * 4,
+        electric_data["insurance_annual"] * num_trucks_electric * 5,
         0,
-        electric_data["maintenance_annual"] * num_trucks_electric * 4,
+        electric_data["maintenance_annual"] * num_trucks_electric * 5,
         0,
         sum(electric_annual_costs)
     ]
@@ -209,14 +209,14 @@ annual_savings = [d - e for d, e in zip(diesel_annual_costs, electric_annual_cos
 
 # Crear DataFrame para mostrar el ahorro anual
 savings_df = pd.DataFrame({
-    "Año": list(range(1, 5)),
+    "Año": list(range(1, 6)),
     "Ahorro Anual ($)": annual_savings
 })
 
 if savings > 0:
-    st.success(f"El camión eléctrico ahorra ${savings:,.2f} en comparación con el camión diésel seleccionado en 4 años.")
+    st.success(f"El camión eléctrico ahorra ${savings:,.2f} en comparación con el camión diésel seleccionado en 5 años.")
 else:
-    st.warning(f"El camión diésel seleccionado es más económico por ${-savings:,.2f} en comparación con el camión eléctrico en 4 años.")
+    st.warning(f"El camión diésel seleccionado es más económico por ${-savings:,.2f} en comparación con el camión eléctrico en 5 años.")
 
 st.divider()
 
@@ -260,9 +260,27 @@ st.table(savings_df)
 
 st.divider()
 
+# Información técnica del camión Sany FE601
+st.markdown("<h4 style='text-align: center;'>Ficha Técnica del Camión Sany FE601</h4>", unsafe_allow_html=True)
+st.markdown("""
+<div style='display: flex; justify-content: center;'>
+<table style='border-collapse: collapse; width: 60%; text-align: left;'>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Modelo</th><td style='border: 1px solid black; padding: 8px;'>Sany FE601</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Capacidad de Batería</th><td style='border: 1px solid black; padding: 8px;'>84.48 kWh</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Consumo por Kilómetro</th><td style='border: 1px solid black; padding: 8px;'>0.45 kWh</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Distancia por Carga Completa</th><td style='border: 1px solid black; padding: 8px;'>200 km</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Costo Inicial</th><td style='border: 1px solid black; padding: 8px;'>$1,566,000 (incluye IVA)</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Mantenimiento Anual</th><td style='border: 1px solid black; padding: 8px;'>$4,000</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Seguro Anual</th><td style='border: 1px solid black; padding: 8px;'>$53,000</td></tr>
+</table>
+</div>
+""", unsafe_allow_html=True)
+
+st.divider()
+
 # Cálculo de la reducción de emisiones de CO2
 co2_emission_per_liter_diesel = 2.68  # kg de CO2 por litro de diésel
-total_diesel_fuel_consumed = diesel_consumption * annual_kilometers * num_trucks_diesel * 4  # Consumo total de diésel en 4 años
+total_diesel_fuel_consumed = diesel_consumption * annual_kilometers * num_trucks_diesel * 5  # Consumo total de diésel en 5 años
 total_co2_emissions_diesel = total_diesel_fuel_consumed * co2_emission_per_liter_diesel
 total_co2_emissions_electric = 0  # Asumimos cero emisiones de CO2 para camiones eléctricos
 percentage_reduction = ((total_co2_emissions_diesel - total_co2_emissions_electric) / total_co2_emissions_diesel) * 100
@@ -271,12 +289,12 @@ percentage_reduction = ((total_co2_emissions_diesel - total_co2_emissions_electr
 st.markdown(f"""
 <div style='text-align: center;'>
 <h4>Interpretación de Resultados</h4>
-<p>La gráfica de costos acumulados muestra la diferencia en los costos totales entre el camión diésel y el camión eléctrico a lo largo de 4 años.</p>
+<p>La gráfica de costos acumulados muestra la diferencia en los costos totales entre el camión diésel y el camión eléctrico a lo largo de 5 años.</p>
 <p><b>Costo Total - Diésel</b>: ${total_diesel_cost:,.2f}</p>
 <p><b>Costo Total - Eléctrico</b>: ${total_electric_cost:,.2f}</p>
 <p><b>Ahorro</b>: ${savings:,.2f}</p>
-<p>El ahorro anual muestra cuánto se ahorra cada año al usar el camión eléctrico en lugar del camión diésel. En general, si el ahorro es positivo, significa que el camión eléctrico es más económico a largo plazo. Si el ahorro es negativo, el camión diésel resulta ser más económico en el período de 4 años evaluado.</p>
-<p>Además, al cambiarse a camiones eléctricos, el cliente estaría reduciendo las emisiones de CO2 en aproximadamente un {percentage_reduction:.2f}% en 4 años, lo cual contribuye significativamente a la reducción de la contaminación y apoya un futuro más sostenible.</p>
+<p>El ahorro anual muestra cuánto se ahorra cada año al usar el camión eléctrico en lugar del camión diésel. En general, si el ahorro es positivo, significa que el camión eléctrico es más económico a largo plazo. Si el ahorro es negativo, el camión diésel resulta ser más económico en el período de 5 años evaluado.</p>
+<p>Además, al cambiarse a camiones eléctricos, el cliente estaría reduciendo las emisiones de CO2 en aproximadamente un {percentage_reduction:.2f}% en 5 años, lo cual contribuye significativamente a la reducción de la contaminación y apoya un futuro más sostenible.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -288,7 +306,7 @@ st.markdown("""
 <ol style='text-align: left;'>
     <li><b>Costo Anual de Diésel:</b> Se calculó multiplicando el consumo de combustible (litros/km) por el costo del combustible (pesos/litro) y el kilometraje anual. Luego se sumaron los costos fijos anuales y los costos de mantenimiento, ajustados por la tasa de inflación y el aumento del precio del combustible.</li>
     <li><b>Costo Anual de Eléctrico:</b> Se calculó multiplicando el consumo de energía (% por km) por la capacidad de la batería (kWh) y el costo de la electricidad (pesos/kWh) y el kilometraje anual. Luego se sumaron los costos fijos anuales y los costos de mantenimiento, ajustados por la tasa de inflación y el aumento del precio de la electricidad.</li>
-    <li><b>Costo Acumulado:</b> Se calcularon sumando los costos anuales acumulados a lo largo de los 4 años.</li>
+    <li><b>Costo Acumulado:</b> Se calcularon sumando los costos anuales acumulados a lo largo de los 5 años.</li>
     <li><b>Ahorro Anual:</b> Se calculó restando el costo anual del camión eléctrico al costo anual del camión diésel para cada año.</li>
     <li><b>Ahorro Total:</b> Se calculó restando el costo acumulado del camión eléctrico al costo acumulado del camión diésel.</li>
 </ol>
@@ -304,6 +322,7 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
