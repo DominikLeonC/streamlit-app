@@ -29,6 +29,29 @@ diesel_trucks = {
     "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 8, "maintenance_annual": 8000, "capacidad_combustible": 140}
 }
 
+# Función para calcular costos anuales del camión diésel seleccionado
+def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, verification_cost, insurance_cost, tax_cost):
+    costs = []
+    for year in range(1, 5):
+        fuel_cost = (1 / diesel_trucks[selected_model]["km_per_liter"]) * diesel_fuel_cost * annual_kilometers
+        maintenance_cost = diesel_trucks[selected_model]["maintenance_annual"]
+        fixed_costs = verification_cost + insurance_cost + tax_cost
+        annual_cost = (fuel_cost + maintenance_cost + fixed_costs) * num_trucks
+        costs.append(annual_cost)
+    return costs
+
+# Función para calcular costos anuales del camión eléctrico
+def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks):
+    costs = []
+    for year in range(1, 5):
+        electricity_cost = (annual_kilometers / electric_data["distance_per_charge_km"]) * (cost_per_kwh * electric_data["battery_capacity_kwh"])
+        maintenance_cost = electric_data["maintenance_annual"]
+        fixed_costs = electric_data["insurance_annual"]
+        battery_replacement_cost = electric_data["battery_replacement_cost"] if year % electric_data["battery_replacement_frequency_years"] == 0 else 0
+        annual_cost = (electricity_cost + maintenance_cost + fixed_costs + battery_replacement_cost) * num_trucks
+        costs.append(annual_cost)
+    return costs
+
 # Título de la aplicación y nombre de la empresa
 st.markdown("<h1 style='text-align: center; color: #FF4B4B; font-size: 60px;'>Comercializadora Sany</h1>", unsafe_allow_html=True)
 st.markdown("<h2 style='text-align: center; color: black; font-size: 36px;'>Comparación de Costos: Camión Diésel vs. Camión Eléctrico</h2>", unsafe_allow_html=True)
@@ -114,23 +137,9 @@ st.markdown("""
 
 st.divider()
 
-# Calcular costos anuales del camión diésel seleccionado
-diesel_annual_costs = []
-for year in range(1, 5):
-    fuel_cost = diesel_consumption * diesel_fuel_cost * annual_kilometers
-    maintenance_cost = diesel_trucks[selected_model]["maintenance_annual"]
-    fixed_costs = verification_cost + insurance_cost + tax_cost
-    annual_cost = (fuel_cost + maintenance_cost + fixed_costs) * num_trucks_diesel
-    diesel_annual_costs.append(annual_cost)
-
-# Calcular costos anuales del camión eléctrico
-electric_annual_costs = []
-for year in range(1, 5):
-    electricity_cost = (annual_kilometers / electric_distance_per_charge) * (cost_per_kwh * electric_data["battery_capacity_kwh"])
-    maintenance_cost = electric_data["maintenance_annual"]
-    fixed_costs = electric_data["insurance_annual"]
-    annual_cost = (electricity_cost + maintenance_cost + fixed_costs) * num_trucks_electric
-    electric_annual_costs.append(annual_cost)
+# Calcular costos anuales
+diesel_annual_costs = calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks_diesel, verification_cost, insurance_cost, tax_cost)
+electric_annual_costs = calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks_electric)
 
 # Crear DataFrame para mostrar los resultados
 df = pd.DataFrame({
@@ -296,6 +305,7 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
