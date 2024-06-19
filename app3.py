@@ -24,10 +24,10 @@ electric_data = {
 
 # Opciones de camiones diésel (Incluyendo IVA)
 diesel_trucks = {
-    "Hino J05E-US": {"cost_initial": 1320000 * 1.16, "km_per_liter": 7, "maintenance_annual": 8000, "capacidad_combustible": 200},
+    "Hino J05E-US": {"cost_initial": 1320000 * 1.16, "km_per_liter": 6.5, "maintenance_annual": 8000, "capacidad_combustible": 200},
     "JAC X350": {"cost_initial": 600000 * 1.16, "km_per_liter": 6, "maintenance_annual": 8000, "capacidad_combustible": 100},
     "VolksWagen Delivery 6.160": {"cost_initial": 560000 * 1.16, "km_per_liter": 4, "maintenance_annual": 8000, "capacidad_combustible": 150},
-    "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 7, "maintenance_annual": 8000, "capacidad_combustible": 140}
+    "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 6.4, "maintenance_annual": 8000, "capacidad_combustible": 140}
 }
 
 # Función para calcular costos anuales del camión diésel seleccionado
