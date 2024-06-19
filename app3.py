@@ -34,20 +34,20 @@ diesel_trucks = {
 def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate):
     costs = []
     for year in range(1, 6):
-        adjusted_fuel_cost = diesel_fuel_cost + fuel_increase_rate * (year - 1)
-        fuel_cost = (annual_kilometers / diesel_trucks[selected_model]["km_per_liter"]) * adjusted_fuel_cost
+        adjusted_fuel_cost = diesel_fuel_cost + (fuel_increase_rate * (year - 1))
+        fuel_cost = (1 / diesel_trucks[selected_model]["km_per_liter"]) * adjusted_fuel_cost * annual_kilometers
         annual_cost = fuel_cost * num_trucks
-        costs.append(round(annual_cost * (1 + inflation_rate) ** (year - 1), 2))
+        costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
     return costs
 
 # Función para calcular costos anuales del camión eléctrico
 def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks, inflation_rate, electric_increase_rate):
     costs = []
     for year in range(1, 6):
-        adjusted_cost_per_kwh = cost_per_kwh + electric_increase_rate * (year - 1)
+        adjusted_cost_per_kwh = cost_per_kwh + (electric_increase_rate * (year - 1))
         electricity_cost = (annual_kilometers / electric_data["distance_per_charge_km"]) * (adjusted_cost_per_kwh * electric_data["battery_capacity_kwh"])
         annual_cost = electricity_cost * num_trucks
-        costs.append(round(annual_cost * (1 + inflation_rate) ** (year - 1), 2))
+        costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
     return costs
 
 # Título de la aplicación y nombre de la empresa
@@ -80,11 +80,37 @@ st.write(f"Kilómetros recorridos anualmente por camión: {annual_kilometers} km
 
 st.divider()
 
+# Costos fijos
+st.markdown("<h4 style='text-align: center;'>Costos Fijos Camión Diesel</h4>", unsafe_allow_html=True)
+verification_cost = st.number_input("Costo de verificación vehicular por camión ($):", value=687, min_value=0)
+insurance_cost = st.number_input("Costo de seguro por camión ($):", value=53500, min_value=0)
+tax_cost = st.number_input("Costo de tenencia por camión ($):", value=698, min_value=0)
+
+st.divider()
+
 # Precio del combustible diésel
 st.markdown("<h4 style='text-align: center;'>Precio del Combustible Diésel</h4>", unsafe_allow_html=True)
 diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=25.30, min_value=0.01)
 diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(diesel_trucks[selected_model]["km_per_liter"]), min_value=0.01)
 diesel_consumption = 1 / diesel_km_per_liter
+
+# Gráfica del comportamiento del precio del diésel
+st.markdown("<h4 style='text-align: center;'>Comportamiento del Precio del Diésel en México (2023)</h4>", unsafe_allow_html=True)
+data = {
+    "Fecha": ["2023-01", "2023-02", "2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11"],
+    "Precio_Diesel": [24.00, 24.20, 24.30, 24.40, 24.50, 24.60, 24.70, 24.80, 24.90, 25.00, 25.10]
+}
+df = pd.DataFrame(data)
+fig, ax = plt.subplots()
+ax.plot(df["Fecha"], df["Precio_Diesel"], marker='o', linestyle='-', color='b')
+ax.set_title('Comportamiento del Precio del Diésel en México (2023)')
+ax.set_xlabel('Fecha')
+ax.set_ylabel('Precio (MXN/Litro)')
+ax.grid(True)
+ax.set_xticklabels(df["Fecha"], rotation=45)
+st.pyplot(fig)
+
+st.divider()
 
 # Precio del kWh
 st.markdown("<h4 style='text-align: center;'>Precio de la Electricidad</h4>", unsafe_allow_html=True)
