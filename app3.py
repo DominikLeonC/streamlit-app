@@ -30,26 +30,24 @@ diesel_trucks = {
     "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 7, "maintenance_annual": 8000, "capacidad_combustible": 140}
 }
 
-# Función para calcular costos anuales del camión diésel seleccionado solo por el consumo de combustible
-def calculate_diesel_fuel_costs(selected_model, diesel_fuel_cost, annual_kilometers, fuel_increase_rate):
+# Función para calcular costos anuales del camión diésel seleccionado
+def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate):
     costs = []
     for year in range(1, 6):
-        adjusted_fuel_cost = diesel_fuel_cost * ((1 + fuel_increase_rate) ** (year - 1))
-        fuel_cost = (1 / diesel_trucks[selected_model]["km_per_liter"]) * adjusted_fuel_cost * annual_kilometers
-        costs.append(round(fuel_cost, 2))
+        adjusted_fuel_cost = diesel_fuel_cost + fuel_increase_rate * (year - 1)
+        fuel_cost = (annual_kilometers / diesel_trucks[selected_model]["km_per_liter"]) * adjusted_fuel_cost
+        annual_cost = fuel_cost * num_trucks
+        costs.append(round(annual_cost * (1 + inflation_rate) ** (year - 1), 2))
     return costs
 
 # Función para calcular costos anuales del camión eléctrico
 def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks, inflation_rate, electric_increase_rate):
     costs = []
     for year in range(1, 6):
-        adjusted_cost_per_kwh = cost_per_kwh * ((1 + electric_increase_rate) ** (year - 1))
+        adjusted_cost_per_kwh = cost_per_kwh + electric_increase_rate * (year - 1)
         electricity_cost = (annual_kilometers / electric_data["distance_per_charge_km"]) * (adjusted_cost_per_kwh * electric_data["battery_capacity_kwh"])
-        maintenance_cost = electric_data["maintenance_annual"]
-        fixed_costs = electric_data["insurance_annual"]
-        battery_replacement_cost = electric_data["battery_replacement_cost"] if year % electric_data["battery_replacement_frequency_years"] == 0 else 0
-        annual_cost = (electricity_cost + maintenance_cost + fixed_costs + battery_replacement_cost) * num_trucks
-        costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
+        annual_cost = electricity_cost * num_trucks
+        costs.append(round(annual_cost * (1 + inflation_rate) ** (year - 1), 2))
     return costs
 
 # Título de la aplicación y nombre de la empresa
@@ -82,37 +80,11 @@ st.write(f"Kilómetros recorridos anualmente por camión: {annual_kilometers} km
 
 st.divider()
 
-# Costos fijos
-st.markdown("<h4 style='text-align: center;'>Costos Fijos Camión Diesel</h4>", unsafe_allow_html=True)
-verification_cost = st.number_input("Costo de verificación vehicular por camión ($):", value=687, min_value=0)
-insurance_cost = st.number_input("Costo de seguro por camión ($):", value=53500, min_value=0)
-tax_cost = st.number_input("Costo de tenencia por camión ($):", value=698, min_value=0)
-
-st.divider()
-
 # Precio del combustible diésel
 st.markdown("<h4 style='text-align: center;'>Precio del Combustible Diésel</h4>", unsafe_allow_html=True)
 diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=25.30, min_value=0.01)
 diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(diesel_trucks[selected_model]["km_per_liter"]), min_value=0.01)
 diesel_consumption = 1 / diesel_km_per_liter
-
-# Gráfica del comportamiento del precio del diésel
-st.markdown("<h4 style='text-align: center;'>Comportamiento del Precio del Diésel en México (2023)</h4>", unsafe_allow_html=True)
-data = {
-    "Fecha": ["2023-01", "2023-02", "2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11"],
-    "Precio_Diesel": [24.00, 24.20, 24.30, 24.40, 24.50, 24.60, 24.70, 24.80, 24.90, 25.00, 25.10]
-}
-df = pd.DataFrame(data)
-fig, ax = plt.subplots()
-ax.plot(df["Fecha"], df["Precio_Diesel"], marker='o', linestyle='-', color='b')
-ax.set_title('Comportamiento del Precio del Diésel en México (2023)')
-ax.set_xlabel('Fecha')
-ax.set_ylabel('Precio (MXN/Litro)')
-ax.grid(True)
-ax.set_xticklabels(df["Fecha"], rotation=45)
-st.pyplot(fig)
-
-st.divider()
 
 # Precio del kWh
 st.markdown("<h4 style='text-align: center;'>Precio de la Electricidad</h4>", unsafe_allow_html=True)
@@ -143,16 +115,16 @@ inflation_rate = st.number_input("Tasa de inflación anual (%):", value=4.0, min
 fuel_increase_rate = st.number_input("Incremento anual del precio del combustible diésel ($):", value=1.10, min_value=0.0, step=0.1)
 electric_increase_rate = st.number_input("Incremento anual del precio de la electricidad ($):", value=0.70, min_value=0.0, step=0.1)
 
-# Calcular costos anuales (solo consumo de combustible)
-diesel_annual_fuel_costs = calculate_diesel_fuel_costs(selected_model, diesel_fuel_cost, annual_kilometers, fuel_increase_rate)
+# Calcular costos anuales
+diesel_annual_costs = calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks_diesel, inflation_rate, fuel_increase_rate)
 electric_annual_costs = calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks_electric, inflation_rate, electric_increase_rate)
 
 # Crear DataFrame para mostrar los resultados
 df = pd.DataFrame({
     "Año": list(range(1, 6)),
-    "Costo Anual - Diésel": diesel_annual_fuel_costs,
+    "Costo Anual - Diésel": diesel_annual_costs,
     "Costo Anual - Eléctrico": electric_annual_costs,
-    "Costo Acumulado - Diésel": pd.Series(diesel_annual_fuel_costs).cumsum(),
+    "Costo Acumulado - Diésel": pd.Series(diesel_annual_costs).cumsum(),
     "Costo Acumulado - Eléctrico": pd.Series(electric_annual_costs).cumsum()
 })
 
@@ -187,7 +159,7 @@ comparison_data = {
         tax_cost * num_trucks_diesel,
         diesel_trucks[selected_model]["maintenance_annual"] * num_trucks_diesel,
         verification_cost * num_trucks_diesel,
-        diesel_annual_fuel_costs[0]
+        diesel_annual_costs[0]
     ],
     "Año 1 (Eléctrico)": [
         electric_data["cost_initial"] * num_trucks_electric,
@@ -203,7 +175,7 @@ comparison_data = {
         tax_cost * num_trucks_diesel * 5,
         diesel_trucks[selected_model]["maintenance_annual"] * num_trucks_diesel * 5,
         verification_cost * num_trucks_diesel * 5,
-        sum(diesel_annual_fuel_costs)
+        sum(diesel_annual_costs)
     ],
     "Acumulado a 5 años (Eléctrico)": [
         electric_data["cost_initial"] * num_trucks_electric,
@@ -228,7 +200,7 @@ total_electric_cost = df["Costo Acumulado - Eléctrico"].iloc[-1]
 savings = total_diesel_cost - total_electric_cost
 
 # Cálculo del ahorro anual
-annual_savings = [d - e for d, e in zip(diesel_annual_fuel_costs, electric_annual_costs)]
+annual_savings = [d - e for d, e in zip(diesel_annual_costs, electric_annual_costs)]
 
 # Crear DataFrame para mostrar el ahorro anual
 savings_df = pd.DataFrame({
