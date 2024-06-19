@@ -39,7 +39,7 @@ def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, 
         maintenance_cost = diesel_trucks[selected_model]["maintenance_annual"]
         fixed_costs = verification_cost + insurance_cost + tax_cost
         annual_cost = (fuel_cost + maintenance_cost + fixed_costs) * num_trucks
-        costs.append(annual_cost * ((1 + inflation_rate) ** (year - 1)))
+        costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
     return costs
 
 # Función para calcular costos anuales del camión eléctrico
@@ -52,7 +52,7 @@ def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num
         fixed_costs = electric_data["insurance_annual"]
         battery_replacement_cost = electric_data["battery_replacement_cost"] if year % electric_data["battery_replacement_frequency_years"] == 0 else 0
         annual_cost = (electricity_cost + maintenance_cost + fixed_costs + battery_replacement_cost) * num_trucks
-        costs.append(annual_cost * ((1 + inflation_rate) ** (year - 1)))
+        costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
     return costs
 
 # Título de la aplicación y nombre de la empresa
@@ -165,6 +165,13 @@ st.divider()
 st.markdown("<h4 style='text-align: center;'>Resultados Comparativos</h4>", unsafe_allow_html=True)
 st.table(df)
 
+st.markdown(f"""
+<div style='text-align: center;'>
+    <p><b>Cantidad de camiones seleccionados:</b> {num_trucks_diesel} diésel y {num_trucks_electric} eléctricos</p>
+    <p>Los costos van aumentando año tras año debido a la inflación y al aumento de los precios.</p>
+</div>
+""", unsafe_allow_html=True)
+
 st.divider()
 
 # Tabla comparativa final
@@ -212,6 +219,7 @@ comparison_data = {
 }
 
 comparison_df = pd.DataFrame(comparison_data)
+comparison_df = comparison_df.applymap(lambda x: f"{x:,.2f}" if isinstance(x, (int, float)) else x)
 st.markdown("<h4 style='text-align: center;'>Tabla Comparativa Final</h4>", unsafe_allow_html=True)
 st.table(comparison_df)
 
@@ -320,6 +328,7 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
