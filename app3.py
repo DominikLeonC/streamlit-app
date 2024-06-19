@@ -84,7 +84,7 @@ st.divider()
 st.markdown("<h4 style='text-align: center;'>Costos Fijos Camión Diesel</h4>", unsafe_allow_html=True)
 verification_cost = st.number_input("Costo de verificación vehicular por camión ($):", value=687, min_value=0)
 insurance_cost = st.number_input("Costo de seguro por camión ($):", value=53500, min_value=0)
-tax_cost = st.number_input("Costo de tenencia por camión ($):", value=698, min_value=0)
+tax_cost = st.number_input("Costo de referendo por camión ($):", value=734, min_value=0)
 
 st.divider()
 
@@ -174,7 +174,7 @@ comparison_data = {
     "Concepto": [
         "Valor del Auto",
         "Seguro anual",
-        "Tenencia",
+        "Referendo",
         "Mantenimiento (Anual o cada 40K km)",
         "Verificación anual",
         "Combustible anual promedio"
