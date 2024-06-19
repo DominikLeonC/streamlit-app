@@ -2,7 +2,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
-Configuración de la página
 st.set_page_config(
 page_title="Comparación de Costos: Camión Diésel vs. Camión Eléctrico",
 layout="centered"
