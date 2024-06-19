@@ -215,6 +215,26 @@ comparison_df = pd.DataFrame(comparison_data)
 st.markdown("<h4 style='text-align: center;'>Tabla Comparativa Final</h4>", unsafe_allow_html=True)
 st.table(comparison_df)
 
+st.divider()
+
+# Cálculo del ahorro
+total_diesel_cost = df["Costo Acumulado - Diésel"].iloc[-1]
+total_electric_cost = df["Costo Acumulado - Eléctrico"].iloc[-1]
+savings = total_diesel_cost - total_electric_cost
+
+# Cálculo del ahorro anual
+annual_savings = [d - e for d, e in zip(diesel_annual_costs, electric_annual_costs)]
+
+# Crear DataFrame para mostrar el ahorro anual
+savings_df = pd.DataFrame({
+    "Año": list(range(1, 6)),
+    "Ahorro Anual ($)": annual_savings
+})
+
+if savings > 0:
+    st.success(f"El camión eléctrico ahorra ${savings:,.2f} en comparación con el camión diésel seleccionado en 5 años.")
+else:
+    st.warning(f"El camión diésel seleccionado es más económico por ${-savings:,.2f} en comparación con el camión eléctrico en 5 años.")
 
 st.divider()
 
@@ -249,28 +269,6 @@ summary_data = {
 summary_df = pd.DataFrame(summary_data)
 
 st.table(summary_df)
-
-st.divider()
-
-# Cálculo del ahorro
-total_diesel_cost = df["Costo Acumulado - Diésel"].iloc[-1]
-total_electric_cost = df["Costo Acumulado - Eléctrico"].iloc[-1]
-savings = total_diesel_cost - total_electric_cost
-
-# Cálculo del ahorro anual
-annual_savings = [d - e for d, e in zip(diesel_annual_costs, electric_annual_costs)]
-
-# Crear DataFrame para mostrar el ahorro anual
-savings_df = pd.DataFrame({
-    "Año": list(range(1, 6)),
-    "Ahorro Anual ($)": annual_savings
-})
-
-if savings > 0:
-    st.success(f"El camión eléctrico ahorra ${savings:,.2f} en comparación con el camión diésel seleccionado en 5 años.")
-else:
-    st.warning(f"El camión diésel seleccionado es más económico por ${-savings:,.2f} en comparación con el camión eléctrico en 5 años.")
-
 
 st.divider()
 
