@@ -31,10 +31,10 @@ diesel_trucks = {
 }
 
 # Función para calcular costos anuales del camión diésel seleccionado
-def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, verification_cost, insurance_cost, tax_cost, inflation_rate, fuel_increase_rate):
+def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, verification_cost, insurance_cost, tax_cost, inflation_rate, fuel_increase_value):
     costs = []
     for year in range(1, 6):
-        adjusted_fuel_cost = diesel_fuel_cost * ((1 + fuel_increase_rate) ** (year - 1))
+        adjusted_fuel_cost = diesel_fuel_cost + (fuel_increase_value * (year - 1))
         fuel_cost = (1 / diesel_trucks[selected_model]["km_per_liter"]) * adjusted_fuel_cost * annual_kilometers
         maintenance_cost = diesel_trucks[selected_model]["maintenance_annual"]
         fixed_costs = verification_cost + insurance_cost + tax_cost
@@ -43,10 +43,10 @@ def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, 
     return costs
 
 # Función para calcular costos anuales del camión eléctrico
-def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks, inflation_rate, electric_increase_rate):
+def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks, inflation_rate, electric_increase_value):
     costs = []
     for year in range(1, 6):
-        adjusted_cost_per_kwh = cost_per_kwh * ((1 + electric_increase_rate) ** (year - 1))
+        adjusted_cost_per_kwh = cost_per_kwh + (electric_increase_value * (year - 1))
         electricity_cost = (annual_kilometers / electric_data["distance_per_charge_km"]) * (adjusted_cost_per_kwh * electric_data["battery_capacity_kwh"])
         maintenance_cost = electric_data["maintenance_annual"]
         fixed_costs = electric_data["insurance_annual"]
@@ -143,12 +143,12 @@ st.divider()
 # Inflación y aumento de precios
 st.markdown("<h4 style='text-align: center;'>Inflación y Aumento de Precios</h4>", unsafe_allow_html=True)
 inflation_rate = st.number_input("Tasa de inflación anual (%):", value=4.0, min_value=0.0, step=0.1) / 100
-fuel_increase_rate = st.number_input("Incremento anual del precio del combustible diésel ($):", value=1.10, min_value=0.0, step=0.1) 
-electric_increase_rate = st.number_input("Incremento anual del precio de la electricidad ($):", value=0.70, min_value=0.0, step=0.1) 
+fuel_increase_value = st.number_input("Incremento anual del precio del combustible diésel ($):", value=1.10, min_value=0.0, step=0.1) 
+electric_increase_value = st.number_input("Incremento anual del precio de la electricidad ($):", value=0.70, min_value=0.0, step=0.1) 
 
 # Calcular costos anuales
-diesel_annual_costs = calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks_diesel, verification_cost, insurance_cost, tax_cost, inflation_rate, fuel_increase_rate)
-electric_annual_costs = calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks_electric, inflation_rate, electric_increase_rate)
+diesel_annual_costs = calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks_diesel, verification_cost, insurance_cost, tax_cost, inflation_rate, fuel_increase_value)
+electric_annual_costs = calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks_electric, inflation_rate, electric_increase_value)
 
 # Crear DataFrame para mostrar los resultados
 df = pd.DataFrame({
@@ -328,6 +328,7 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
