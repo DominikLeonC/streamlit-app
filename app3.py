@@ -95,7 +95,7 @@ st.divider()
 
 # Precio del combustible diésel
 st.markdown("<h4 style='text-align: center;'>Precio del Combustible Diésel</h4>", unsafe_allow_html=True)
-diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=25.54, min_value=0.01)
+diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=25.30, min_value=0.01)
 diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(diesel_trucks[selected_model]["km_per_liter"]), min_value=0.01)
 diesel_consumption = 1 / diesel_km_per_liter
 
@@ -143,8 +143,8 @@ st.divider()
 # Inflación y aumento de precios
 st.markdown("<h4 style='text-align: center;'>Inflación y Aumento de Precios</h4>", unsafe_allow_html=True)
 inflation_rate = st.number_input("Tasa de inflación anual (%):", value=4.0, min_value=0.0, step=0.1) / 100
-fuel_increase_rate = st.number_input("Incremento anual del precio del combustible diésel ($):", value=1.20, min_value=0.0, step=0.1)
-electric_increase_rate = st.number_input("Incremento anual del precio de la electricidad ($):", value=0.40, min_value=0.0, step=0.1)
+fuel_increase_rate = st.number_input("Incremento anual del precio del combustible diésel (%):", value=1.50, min_value=0.0, step=0.1) / 100
+electric_increase_rate = st.number_input("Incremento anual del precio de la electricidad (%):", value=0.40, min_value=0.0, step=0.1) / 100
 
 # Calcular costos anuales
 diesel_annual_costs = calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks_diesel, verification_cost, insurance_cost, tax_cost, inflation_rate, fuel_increase_rate)
@@ -328,7 +328,6 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
-
 
 
 
