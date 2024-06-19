@@ -258,8 +258,8 @@ st.pyplot(fig)
 
 st.divider()
 
-# Resumen de Costos Totales
-st.markdown("<h4 style='text-align: center;'>Resumen de Costos Totales</h4>", unsafe_allow_html=True)
+# Resumen de ahorro de Combustible
+st.markdown("<h4 style='text-align: center;'>Resumen de ahorro de Combustible</h4>", unsafe_allow_html=True)
 summary_data = {
     "Concepto": ["Costo Total - Diésel", "Costo Total - Eléctrico", "Ahorro"],
     "Valor ($)": [total_diesel_cost, total_electric_cost, savings]
