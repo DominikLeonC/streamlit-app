@@ -193,7 +193,7 @@ comparison_data = {
         0,
         electric_annual_costs[0]
     ],
-    "Acumulado (Diésel)": [
+    "Acumulado a 5 años (Diésel)": [
         diesel_trucks[selected_model]["cost_initial"] * num_trucks_diesel,
         insurance_cost * num_trucks_diesel * 5,
         tax_cost * num_trucks_diesel * 5,
@@ -201,7 +201,7 @@ comparison_data = {
         verification_cost * num_trucks_diesel * 5,
         sum(diesel_annual_costs)
     ],
-    "Acumulado (Eléctrico)": [
+    "Acumulado a 5 años (Eléctrico)": [
         electric_data["cost_initial"] * num_trucks_electric,
         electric_data["insurance_annual"] * num_trucks_electric * 5,
         0,
