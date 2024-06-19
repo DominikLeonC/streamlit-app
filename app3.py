@@ -231,11 +231,6 @@ savings_df = pd.DataFrame({
     "Ahorro Anual ($)": annual_savings
 })
 
-if savings > 0:
-    st.success(f"El camión eléctrico ahorra ${savings:,.2f} en comparación con el camión diésel seleccionado en 5 años.")
-else:
-    st.warning(f"El camión diésel seleccionado es más económico por ${-savings:,.2f} en comparación con el camión eléctrico en 5 años.")
-
 st.divider()
 
 # Formateador de moneda
@@ -270,6 +265,11 @@ summary_df = pd.DataFrame(summary_data)
 
 st.table(summary_df)
 
+if savings > 0:
+    st.success(f"El camión eléctrico ahorra ${savings:,.2f} en comparación con el camión diésel seleccionado en 5 años.")
+else:
+    st.warning(f"El camión diésel seleccionado es más económico por ${-savings:,.2f} en comparación con el camión eléctrico en 5 años.")
+
 st.divider()
 
 # Mostrar ahorro anual
@@ -277,7 +277,6 @@ st.markdown("<h4 style='text-align: center;'>Ahorro Anual</h4>", unsafe_allow_ht
 st.table(savings_df)
 
 st.divider()
-
 
 # Cálculo de la reducción de emisiones de CO2
 co2_emission_per_liter_diesel = 2.68  # kg de CO2 por litro de diésel
@@ -321,6 +320,7 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
