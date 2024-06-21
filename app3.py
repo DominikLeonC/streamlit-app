@@ -97,6 +97,7 @@ diesel_consumption = 1 / diesel_km_per_liter
 # Gráfica del comportamiento del precio del diésel
 st.markdown("<h4 style='text-align: center;'>Comportamiento del Precio del Diésel en México (2018-2024)</h4>", unsafe_allow_html=True)
 # Datos de precios del diésel de 2018 a 2023
+# Datos de precios del diésel de 2018 a 2023
 data = {
     "Fecha": [
         "2018-01", "2018-02", "2018-03", "2018-04", "2018-05", "2018-06", "2018-07", "2018-08", "2018-09", "2018-10", "2018-11", "2018-12",
@@ -122,18 +123,20 @@ df = pd.DataFrame(data)
 # Convertir la columna de fechas a tipo datetime
 df["Fecha"] = pd.to_datetime(df["Fecha"])
 
-# Configurar la gráfica de barras
+# Configurar la gráfica de líneas
 plt.figure(figsize=(12, 6))
-plt.bar(df["Fecha"], df["Precio_Diesel"], color='b')
-plt.title('Precio del Diésel en México (2018-2023)')
+plt.plot(df["Fecha"], df["Precio_Diesel"], marker='o', linestyle='-', color='b')
+plt.title('Comportamiento del Precio del Diésel en México (2018-2023)')
 plt.xlabel('Fecha')
 plt.ylabel('Precio (MXN por litro)')
 plt.grid(True)
-plt.xticks(rotation=45, ha='right', fontsize=10)  # Ajustar etiquetas del eje x para mejor visualización
+plt.xticks(rotation=45)
 plt.tight_layout()
 
 # Mostrar la gráfica en Streamlit
 st.pyplot(plt)
+
+
 st.divider()
 
 # Precio del kWh
