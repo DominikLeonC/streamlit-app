@@ -127,7 +127,7 @@ df_diesel["Fecha"] = pd.to_datetime(df_diesel["Fecha"])
 # Configurar la gráfica de líneas
 plt.figure(figsize=(12, 6))
 plt.plot(df_diesel["Fecha"], df_diesel["Precio_Diesel"], marker='o', linestyle='-', color='b')
-plt.title('Comportamiento del Precio del Diésel en México (2018-2023)')
+plt.title('Comportamiento del Precio del Diésel en México (2018-2024)')
 plt.xlabel('Fecha')
 plt.ylabel('Precio (MXN por litro)')
 plt.grid(True)
