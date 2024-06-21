@@ -140,7 +140,7 @@ precio_inicio_2018 = df_diesel.loc[df_diesel["Fecha"] == "2018-01-01", "Precio_D
 precio_actual_2023 = df_diesel.loc[df_diesel["Fecha"] == "2023-12-01", "Precio_Diesel"].values[0]
 incremento_porcentual = ((precio_actual_2023 - precio_inicio_2018) / precio_inicio_2018) * 100
 
-st.markdown(f"<p style='text-align: center;'>El precio del diésel ha incrementado un {incremento_porcentual:.2f}% desde enero de 2018 hasta diciembre de 2023.</p>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align: center;'>El precio del diésel ha incrementado un {incremento_porcentual:.2f}% desde enero de 2018 hasta diciembre de 2024.</p>", unsafe_allow_html=True)
 
 st.divider()
 
