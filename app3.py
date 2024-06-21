@@ -96,6 +96,7 @@ diesel_consumption = 1 / diesel_km_per_liter
 
 # Gráfica del comportamiento del precio del diésel
 st.markdown("<h4 style='text-align: center;'>Comportamiento del Precio del Diésel en México (2018-2024)</h4>", unsafe_allow_html=True)
+# Datos de precios del diésel de 2018 a 2023
 data = {
     "Fecha": [
         "2018-01", "2018-02", "2018-03", "2018-04", "2018-05", "2018-06", "2018-07", "2018-08", "2018-09", "2018-10", "2018-11", "2018-12",
@@ -114,16 +115,25 @@ data = {
         24.30, 24.45, 24.60, 24.75, 24.90, 25.05, 25.20, 25.35, 25.50, 25.65, 25.80, 25.95
     ]
 }
-df = pd.DataFrame(data)
-fig, ax = plt.subplots()
-ax.plot(df["Fecha"], df["Precio_Diesel"], marker='o', linestyle='-', color='b')
-ax.set_title('Comportamiento del Precio del Diésel en México (2023)')
-ax.set_xlabel('Fecha')
-ax.set_ylabel('Precio (MXN/Litro)')
-ax.grid(True)
-ax.set_xticklabels(df["Fecha"], rotation=45)
-st.pyplot(fig)
 
+# Crear el DataFrame
+df = pd.DataFrame(data)
+
+# Convertir la columna de fechas a tipo datetime
+df["Fecha"] = pd.to_datetime(df["Fecha"])
+
+# Configurar la gráfica de barras
+plt.figure(figsize=(12, 6))
+plt.bar(df["Fecha"], df["Precio_Diesel"], color='b')
+plt.title('Precio del Diésel en México (2018-2023)')
+plt.xlabel('Fecha')
+plt.ylabel('Precio (MXN por litro)')
+plt.grid(True)
+plt.xticks(rotation=45, ha='right', fontsize=10)  # Ajustar etiquetas del eje x para mejor visualización
+plt.tight_layout()
+
+# Mostrar la gráfica en Streamlit
+st.pyplot(plt)
 st.divider()
 
 # Precio del kWh
