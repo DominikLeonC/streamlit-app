@@ -136,7 +136,6 @@ plt.tight_layout()
 st.pyplot(plt)
 
 st.divider()
-    ]
 }
 
 # Crear el DataFrame
