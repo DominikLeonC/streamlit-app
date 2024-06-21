@@ -135,8 +135,6 @@ plt.tight_layout()
 # Mostrar la gráfica en Streamlit
 st.pyplot(plt)
 
-st.divider()
-
 # Crear el DataFrame
 df = pd.DataFrame(data)
 
