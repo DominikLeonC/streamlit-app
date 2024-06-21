@@ -123,13 +123,13 @@ df = pd.DataFrame(data)
 df["Fecha"] = pd.to_datetime(df["Fecha"])
 
 # Configurar la gráfica de barras
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(12, 8))
 plt.bar(df["Fecha"], df["Precio_Diesel"], color='b')
 plt.title('Comportamiento del Precio del Diésel en México (2018-2023)')
 plt.xlabel('Fecha')
 plt.ylabel('Precio (MXN por litro)')
 plt.grid(True)
-plt.xticks(rotation=45, ha='right', fontsize=20)
+plt.xticks(rotation=45, ha='right', fontsize=10)
 plt.tight_layout()
 
 # Mostrar la gráfica en Streamlit
