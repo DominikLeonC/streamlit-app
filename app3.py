@@ -117,14 +117,14 @@ data = {
 }
 
 # Crear el DataFrame
-df = pd.DataFrame(data)
+df_diesel = pd.DataFrame(data)
 
 # Convertir la columna de fechas a tipo datetime
-df["Fecha"] = pd.to_datetime(df["Fecha"])
+df_diesel["Fecha"] = pd.to_datetime(df_diesel["Fecha"])
 
 # Configurar la gráfica de líneas
 plt.figure(figsize=(12, 6))
-plt.plot(df["Fecha"], df["Precio_Diesel"], marker='o', linestyle='-', color='b')
+plt.plot(df_diesel["Fecha"], df_diesel["Precio_Diesel"], marker='o', linestyle='-', color='b')
 plt.title('Comportamiento del Precio del Diésel en México (2018-2023)')
 plt.xlabel('Fecha')
 plt.ylabel('Precio (MXN por litro)')
@@ -134,6 +134,13 @@ plt.tight_layout()
 
 # Mostrar la gráfica en Streamlit
 st.pyplot(plt)
+
+# Cálculo del incremento porcentual del precio del diésel
+precio_inicio_2018 = df_diesel.loc[df_diesel["Fecha"] == "2018-01-01", "Precio_Diesel"].values[0]
+precio_actual_2023 = df_diesel.loc[df_diesel["Fecha"] == "2023-12-01", "Precio_Diesel"].values[0]
+incremento_porcentual = ((precio_actual_2023 - precio_inicio_2018) / precio_inicio_2018) * 100
+
+st.markdown(f"<p style='text-align: center;'>El precio del diésel ha incrementado un {incremento_porcentual:.2f}% desde enero de 2018 hasta diciembre de 2023.</p>", unsafe_allow_html=True)
 
 st.divider()
 
@@ -348,6 +355,7 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
