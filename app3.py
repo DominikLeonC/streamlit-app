@@ -129,7 +129,7 @@ plt.title('Comportamiento del Precio del Diésel en México (2018-2023)')
 plt.xlabel('Fecha')
 plt.ylabel('Precio (MXN por litro)')
 plt.grid(True)
-plt.xticks(rotation=45, ha='right', fontsize=10)
+plt.xticks(rotation=45, ha='right', fontsize=20)
 plt.tight_layout()
 
 # Mostrar la gráfica en Streamlit
@@ -153,7 +153,6 @@ plt.tight_layout()
 
 # Mostrar la gráfica en Streamlit
 st.pyplot(plt)
-
 
 st.divider()
 
