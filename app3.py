@@ -122,25 +122,6 @@ df = pd.DataFrame(data)
 # Convertir la columna de fechas a tipo datetime
 df["Fecha"] = pd.to_datetime(df["Fecha"])
 
-# Configurar la gráfica de barras
-plt.figure(figsize=(12, 8))
-plt.bar(df["Fecha"], df["Precio_Diesel"], color='b')
-plt.title('Comportamiento del Precio del Diésel en México (2018-2023)')
-plt.xlabel('Fecha')
-plt.ylabel('Precio (MXN por litro)')
-plt.grid(True)
-plt.xticks(rotation=45, ha='right', fontsize=10)
-plt.tight_layout()
-
-# Mostrar la gráfica en Streamlit
-st.pyplot(plt)
-
-# Crear el DataFrame
-df = pd.DataFrame(data)
-
-# Convertir la columna de fechas a tipo datetime
-df["Fecha"] = pd.to_datetime(df["Fecha"])
-
 # Configurar la gráfica de líneas
 plt.figure(figsize=(12, 6))
 plt.plot(df["Fecha"], df["Precio_Diesel"], marker='o', linestyle='-', color='b')
