@@ -90,13 +90,13 @@ st.divider()
 
 # Precio del combustible diésel
 st.markdown("<h4 style='text-align: center;'>Precio del Combustible Diésel</h4>", unsafe_allow_html=True)
-diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=26.05, min_value=0.01)
+diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=25.54, min_value=0.01)
 diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(diesel_trucks[selected_model]["km_per_liter"]), min_value=0.01)
 diesel_consumption = 1 / diesel_km_per_liter
 
 # Gráfica del comportamiento del precio del diésel
 st.markdown("<h4 style='text-align: center;'>Comportamiento del Precio del Diésel en México (2018-2024)</h4>", unsafe_allow_html=True)
-# Datos de precios del diésel de 2018 a 2024
+# Datos de precios del diésel de 2018 a 2023
 data = {
     "Fecha": [
         "2018-01", "2018-02", "2018-03", "2018-04", "2018-05", "2018-06", "2018-07", "2018-08", "2018-09", "2018-10", "2018-11", "2018-12",
@@ -104,8 +104,7 @@ data = {
         "2020-01", "2020-02", "2020-03", "2020-04", "2020-05", "2020-06", "2020-07", "2020-08", "2020-09", "2020-10", "2020-11", "2020-12",
         "2021-01", "2021-02", "2021-03", "2021-04", "2021-05", "2021-06", "2021-07", "2021-08", "2021-09", "2021-10", "2021-11", "2021-12",
         "2022-01", "2022-02", "2022-03", "2022-04", "2022-05", "2022-06", "2022-07", "2022-08", "2022-09", "2022-10", "2022-11", "2022-12",
-        "2023-01", "2023-02", "2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12",
-        "2024-01","2024-02","2024-03","2024-04","2024-05","2024-06"
+        "2023-01", "2023-02", "2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12"
     ],
     "Precio_Diesel": [
         17.16, 17.42, 17.57, 17.69, 17.80, 18.02, 18.25, 18.42, 18.55, 18.75, 19.14, 19.35,
@@ -113,21 +112,20 @@ data = {
         21.10, 21.18, 20.95, 19.72, 19.34, 19.55, 19.78, 19.98, 20.12, 20.29, 20.45, 20.62,
         20.78, 20.93, 21.04, 21.18, 21.34, 21.55, 21.72, 21.89, 22.05, 22.20, 22.35, 22.50,
         22.60, 22.75, 22.90, 23.05, 23.20, 23.35, 23.50, 23.65, 23.80, 23.95, 24.10, 24.25,
-        24.30, 24.45, 24.60, 24.75, 24.90, 25.05, 25.20, 25.35, 25.50, 25.65, 25.80, 25.82,
-        25.87, 25.89, 25.94, 25.97, 26.05, 26.10
+        24.30, 24.45, 24.60, 24.75, 24.90, 25.05, 25.20, 25.35, 25.50, 25.65, 25.80, 25.95
     ]
 }
 
 # Crear el DataFrame
-df_diesel = pd.DataFrame(data)
+df = pd.DataFrame(data)
 
 # Convertir la columna de fechas a tipo datetime
-df_diesel["Fecha"] = pd.to_datetime(df_diesel["Fecha"])
+df["Fecha"] = pd.to_datetime(df["Fecha"])
 
 # Configurar la gráfica de líneas
 plt.figure(figsize=(12, 6))
-plt.plot(df_diesel["Fecha"], df_diesel["Precio_Diesel"], marker='o', linestyle='-', color='b')
-plt.title('Comportamiento del Precio del Diésel en México (2018-2024)')
+plt.plot(df["Fecha"], df["Precio_Diesel"], marker='o', linestyle='-', color='b')
+plt.title('Comportamiento del Precio del Diésel en México (2018-2023)')
 plt.xlabel('Fecha')
 plt.ylabel('Precio (MXN por litro)')
 plt.grid(True)
@@ -137,12 +135,17 @@ plt.tight_layout()
 # Mostrar la gráfica en Streamlit
 st.pyplot(plt)
 
-# Cálculo del incremento porcentual del precio del diésel
-precio_inicio_2018 = df_diesel.loc[df_diesel["Fecha"] == "2018-01-01", "Precio_Diesel"].values[0]
-precio_actual_2023 = df_diesel.loc[df_diesel["Fecha"] == "2024-06-01", "Precio_Diesel"].values[0]
-incremento_porcentual = ((precio_actual_2023 - precio_inicio_2018) / precio_inicio_2018) * 100
+# Cálculo del incremento porcentual del precio del diésel desde 2018 hasta la fecha
+initial_price = data["Precio_Diesel"][0]
+current_price = data["Precio_Diesel"][-1]
+price_increase_percentage = ((current_price - initial_price) / initial_price) * 100
 
-st.markdown(f"<p style='text-align: center;'>El precio del diésel ha incrementado un {incremento_porcentual:.2f}% desde enero de 2018 hasta el 2024.</p>", unsafe_allow_html=True)
+st.markdown(f"""
+<div style='text-align: center;'>
+<h4>Incremento del Precio del Diésel (2018-2023)</h4>
+<p>El precio del diésel ha aumentado en un {price_increase_percentage:.2f}% desde 2018 hasta la fecha.</p>
+</div>
+""", unsafe_allow_html=True)
 
 st.divider()
 
@@ -206,7 +209,6 @@ st.divider()
 # Tabla comparativa final
 comparison_data = {
     "Concepto": [
-        "Valor del Auto",
         "Seguro anual",
         "Refrendo",
         "Mantenimiento (Anual o cada 40K km)",
@@ -214,7 +216,6 @@ comparison_data = {
         "Combustible anual promedio"
     ],
     "Año 1 (Diésel)": [
-        diesel_trucks[selected_model]["cost_initial"] * num_trucks_diesel,
         insurance_cost * num_trucks_diesel,
         tax_cost * num_trucks_diesel,
         diesel_trucks[selected_model]["maintenance_annual"] * num_trucks_diesel,
@@ -222,7 +223,6 @@ comparison_data = {
         diesel_annual_costs[0]
     ],
     "Año 1 (Eléctrico)": [
-        electric_data["cost_initial"] * num_trucks_electric,
         electric_data["insurance_annual"] * num_trucks_electric,
         0,
         electric_data["maintenance_annual"] * num_trucks_electric,
@@ -230,7 +230,6 @@ comparison_data = {
         electric_annual_costs[0]
     ],
     "Acumulado a 5 años (Diésel)": [
-        diesel_trucks[selected_model]["cost_initial"] * num_trucks_diesel,
         insurance_cost * num_trucks_diesel * 5,
         tax_cost * num_trucks_diesel * 5,
         diesel_trucks[selected_model]["maintenance_annual"] * num_trucks_diesel * 5,
@@ -238,7 +237,6 @@ comparison_data = {
         sum(diesel_annual_costs)
     ],
     "Acumulado a 5 años (Eléctrico)": [
-        electric_data["cost_initial"] * num_trucks_electric,
         electric_data["insurance_annual"] * num_trucks_electric * 5,
         0,
         electric_data["maintenance_annual"] * num_trucks_electric * 5,
@@ -249,6 +247,18 @@ comparison_data = {
 
 comparison_df = pd.DataFrame(comparison_data)
 comparison_df = comparison_df.applymap(lambda x: f"{x:,.2f}" if isinstance(x, (int, float)) else x)
+
+# Calcular el ahorro total a 5 años
+ahorro_total_seguro = comparison_data["Acumulado a 5 años (Diésel)"][0] - comparison_data["Acumulado a 5 años (Eléctrico)"][0]
+ahorro_total_refrendo = comparison_data["Acumulado a 5 años (Diésel)"][1] - comparison_data["Acumulado a 5 años (Eléctrico)"][1]
+ahorro_total_mantenimiento = comparison_data["Acumulado a 5 años (Diésel)"][2] - comparison_data["Acumulado a 5 años (Eléctrico)"][2]
+ahorro_total_verificacion = comparison_data["Acumulado a 5 años (Diésel)"][3] - comparison_data["Acumulado a 5 años (Eléctrico)"][3]
+ahorro_total_combustible = comparison_data["Acumulado a 5 años (Diésel)"][4] - comparison_data["Acumulado a 5 años (Eléctrico)"][4]
+ahorro_total = ahorro_total_seguro + ahorro_total_refrendo + ahorro_total_mantenimiento + ahorro_total_verificacion + ahorro_total_combustible
+
+# Agregar fila de ahorro total a la tabla comparativa
+comparison_df.loc["Ahorro Total a 5 años"] = ["", "", "", "", f"{ahorro_total:,.2f}"]
+
 st.markdown("<h4 style='text-align: center;'>Tabla Comparativa Final</h4>", unsafe_allow_html=True)
 st.table(comparison_df)
 
