@@ -95,7 +95,7 @@ diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel
 diesel_consumption = 1 / diesel_km_per_liter
 
 # Gráfica del comportamiento del precio del diésel
-st.markdown("<h4 style='text-align: center;'>Comportamiento del Precio del Diésel en México (2018-2024)</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center;'>Comportamiento del Precio del Diésel en México (2018-2023)</h4>", unsafe_allow_html=True)
 # Datos de precios del diésel de 2018 a 2023
 data = {
     "Fecha": [
@@ -117,35 +117,28 @@ data = {
 }
 
 # Crear el DataFrame
-df = pd.DataFrame(data)
+df_diesel = pd.DataFrame(data)
 
 # Convertir la columna de fechas a tipo datetime
-df["Fecha"] = pd.to_datetime(df["Fecha"])
+df_diesel["Fecha"] = pd.to_datetime(df_diesel["Fecha"])
 
 # Configurar la gráfica de líneas
-plt.figure(figsize=(12, 6))
-plt.plot(df["Fecha"], df["Precio_Diesel"], marker='o', linestyle='-', color='b')
-plt.title('Comportamiento del Precio del Diésel en México (2018-2023)')
-plt.xlabel('Fecha')
-plt.ylabel('Precio (MXN por litro)')
-plt.grid(True)
-plt.xticks(rotation=45)
+fig, ax = plt.subplots(figsize=(12, 6))
+ax.plot(df_diesel["Fecha"], df_diesel["Precio_Diesel"], marker='o', linestyle='-', color='b')
+ax.set_title('Comportamiento del Precio del Diésel en México (2018-2023)')
+ax.set_xlabel('Fecha')
+ax.set_ylabel('Precio (MXN por litro)')
+ax.grid(True)
+ax.tick_params(axis='x', rotation=45)
 plt.tight_layout()
 
-# Mostrar la gráfica en Streamlit
-st.pyplot(plt)
+# Calcular el porcentaje de incremento desde 2018 hasta 2023
+initial_price = df_diesel["Precio_Diesel"].iloc[0]
+final_price = df_diesel["Precio_Diesel"].iloc[-1]
+increment_percentage = ((final_price - initial_price) / initial_price) * 100
 
-# Cálculo del incremento porcentual del precio del diésel desde 2018 hasta la fecha
-initial_price = data["Precio_Diesel"][0]
-current_price = data["Precio_Diesel"][-1]
-price_increase_percentage = ((current_price - initial_price) / initial_price) * 100
-
-st.markdown(f"""
-<div style='text-align: center;'>
-<h4>Incremento del Precio del Diésel (2018-2023)</h4>
-<p>El precio del diésel ha aumentado en un {price_increase_percentage:.2f}% desde 2018 hasta la fecha.</p>
-</div>
-""", unsafe_allow_html=True)
+st.pyplot(fig)
+st.markdown(f"El precio del diésel ha incrementado un {increment_percentage:.2f}% desde enero de 2018 hasta diciembre de 2023.")
 
 st.divider()
 
@@ -247,20 +240,29 @@ comparison_data = {
 
 comparison_df = pd.DataFrame(comparison_data)
 comparison_df = comparison_df.applymap(lambda x: f"{x:,.2f}" if isinstance(x, (int, float)) else x)
-
-# Calcular el ahorro total a 5 años
-ahorro_total_seguro = comparison_data["Acumulado a 5 años (Diésel)"][0] - comparison_data["Acumulado a 5 años (Eléctrico)"][0]
-ahorro_total_refrendo = comparison_data["Acumulado a 5 años (Diésel)"][1] - comparison_data["Acumulado a 5 años (Eléctrico)"][1]
-ahorro_total_mantenimiento = comparison_data["Acumulado a 5 años (Diésel)"][2] - comparison_data["Acumulado a 5 años (Eléctrico)"][2]
-ahorro_total_verificacion = comparison_data["Acumulado a 5 años (Diésel)"][3] - comparison_data["Acumulado a 5 años (Eléctrico)"][3]
-ahorro_total_combustible = comparison_data["Acumulado a 5 años (Diésel)"][4] - comparison_data["Acumulado a 5 años (Eléctrico)"][4]
-ahorro_total = ahorro_total_seguro + ahorro_total_refrendo + ahorro_total_mantenimiento + ahorro_total_verificacion + ahorro_total_combustible
-
-# Agregar fila de ahorro total a la tabla comparativa
-comparison_df.loc["Ahorro Total a 5 años"] = ["", "", "", "", f"{ahorro_total:,.2f}"]
-
 st.markdown("<h4 style='text-align: center;'>Tabla Comparativa Final</h4>", unsafe_allow_html=True)
 st.table(comparison_df)
+
+# Cálculo del ahorro acumulado a 5 años
+savings_insurance = comparison_data["Acumulado a 5 años (Diésel)"][0] - comparison_data["Acumulado a 5 años (Eléctrico)"][0]
+savings_tax = comparison_data["Acumulado a 5 años (Diésel)"][1] - comparison_data["Acumulado a 5 años (Eléctrico)"][1]
+savings_maintenance = comparison_data["Acumulado a 5 años (Diésel)"][2] - comparison_data["Acumulado a 5 años (Eléctrico)"][2]
+savings_verification = comparison_data["Acumulado a 5 años (Diésel)"][3] - comparison_data["Acumulado a 5 años (Eléctrico)"][3]
+savings_fuel = comparison_data["Acumulado a 5 años (Diésel)"][4] - comparison_data["Acumulado a 5 años (Eléctrico)"][4]
+
+total_savings = savings_insurance + savings_tax + savings_maintenance + savings_verification + savings_fuel
+
+st.markdown(f"""
+<div style='text-align: center;'>
+    <h4>Ahorro Total Acumulado en 5 años</h4>
+    <p>Seguro anual: ${savings_insurance:,.2f}</p>
+    <p>Refrendo: ${savings_tax:,.2f}</p>
+    <p>Mantenimiento: ${savings_maintenance:,.2f}</p>
+    <p>Verificación: ${savings_verification:,.2f}</p>
+    <p>Combustible: ${savings_fuel:,.2f}</p>
+    <h4>Total Ahorro: ${total_savings:,.2f}</h4>
+</div>
+""", unsafe_allow_html=True)
 
 st.divider()
 
@@ -367,8 +369,6 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
-
-
 
 
 
