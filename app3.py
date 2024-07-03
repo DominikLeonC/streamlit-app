@@ -9,6 +9,15 @@ st.set_page_config(
     layout="centered"
 )
 
+# Estilo CSS para fondo blanco
+st.markdown("""
+    <style>
+        .stApp {
+            background-color: white;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
 # Datos fijos del camión eléctrico (actualizados)
 electric_data = {
     "model": "Sany FE601",
@@ -83,13 +92,17 @@ st.divider()
 # Costos fijos
 st.markdown("<h4 style='text-align: center;'>Costos Fijos Camión Diesel</h4>", unsafe_allow_html=True)
 apply_verification = st.checkbox("¿Aplica verificación vehicular?", value=True)
-verification_cost = 0
 if apply_verification:
     verification_cost = st.number_input("Costo de verificación vehicular por camión ($):", value=687, min_value=0)
+else:
+    verification_cost = 0
+
 apply_tax = st.checkbox("¿Aplica refrendo?", value=True)
-tax_cost = 0
 if apply_tax:
     tax_cost = st.number_input("Costo de refrendo por camión ($):", value=734, min_value=0)
+else:
+    tax_cost = 0
+
 insurance_cost = st.number_input("Costo de seguro por camión ($):", value=53500, min_value=0)
 
 st.divider()
@@ -123,19 +136,14 @@ data = {
 }
 
 # Crear el DataFrame
-df_diesel_prices = pd.DataFrame(data)
+df = pd.DataFrame(data)
 
 # Convertir la columna de fechas a tipo datetime
-df_diesel_prices["Fecha"] = pd.to_datetime(df_diesel_prices["Fecha"])
-
-# Calcular el incremento porcentual del precio del diésel desde 2018 hasta la fecha
-initial_price = df_diesel_prices["Precio_Diesel"].iloc[0]
-final_price = df_diesel_prices["Precio_Diesel"].iloc[-1]
-price_increase_percent = ((final_price - initial_price) / initial_price) * 100
+df["Fecha"] = pd.to_datetime(df["Fecha"])
 
 # Configurar la gráfica de líneas
 plt.figure(figsize=(12, 6))
-plt.plot(df_diesel_prices["Fecha"], df_diesel_prices["Precio_Diesel"], marker='o', linestyle='-', color='b')
+plt.plot(df["Fecha"], df["Precio_Diesel"], marker='o', linestyle='-', color='b')
 plt.title('Comportamiento del Precio del Diésel en México (2018-2023)')
 plt.xlabel('Fecha')
 plt.ylabel('Precio (MXN por litro)')
@@ -146,31 +154,11 @@ plt.tight_layout()
 # Mostrar la gráfica en Streamlit
 st.pyplot(plt)
 
-# Mostrar el incremento porcentual
-st.markdown(f"<p>El precio del diésel ha aumentado un {price_increase_percent:.2f}% desde 2018 hasta la fecha.</p>", unsafe_allow_html=True)
-
 st.divider()
 
 # Precio del kWh
 st.markdown("<h4 style='text-align: center;'>Precio de la Electricidad</h4>", unsafe_allow_html=True)
 cost_per_kwh = st.number_input("Costo de la electricidad ($/kWh):", value=3.00, min_value=0.01)
-
-# Información técnica del camión Sany FE601
-st.markdown("<h4 style='text-align: center;'>Ficha Técnica del Camión Sany FE601</h4>", unsafe_allow_html=True)
-st.markdown("""
-<div style='display: flex; justify-content: center;'>
-<table style='border-collapse: collapse; width: 60%; text-align: left;'>
-    <tr><th style='border: 1px solid black; padding: 8px;'>Modelo</th><td style='border: 1px solid black; padding: 8px;'>Sany FE601</td></tr>
-    <tr><th style='border: 1px solid black; padding: 8px;'>Capacidad de Batería</th><td style='border: 1px solid black; padding: 8px;'>84.48 kWh</td></tr>
-    <tr><th style='border: 1px solid black; padding: 8px;'>Consumo por Kilómetro</th><td style='border: 1px solid black; padding: 8px;'>0.45 kWh</td></tr>
-    <tr><th style='border: 1px solid black; padding: 8px;'>Costo Inicial</th><td style='border: 1px solid black; padding: 8px;'>$1,566,000 (incluye IVA)</td></tr>
-    <tr><th style='border: 1px solid black; padding: 8px;'>Mantenimiento Anual</th><td style='border: 1px solid black; padding: 8px;'>$4,000</td></tr>
-    <tr><th style='border: 1px solid black; padding: 8px;'>Seguro Anual</th><td style='border: 1px solid black; padding: 8px;'>$53,000</td></tr>
-</table>
-</div>
-""", unsafe_allow_html=True)
-
-st.divider()
 
 # Inflación y aumento de precios
 st.markdown("<h4 style='text-align: center;'>Inflación y Aumento de Precios</h4>", unsafe_allow_html=True)
@@ -293,8 +281,6 @@ if total_savings > 0:
     st.success(f"El camión eléctrico ahorra ${total_savings:,.2f} en comparación con el camión diésel seleccionado en 5 años.")
 else:
     st.warning(f"El camión diésel seleccionado es más económico por ${-total_savings:,.2f} en comparación con el camión eléctrico en 5 años.")
-
-st.divider()
 
 # Pie de página
 st.markdown("""
