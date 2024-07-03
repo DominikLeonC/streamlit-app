@@ -62,7 +62,7 @@ st.markdown("<h2 style='text-align: center; color: #34495E; font-size: 36px;'>Co
 st.markdown("""
 <div style='text-align: center; color: #34495E;'>
 <h4>Sobre Nosotros</h4>
-<p>Comercializadora Sany se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
+<p>Comercializadora CidVid se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
 </div>
 """, unsafe_allow_html=True)
 
