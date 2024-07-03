@@ -75,7 +75,7 @@ def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num
 
 # Título de la aplicación y nombre de la empresa
 st.markdown("<h1 style='text-align: center;'>Comercializadora CidVid</h1>", unsafe_allow_html=True)
-st.markdown("<h2 style='text-align: center;'>Comparación de Costos: Camión Diésel vs. Camión Eléctrico</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center;'>Camión Diésel vs. Camión Eléctrico</h2>", unsafe_allow_html=True)
 
 # Sección sobre la empresa
 st.markdown("""
