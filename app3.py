@@ -31,12 +31,14 @@ diesel_trucks = {
 }
 
 # Función para calcular costos anuales del camión diésel seleccionado
-def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate):
+def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, apply_verification, apply_tax):
     costs = []
     for year in range(1, 6):
         adjusted_fuel_cost = diesel_fuel_cost + (fuel_increase_rate * (year - 1))
         fuel_cost = (1 / diesel_trucks[selected_model]["km_per_liter"]) * adjusted_fuel_cost * annual_kilometers
-        annual_cost = fuel_cost * num_trucks
+        verification_cost = st.session_state.verification_cost if apply_verification else 0
+        tax_cost = st.session_state.tax_cost if apply_tax else 0
+        annual_cost = (fuel_cost + st.session_state.insurance_cost + verification_cost + tax_cost + diesel_trucks[selected_model]["maintenance_annual"]) * num_trucks
         costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
     return costs
 
@@ -46,19 +48,19 @@ def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num
     for year in range(1, 6):
         adjusted_cost_per_kwh = cost_per_kwh + (electric_increase_rate * (year - 1))
         electricity_cost = (annual_kilometers / electric_data["distance_per_charge_km"]) * (adjusted_cost_per_kwh * electric_data["battery_capacity_kwh"])
-        annual_cost = electricity_cost * num_trucks
+        annual_cost = (electricity_cost + electric_data["insurance_annual"] + electric_data["maintenance_annual"]) * num_trucks
         costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
     return costs
 
 # Título de la aplicación y nombre de la empresa
-st.markdown("<h1 style='text-align: center; color: #2980B9; font-size: 60px;'>Comercializadora Sany</h1>", unsafe_allow_html=True)
-st.markdown("<h2 style='text-align: center; color: #2C3E50; font-size: 36px;'>Comparación de Costos: Camión Diésel vs. Camión Eléctrico</h2>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: #FF4B4B; font-size: 60px;'>Comercializadora Sany</h1>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center; color: #34495E; font-size: 36px;'>Comparación de Costos: Camión Diésel vs. Camión Eléctrico</h2>", unsafe_allow_html=True)
 
 # Sección sobre la empresa
 st.markdown("""
-<div style='text-align: center;'>
-<h4 style='color: #34495E;'>Sobre Nosotros</h4>
-<p style='color: #34495E;'>Comercializadora Sany se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
+<div style='text-align: center; color: #34495E;'>
+<h4>Sobre Nosotros</h4>
+<p>Comercializadora Sany se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -83,26 +85,16 @@ st.divider()
 # Costos fijos
 st.markdown("<h4 style='text-align: center; color: #34495E;'>Costos Fijos Camión Diesel</h4>", unsafe_allow_html=True)
 apply_verification = st.checkbox("¿Aplica verificación vehicular?", value=True)
-if apply_verification:
-    verification_cost = st.number_input("Costo de verificación vehicular por camión ($):", value=687, min_value=0)
-else:
-    verification_cost = 0
-
+st.session_state.verification_cost = st.number_input("Costo de verificación vehicular por camión ($):", value=687, min_value=0)
 apply_tax = st.checkbox("¿Aplica refrendo?", value=True)
-if apply_tax:
-    tax_cost = st.number_input("Costo de refrendo por camión ($):", value=734, min_value=0)
-else:
-    tax_cost = 0
-
-insurance_cost = st.number_input("Costo de seguro por camión ($):", value=53500, min_value=0)
+st.session_state.tax_cost = st.number_input("Costo de refrendo por camión ($):", value=734, min_value=0)
+st.session_state.insurance_cost = st.number_input("Costo de seguro por camión ($):", value=53500, min_value=0)
 
 st.divider()
 
 # Precio del combustible diésel
 st.markdown("<h4 style='text-align: center; color: #34495E;'>Precio del Combustible Diésel</h4>", unsafe_allow_html=True)
 diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=25.54, min_value=0.01)
-diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(diesel_trucks[selected_model]["km_per_liter"]), min_value=0.01)
-diesel_consumption = 1 / diesel_km_per_liter
 
 # Gráfica del comportamiento del precio del diésel
 st.markdown("<h4 style='text-align: center; color: #34495E;'>Comportamiento del Precio del Diésel en México (2018-2024)</h4>", unsafe_allow_html=True)
@@ -134,10 +126,10 @@ df["Fecha"] = pd.to_datetime(df["Fecha"])
 
 # Configurar la gráfica de líneas
 plt.figure(figsize=(12, 6))
-plt.plot(df["Fecha"], df["Precio_Diesel"], marker='o', linestyle='-', color='#2980B9')
-plt.title('Comportamiento del Precio del Diésel en México (2018-2023)', color='#2C3E50')
-plt.xlabel('Fecha', color='#34495E')
-plt.ylabel('Precio (MXN por litro)', color='#34495E')
+plt.plot(df["Fecha"], df["Precio_Diesel"], marker='o', linestyle='-', color='b')
+plt.title('Comportamiento del Precio del Diésel en México (2018-2023)')
+plt.xlabel('Fecha')
+plt.ylabel('Precio (MXN por litro)')
 plt.grid(True)
 plt.xticks(rotation=45)
 plt.tight_layout()
@@ -151,6 +143,24 @@ st.divider()
 st.markdown("<h4 style='text-align: center; color: #34495E;'>Precio de la Electricidad</h4>", unsafe_allow_html=True)
 cost_per_kwh = st.number_input("Costo de la electricidad ($/kWh):", value=3.00, min_value=0.01)
 
+# Información técnica del camión Sany FE601
+st.markdown("<h4 style='text-align: center; color: #34495E;'>Ficha Técnica del Camión Sany FE601</h4>", unsafe_allow_html=True)
+st.markdown("""
+<div style='display: flex; justify-content: center;'>
+<table style='border-collapse: collapse; width: 60%; text-align: left; color: #34495E;'>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Modelo</th><td style='border: 1px solid black; padding: 8px;'>Sany FE601</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Capacidad de Batería</th><td style='border: 1px solid black; padding: 8px;'>84.48 kWh</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Consumo por Kilómetro</th><td style='border: 1px solid black; padding: 8px;'>0.45 kWh</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Distancia por Carga Completa</th><td style='border: 1px solid black; padding: 8px;'>200 km</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Costo Inicial</th><td style='border: 1px solid black; padding: 8px;'>$1,566,000 (incluye IVA)</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Mantenimiento Anual</th><td style='border: 1px solid black; padding: 8px;'>$4,000</td></tr>
+    <tr><th style='border: 1px solid black; padding: 8px;'>Seguro Anual</th><td style='border: 1px solid black; padding: 8px;'>$53,000</td></tr>
+</table>
+</div>
+""", unsafe_allow_html=True)
+
+st.divider()
+
 # Inflación y aumento de precios
 st.markdown("<h4 style='text-align: center; color: #34495E;'>Inflación y Aumento de Precios</h4>", unsafe_allow_html=True)
 inflation_rate = st.number_input("Tasa de inflación anual (%):", value=4.20, min_value=0.0, step=0.1) / 100
@@ -158,7 +168,7 @@ fuel_increase_rate = st.number_input("Incremento anual del precio del combustibl
 electric_increase_rate = st.number_input("Incremento anual del precio de la electricidad ($):", value=0.40, min_value=0.0, step=0.1)
 
 # Calcular costos anuales
-diesel_annual_costs = calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks_diesel, inflation_rate, fuel_increase_rate)
+diesel_annual_costs = calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks_diesel, inflation_rate, fuel_increase_rate, apply_verification, apply_tax)
 electric_annual_costs = calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks_electric, inflation_rate, electric_increase_rate)
 
 # Crear DataFrame para mostrar los resultados
@@ -185,22 +195,6 @@ st.markdown(f"""
 
 st.divider()
 
-# Gráfico de costos acumulados
-st.markdown("<h4 style='text-align: center; color: #34495E;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
-fig, ax = plt.subplots()
-formatter = FuncFormatter(lambda x, pos: f"${x:,.0f}")
-ax.plot(df["Año"], df["Costo Acumulado - Diésel"], label="Diésel", color='#2980B9', marker='o')
-ax.plot(df["Año"], df["Costo Acumulado - Eléctrico"], label="Eléctrico", color='#27AE60', marker='o')
-ax.set_ylabel("Costo Acumulado ($)", color='#34495E')
-ax.set_xlabel("Año", color='#34495E')
-ax.set_title("Comparación de Costos Acumulados", color='#2C3E50')
-ax.legend()
-ax.yaxis.set_major_formatter(formatter)
-
-st.pyplot(fig)
-
-st.divider()
-
 # Tabla comparativa final
 comparison_data = {
     "Concepto": [
@@ -211,10 +205,10 @@ comparison_data = {
         "Combustible anual promedio"
     ],
     "Año 1 (Diésel)": [
-        insurance_cost * num_trucks_diesel,
-        tax_cost * num_trucks_diesel,
+        st.session_state.insurance_cost * num_trucks_diesel,
+        st.session_state.tax_cost * num_trucks_diesel if apply_tax else 0,
         diesel_trucks[selected_model]["maintenance_annual"] * num_trucks_diesel,
-        verification_cost * num_trucks_diesel,
+        st.session_state.verification_cost * num_trucks_diesel if apply_verification else 0,
         diesel_annual_costs[0]
     ],
     "Año 1 (Eléctrico)": [
@@ -225,10 +219,10 @@ comparison_data = {
         electric_annual_costs[0]
     ],
     "Acumulado a 5 años (Diésel)": [
-        insurance_cost * num_trucks_diesel * 5,
-        tax_cost * num_trucks_diesel * 5,
+        st.session_state.insurance_cost * num_trucks_diesel * 5,
+        st.session_state.tax_cost * num_trucks_diesel * 5 if apply_tax else 0,
         diesel_trucks[selected_model]["maintenance_annual"] * num_trucks_diesel * 5,
-        verification_cost * num_trucks_diesel * 5,
+        st.session_state.verification_cost * num_trucks_diesel * 5 if apply_verification else 0,
         sum(diesel_annual_costs)
     ],
     "Acumulado a 5 años (Eléctrico)": [
@@ -240,28 +234,10 @@ comparison_data = {
     ]
 }
 
-# Cálculo del ahorro en cada categoría
-savings_data = {
-    "Concepto": ["Seguro anual", "Refrendo", "Mantenimiento", "Verificación anual", "Combustible anual promedio"],
-    "Ahorro a 5 años ($)": [
-        (insurance_cost * num_trucks_diesel * 5) - (electric_data["insurance_annual"] * num_trucks_electric * 5),
-        tax_cost * num_trucks_diesel * 5,
-        (diesel_trucks[selected_model]["maintenance_annual"] * num_trucks_diesel * 5) - (electric_data["maintenance_annual"] * num_trucks_electric * 5),
-        verification_cost * num_trucks_diesel * 5,
-        sum(diesel_annual_costs) - sum(electric_annual_costs)
-    ]
-}
-
 comparison_df = pd.DataFrame(comparison_data)
 comparison_df = comparison_df.applymap(lambda x: f"{x:,.2f}" if isinstance(x, (int, float)) else x)
 st.markdown("<h4 style='text-align: center; color: #34495E;'>Tabla Comparativa Final</h4>", unsafe_allow_html=True)
 st.table(comparison_df)
-
-# Mostrar tabla de ahorros
-savings_df = pd.DataFrame(savings_data)
-savings_df = savings_df.applymap(lambda x: f"{x:,.2f}" if isinstance(x, (int, float)) else x)
-st.markdown("<h4 style='text-align: center; color: #34495E;'>Ahorro Total en 5 años</h4>", unsafe_allow_html=True)
-st.table(savings_df)
 
 st.divider()
 
@@ -269,6 +245,36 @@ st.divider()
 total_diesel_cost = df["Costo Acumulado - Diésel"].iloc[-1]
 total_electric_cost = df["Costo Acumulado - Eléctrico"].iloc[-1]
 savings = total_diesel_cost - total_electric_cost
+
+# Interpretación de ahorro total
+total_savings = (
+    (st.session_state.insurance_cost - electric_data["insurance_annual"]) * num_trucks_electric * 5 +
+    (st.session_state.tax_cost * num_trucks_diesel if apply_tax else 0) * 5 +
+    (diesel_trucks[selected_model]["maintenance_annual"] - electric_data["maintenance_annual"]) * num_trucks_electric * 5 +
+    (st.session_state.verification_cost * num_trucks_diesel if apply_verification else 0) * 5 +
+    (sum(diesel_annual_costs) - sum(electric_annual_costs))
+)
+
+st.markdown(f"""
+<div style='text-align: center; color: #34495E;'>
+    <p>El ahorro total considerando todos los costos aplicables es de <b>${total_savings:,.2f}</b> en 5 años.</p>
+</div>
+""", unsafe_allow_html=True)
+
+# Gráfico de costos acumulados
+st.markdown("<h4 style='text-align: center; color: #34495E;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
+fig, ax = plt.subplots()
+ax.plot(df["Año"], df["Costo Acumulado - Diésel"], label="Diésel", color='blue', marker='o')
+ax.plot(df["Año"], df["Costo Acumulado - Eléctrico"], label="Eléctrico", color='green', marker='o')
+ax.set_ylabel("Costo Acumulado ($)")
+ax.set_xlabel("Año")
+ax.set_title("Comparación de Costos Acumulados")
+ax.legend()
+ax.yaxis.set_major_formatter(FuncFormatter(lambda x, _: f"${x:,.0f}"))
+
+st.pyplot(fig)
+
+st.divider()
 
 # Resumen de ahorro de Combustible
 st.markdown("<h4 style='text-align: center; color: #34495E;'>Resumen de ahorro de Combustible</h4>", unsafe_allow_html=True)
@@ -291,8 +297,6 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
-
-
 
 
 
