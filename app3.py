@@ -5,7 +5,7 @@ from matplotlib.ticker import FuncFormatter
 
 # Configuración de la página
 st.set_page_config(
-    page_title=" Camión Diésel vs. Camión Eléctrico",
+    page_title="Camión Diésel vs. Camión Eléctrico",
     layout="centered"
 )
 
@@ -26,9 +26,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-# Mostrar el logo en la esquina superior izquierda
-st.image("LogoCidCOM.jpeg", width=100)
 
 # Datos fijos del camión eléctrico (actualizados)
 electric_data = {
@@ -52,17 +49,17 @@ diesel_trucks = {
 }
 
 # Función para calcular costos anuales del camión diésel seleccionado
-def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, years, apply_verification, apply_tax):
+def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, years, apply_verification, verification_cost, apply_tax, tax_cost, insurance_cost, maintenance_annual):
     costs = []
     for year in range(1, years + 1):
         adjusted_fuel_cost = diesel_fuel_cost + (fuel_increase_rate * (year - 1))
-        fuel_cost = (1 / diesel_trucks[selected_model]["km_per_liter"]) * adjusted_fuel_cost * annual_kilometers
+        fuel_cost = (1 / selected_model["km_per_liter"]) * adjusted_fuel_cost * annual_kilometers
         fixed_costs = 0
         if apply_verification:
             fixed_costs += verification_cost
         if apply_tax:
             fixed_costs += tax_cost
-        annual_cost = (fuel_cost + fixed_costs + insurance_cost + diesel_trucks[selected_model]["maintenance_annual"]) * num_trucks
+        annual_cost = (fuel_cost + fixed_costs + insurance_cost + maintenance_annual) * num_trucks
         costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
     return costs
 
@@ -77,14 +74,14 @@ def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num
     return costs
 
 # Título de la aplicación y nombre de la empresa
-st.markdown("<h1 style='text-align: center;'>Comercializadora CidVid</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>Comercializadora Sany</h1>", unsafe_allow_html=True)
 st.markdown("<h2 style='text-align: center;'>Camión Diésel vs. Camión Eléctrico</h2>", unsafe_allow_html=True)
 
 # Sección sobre la empresa
 st.markdown("""
 <div style='text-align: center;'>
 <h4>Sobre Nosotros</h4>
-<p>Comercializadora CidVid se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
+<p>Comercializadora Sany se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -92,15 +89,16 @@ st.divider()
 
 # Selección de modelo de camión diésel
 st.markdown("<h4 style='text-align: center;'>Seleccione el modelo de camión diésel</h4>", unsafe_allow_html=True)
-selected_model = st.selectbox("", list(diesel_trucks.keys()))
+selected_model_name = st.selectbox("", list(diesel_trucks.keys()))
+selected_model = diesel_trucks[selected_model_name]
 
 st.divider()
 
 # Datos de operación
 st.markdown("<h4 style='text-align: center;'>Datos de Operación</h4>", unsafe_allow_html=True)
 daily_kilometers = st.number_input("Kilómetros recorridos diariamente por camión:", value=50, min_value=1)
+num_trucks = st.number_input("Cantidad de camiones a comparar:", value=1, min_value=1)
 annual_kilometers = daily_kilometers * 312
-num_trucks = st.number_input("Cantidad de camiones:", value=1, min_value=1)
 st.write(f"Kilómetros recorridos anualmente por camión: {annual_kilometers} km")
 
 st.divider()
@@ -124,8 +122,6 @@ st.divider()
 # Precio del combustible diésel
 st.markdown("<h4 style='text-align: center;'>Precio del Combustible Diésel</h4>", unsafe_allow_html=True)
 diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=25.54, min_value=0.01)
-diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(diesel_trucks[selected_model]["km_per_liter"]), min_value=0.01)
-diesel_consumption = 1 / diesel_km_per_liter
 
 # Gráfica del comportamiento del precio del diésel
 st.markdown("<h4 style='text-align: center;'>Comportamiento del Precio del Diésel en México (2018-2024)</h4>", unsafe_allow_html=True)
@@ -202,7 +198,7 @@ electric_increase_rate = st.number_input("Incremento anual del precio de la elec
 years = st.number_input("Número de años a proyectar:", value=5, min_value=1)
 
 # Calcular costos anuales
-diesel_annual_costs = calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, years, apply_verification, apply_tax)
+diesel_annual_costs = calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, years, apply_verification, verification_cost, apply_tax, tax_cost, insurance_cost, selected_model["maintenance_annual"])
 electric_annual_costs = calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks, inflation_rate, electric_increase_rate, years)
 
 # Crear DataFrame para mostrar los resultados
@@ -241,7 +237,7 @@ comparison_data = {
     "Año 1 (Diésel)": [
         insurance_cost * num_trucks,
         tax_cost * num_trucks if apply_tax else 0,
-        diesel_trucks[selected_model]["maintenance_annual"] * num_trucks,
+        selected_model["maintenance_annual"] * num_trucks,
         verification_cost * num_trucks if apply_verification else 0,
         diesel_annual_costs[0]
     ],
@@ -252,14 +248,14 @@ comparison_data = {
         0,
         electric_annual_costs[0]
     ],
-    f"Acumulado a {years} años (Diésel)": [
+    "Acumulado a 5 años (Diésel)": [
         insurance_cost * num_trucks * years,
         tax_cost * num_trucks * years if apply_tax else 0,
-        diesel_trucks[selected_model]["maintenance_annual"] * num_trucks * years,
+        selected_model["maintenance_annual"] * num_trucks * years,
         verification_cost * num_trucks * years if apply_verification else 0,
         sum(diesel_annual_costs)
     ],
-    f"Acumulado a {years} años (Eléctrico)": [
+    "Acumulado a 5 años (Eléctrico)": [
         electric_data["insurance_annual"] * num_trucks * years,
         0,
         electric_data["maintenance_annual"] * num_trucks * years,
@@ -321,7 +317,7 @@ st.divider()
 
 # Cálculo de la reducción de emisiones de CO2
 co2_emission_per_liter_diesel = 2.68  # kg de CO2 por litro de diésel
-total_diesel_fuel_consumed = diesel_consumption * annual_kilometers * num_trucks * years  # Consumo total de diésel en 5 años
+total_diesel_fuel_consumed = (1 / selected_model["km_per_liter"]) * diesel_fuel_cost * annual_kilometers * num_trucks * years  # Consumo total de diésel en 5 años
 total_co2_emissions_diesel = total_diesel_fuel_consumed * co2_emission_per_liter_diesel
 total_co2_emissions_electric = 0  # Asumimos cero emisiones de CO2 para camiones eléctricos
 percentage_reduction = ((total_co2_emissions_diesel - total_co2_emissions_electric) / total_co2_emissions_diesel) * 100
@@ -345,7 +341,6 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
-
 
 
 
