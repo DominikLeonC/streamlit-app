@@ -5,7 +5,7 @@ from matplotlib.ticker import FuncFormatter
 
 # Configuración de la página
 st.set_page_config(
-    page_title="Camión Diésel vs. Camión Eléctrico",
+    page_title=" Camión Diésel vs. Camión Eléctrico",
     layout="centered"
 )
 
@@ -22,22 +22,13 @@ st.markdown(
         h1, h2, h4 {
             color: #34495E;
         }
-        .logo {
-            display: flex;
-            justify-content: flex-start;
-        }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# Mostrar el logo en la parte superior izquierda
-logo_path = "/mnt/data/LogoCidCOM.jpeg"
-st.markdown(f"""
-    <div class="logo">
-        <img src="{logo_path}" width="100">
-    </div>
-""", unsafe_allow_html=True)
+# Mostrar el logo en la esquina superior izquierda
+st.image("LogoCidCOM.jpeg", width=100)
 
 # Datos fijos del camión eléctrico (actualizados)
 electric_data = {
@@ -109,7 +100,7 @@ st.divider()
 st.markdown("<h4 style='text-align: center;'>Datos de Operación</h4>", unsafe_allow_html=True)
 daily_kilometers = st.number_input("Kilómetros recorridos diariamente por camión:", value=50, min_value=1)
 annual_kilometers = daily_kilometers * 312
-num_trucks = st.number_input("Cantidad de camiones a comparar:", value=1, min_value=1)
+num_trucks = st.number_input("Cantidad de camiones:", value=1, min_value=1)
 st.write(f"Kilómetros recorridos anualmente por camión: {annual_kilometers} km")
 
 st.divider()
@@ -351,11 +342,9 @@ st.divider()
 # Pie de página
 st.markdown("""
 <div style='text-align: center;'>
-<p>&copy; 2024 Comercializadora CidVid. Todos los derechos reservados.</p>
+<p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
-
-
 
 
 
