@@ -49,17 +49,17 @@ diesel_trucks = {
 }
 
 # Función para calcular costos anuales del camión diésel seleccionado
-def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, years, apply_verification, apply_tax):
+def calculate_diesel_costs(diesel_km_per_liter, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, years, apply_verification, verification_cost, apply_tax, tax_cost, insurance_cost, maintenance_annual):
     costs = []
     for year in range(1, years + 1):
-        adjusted_fuel_cost = diesel_fuel_cost * ((1 + fuel_increase_rate) ** (year - 1))
-        fuel_cost = (1 / diesel_trucks[selected_model]["km_per_liter"]) * adjusted_fuel_cost * annual_kilometers
+        adjusted_fuel_cost = diesel_fuel_cost + (fuel_increase_rate * (year - 1))
+        fuel_cost = (1 / diesel_km_per_liter) * adjusted_fuel_cost * annual_kilometers
         fixed_costs = 0
         if apply_verification:
             fixed_costs += verification_cost
         if apply_tax:
             fixed_costs += tax_cost
-        annual_cost = (fuel_cost + fixed_costs + insurance_cost + diesel_trucks[selected_model]["maintenance_annual"]) * num_trucks
+        annual_cost = (fuel_cost + fixed_costs + insurance_cost + maintenance_annual) * num_trucks
         costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
     return costs
 
@@ -67,7 +67,7 @@ def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, 
 def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks, inflation_rate, electric_increase_rate, years):
     costs = []
     for year in range(1, years + 1):
-        adjusted_cost_per_kwh = cost_per_kwh * ((1 + electric_increase_rate) ** (year - 1))
+        adjusted_cost_per_kwh = cost_per_kwh + (electric_increase_rate * (year - 1))
         electricity_cost = (annual_kilometers / electric_data["distance_per_charge_km"]) * (adjusted_cost_per_kwh * electric_data["battery_capacity_kwh"])
         annual_cost = (electricity_cost + electric_data["insurance_annual"] + electric_data["maintenance_annual"]) * num_trucks
         costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
@@ -200,7 +200,7 @@ electric_increase_rate = st.number_input("Incremento anual del precio de la elec
 years = st.number_input("Número de años a proyectar:", value=5, min_value=1)
 
 # Calcular costos anuales
-diesel_annual_costs = calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks_diesel, inflation_rate, fuel_increase_rate, years, apply_verification, apply_tax)
+diesel_annual_costs = calculate_diesel_costs(diesel_km_per_liter, diesel_fuel_cost, annual_kilometers, num_trucks_diesel, inflation_rate, fuel_increase_rate, years, apply_verification, verification_cost, apply_tax, tax_cost, insurance_cost, diesel_trucks[selected_model]["maintenance_annual"])
 electric_annual_costs = calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks_electric, inflation_rate, electric_increase_rate, years)
 
 # Crear DataFrame para mostrar los resultados
@@ -343,7 +343,6 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
-
 
 
 
