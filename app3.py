@@ -5,7 +5,7 @@ from matplotlib.ticker import FuncFormatter
 
 # Configuración de la página
 st.set_page_config(
-    page_title=" Camión Diésel vs. Camión Eléctrico",
+    page_title="Camión Diésel vs. Camión Eléctrico",
     layout="centered"
 )
 
@@ -52,7 +52,7 @@ diesel_trucks = {
 def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, years, apply_verification, apply_tax):
     costs = []
     for year in range(1, years + 1):
-        adjusted_fuel_cost = diesel_fuel_cost + (fuel_increase_rate * (year - 1))
+        adjusted_fuel_cost = diesel_fuel_cost * ((1 + fuel_increase_rate) ** (year - 1))
         fuel_cost = (1 / diesel_trucks[selected_model]["km_per_liter"]) * adjusted_fuel_cost * annual_kilometers
         fixed_costs = 0
         if apply_verification:
@@ -67,7 +67,7 @@ def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, 
 def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks, inflation_rate, electric_increase_rate, years):
     costs = []
     for year in range(1, years + 1):
-        adjusted_cost_per_kwh = cost_per_kwh + (electric_increase_rate * (year - 1))
+        adjusted_cost_per_kwh = cost_per_kwh * ((1 + electric_increase_rate) ** (year - 1))
         electricity_cost = (annual_kilometers / electric_data["distance_per_charge_km"]) * (adjusted_cost_per_kwh * electric_data["battery_capacity_kwh"])
         annual_cost = (electricity_cost + electric_data["insurance_annual"] + electric_data["maintenance_annual"]) * num_trucks
         costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
@@ -250,14 +250,14 @@ comparison_data = {
         0,
         electric_annual_costs[0]
     ],
-    "Acumulado a 5 años (Diésel)": [
+    f"Acumulado a {years} años (Diésel)": [
         insurance_cost * num_trucks_diesel * years,
         tax_cost * num_trucks_diesel * years if apply_tax else 0,
         diesel_trucks[selected_model]["maintenance_annual"] * num_trucks_diesel * years,
         verification_cost * num_trucks_diesel * years if apply_verification else 0,
         sum(diesel_annual_costs)
     ],
-    "Acumulado a 5 años (Eléctrico)": [
+    f"Acumulado a {years} años (Eléctrico)": [
         electric_data["insurance_annual"] * num_trucks_electric * years,
         0,
         electric_data["maintenance_annual"] * num_trucks_electric * years,
@@ -343,6 +343,7 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
