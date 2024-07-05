@@ -25,22 +25,20 @@ st.markdown(
         .highlight {
             color: gold;
         }
-        .sidebar .sidebar-content {
-            background-color: white;
-        }
         .center {
             display: flex;
             justify-content: center;
+        }
+        .sidebar .sidebar-content {
+            background-color: white;
         }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# Agregar logo centrado
-st.markdown('<div class="center">', unsafe_allow_html=True)
-st.image("LogoCidCOM.jpeg", width=150)
-st.markdown('</div>', unsafe_allow_html=True)
+# Agregar logo
+st.markdown("<div class='center'><img src='LogoCidCOM.jpeg' width='150'></div>", unsafe_allow_html=True)
 
 # Datos fijos del camión eléctrico (actualizados)
 electric_data = {
@@ -64,11 +62,11 @@ diesel_trucks = {
 }
 
 # Función para calcular costos anuales del camión diésel seleccionado
-def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, years, apply_verification, verification_cost, apply_tax, tax_cost, insurance_cost, maintenance_annual):
+def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, years, apply_verification, verification_cost, apply_tax, tax_cost, insurance_cost, maintenance_annual, km_per_liter):
     costs = []
     for year in range(1, years + 1):
         adjusted_fuel_cost = diesel_fuel_cost + (fuel_increase_rate * (year - 1))
-        fuel_cost = (1 / selected_model["km_per_liter"]) * adjusted_fuel_cost * annual_kilometers
+        fuel_cost = (1 / km_per_liter) * adjusted_fuel_cost * annual_kilometers
         fixed_costs = 0
         if apply_verification:
             fixed_costs += verification_cost
@@ -140,7 +138,6 @@ st.divider()
 st.markdown("<h4 style='text-align: center;'>Precio del Combustible Diésel</h4>", unsafe_allow_html=True)
 diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=25.54, min_value=0.01)
 diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(selected_model["km_per_liter"]), min_value=0.01)
-diesel_consumption = 1 / diesel_km_per_liter
 
 # Gráfica del comportamiento del precio del diésel
 st.markdown("<h4 style='text-align: center;'>Comportamiento del Precio del Diésel en México (2018-2024)</h4>", unsafe_allow_html=True)
@@ -217,7 +214,7 @@ electric_increase_rate = st.number_input("Incremento anual del precio de la elec
 years = st.number_input("Número de años a proyectar:", value=5, min_value=1)
 
 # Calcular costos anuales
-diesel_annual_costs = calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, years, apply_verification, verification_cost, apply_tax, tax_cost, insurance_cost, selected_model["maintenance_annual"])
+diesel_annual_costs = calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, years, apply_verification, verification_cost, apply_tax, tax_cost, insurance_cost, selected_model["maintenance_annual"], diesel_km_per_liter)
 electric_annual_costs = calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks, inflation_rate, electric_increase_rate, years)
 
 # Crear DataFrame para mostrar los resultados
@@ -357,10 +354,9 @@ st.divider()
 # Pie de página
 st.markdown("""
 <div style='text-align: center;'>
-<p>&copy; 2024 Comercializadora <span class='highlight'>CIDVID</span> . Todos los derechos reservados.</p>
+<p>&copy; 2024 Comercializadora <span class='highlight'>CIDVID</span>. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
-
 
 
 
