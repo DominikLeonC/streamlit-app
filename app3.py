@@ -19,13 +19,36 @@ st.markdown(
         .main {
             background-color: white;
         }
-        h1, h2, h4, p {
+        h1, h2, h4 {
             color: black;
         }
         .highlight {
-            color: #DAA520;  /* Dorado */
+            color: gold;
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-logo img {
+            height: 80px;
         }
     </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Cargar el logo desde la ruta proporcionada
+logo_path = "/mnt/data/LogoCidCOM.jpeg"
+
+# Mostrar el logo y el título de la aplicación
+st.markdown(
+    f"""
+    <div class="header-logo">
+        <img src="{logo_path}" alt="Logo CidCom">
+        <h1>Comercializadora <span class='highlight'>CidCom</span></h1>
+    </div>
+    <h2 style='text-align: center;'>Camión Diésel vs. Camión Eléctrico</h2>
     """,
     unsafe_allow_html=True
 )
@@ -76,15 +99,11 @@ def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num
         costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
     return costs
 
-# Título de la aplicación y nombre de la empresa
-st.markdown("<h1 style='text-align: center;'>Comercializadora <span class='highlight'>CIDCOM</span></h1>", unsafe_allow_html=True)
-st.markdown("<h2 style='text-align: center;'>Camión Diésel vs. Camión Eléctrico</h2>", unsafe_allow_html=True)
-
 # Sección sobre la empresa
 st.markdown("""
 <div style='text-align: center;'>
 <h4>Sobre Nosotros</h4>
-<p>Comercializadora <span class='highlight'>CIDCOM</span> se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
+<p>Comercializadora <span class='highlight'>CidCom</span> se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -126,22 +145,26 @@ st.divider()
 
 # Precio del combustible diésel
 st.markdown("<h4 style='text-align: center;'>Precio del Combustible Diésel</h4>", unsafe_allow_html=True)
-diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=25.80, min_value=0.01)
+diesel_fuel_cost = st.number_input("Costo del combustible diésel ($/litro):", value=25.54, min_value=0.01)
 diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel seleccionado:", value=float(selected_model["km_per_liter"]), min_value=0.01)
 diesel_consumption = 1 / diesel_km_per_liter
 
 # Gráfica del comportamiento del precio del diésel
-st.markdown("<h4 style='text-align: center;'>Comportamiento del Precio del Diésel en México (2020-2024)</h4>", unsafe_allow_html=True)
-# Datos de precios del diésel de 2020 a 2023
+st.markdown("<h4 style='text-align: center;'>Comportamiento del Precio del Diésel en México (2018-2024)</h4>", unsafe_allow_html=True)
+# Datos de precios del diésel de 2018 a 2023
 data = {
     "Fecha": [
-        "2020-09", "2020-10", "2020-11", "2020-12",
+        "2018-01", "2018-02", "2018-03", "2018-04", "2018-05", "2018-06", "2018-07", "2018-08", "2018-09", "2018-10", "2018-11", "2018-12",
+        "2019-01", "2019-02", "2019-03", "2019-04", "2019-05", "2019-06", "2019-07", "2019-08", "2019-09", "2019-10", "2019-11", "2019-12",
+        "2020-01", "2020-02", "2020-03", "2020-04", "2020-05", "2020-06", "2020-07", "2020-08", "2020-09", "2020-10", "2020-11", "2020-12",
         "2021-01", "2021-02", "2021-03", "2021-04", "2021-05", "2021-06", "2021-07", "2021-08", "2021-09", "2021-10", "2021-11", "2021-12",
         "2022-01", "2022-02", "2022-03", "2022-04", "2022-05", "2022-06", "2022-07", "2022-08", "2022-09", "2022-10", "2022-11", "2022-12",
         "2023-01", "2023-02", "2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12"
     ],
     "Precio_Diesel": [
-        20.12, 20.29, 20.45, 20.62,
+        17.16, 17.42, 17.57, 17.69, 17.80, 18.02, 18.25, 18.42, 18.55, 18.75, 19.14, 19.35,
+        19.52, 19.61, 19.65, 19.74, 19.87, 20.05, 20.25, 20.37, 20.48, 20.67, 20.88, 21.05,
+        21.10, 21.18, 20.95, 19.72, 19.34, 19.55, 19.78, 19.98, 20.12, 20.29, 20.45, 20.62,
         20.78, 20.93, 21.04, 21.18, 21.34, 21.55, 21.72, 21.89, 22.05, 22.20, 22.35, 22.50,
         22.60, 22.75, 22.90, 23.05, 23.20, 23.35, 23.50, 23.65, 23.80, 23.95, 24.10, 24.25,
         24.30, 24.45, 24.60, 24.75, 24.90, 25.05, 25.20, 25.35, 25.50, 25.65, 25.80, 25.95
@@ -157,7 +180,7 @@ df["Fecha"] = pd.to_datetime(df["Fecha"])
 # Configurar la gráfica de líneas
 plt.figure(figsize=(12, 6))
 plt.plot(df["Fecha"], df["Precio_Diesel"], marker='o', linestyle='-', color='b')
-plt.title('Comportamiento del Precio del Diésel en México (2020-2024)')
+plt.title('Comportamiento del Precio del Diésel en México (2018-2023)')
 plt.xlabel('Fecha')
 plt.ylabel('Precio (MXN por litro)')
 plt.grid(True)
@@ -216,7 +239,7 @@ df = pd.DataFrame({
 st.divider()
 
 # Mostrar resultados
-st.markdown("<h4 style='text-align: center; color: black;'>Resultados Comparativos</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center;'>Resultados Comparativos</h4>", unsafe_allow_html=True)
 st.table(df.style.format({"Costo Anual - Diésel": "{:,.2f}", "Costo Anual - Eléctrico": "{:,.2f}", "Costo Acumulado - Diésel": "{:,.2f}", "Costo Acumulado - Eléctrico": "{:,.2f}"}))
 
 st.markdown(f"""
@@ -287,7 +310,7 @@ def currency(x, pos):
 formatter = FuncFormatter(currency)
 
 # Gráfico de costos acumulados
-st.markdown("<h4 style='text-align: center; color: black;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
 fig, ax = plt.subplots()
 ax.plot(df["Año"], df["Costo Acumulado - Diésel"], label="Diésel", color='#3498DB', marker='o')
 ax.plot(df["Año"], df["Costo Acumulado - Eléctrico"], label="Eléctrico", color='#2ECC71', marker='o')
@@ -302,7 +325,7 @@ st.pyplot(fig)
 st.divider()
 
 # Resumen de ahorro de Combustible
-st.markdown("<h4 style='text-align: center; color: black;'>Resumen de ahorro de Combustible</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center;'>Resumen de ahorro de Combustible</h4>", unsafe_allow_html=True)
 summary_data = {
     "Concepto": ["Costo Total - Diésel", "Costo Total - Eléctrico", "Ahorro"],
     "Valor ($)": [total_diesel_cost, total_electric_cost, savings]
@@ -320,7 +343,7 @@ st.divider()
 
 # Cálculo de la reducción de emisiones de CO2
 co2_emission_per_liter_diesel = 2.68  # kg de CO2 por litro de diésel
-total_diesel_fuel_consumed = (1 / selected_model["km_per_liter"]) * diesel_fuel_cost * annual_kilometers * num_trucks * years  # Consumo total de diésel en 5 años
+total_diesel_fuel_consumed = (1 / selected_model["km_per_liter"]) * annual_kilometers * num_trucks * years  # Consumo total de diésel en 5 años
 total_co2_emissions_diesel = total_diesel_fuel_consumed * co2_emission_per_liter_diesel
 total_co2_emissions_electric = 0  # Asumimos cero emisiones de CO2 para camiones eléctricos
 percentage_reduction = ((total_co2_emissions_diesel - total_co2_emissions_electric) / total_co2_emissions_diesel) * 100
@@ -341,9 +364,10 @@ st.divider()
 # Pie de página
 st.markdown("""
 <div style='text-align: center;'>
-<p>&copy; 2024 Comercializadora <span class='highlight'>CIDCOM</span>. Todos los derechos reservados.</p>
+<p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
