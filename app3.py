@@ -42,18 +42,25 @@ st.markdown(
 st.markdown(
     """
     <style>
-        .centered-image img {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
+        .center-container {
+            display: flex;
+            justify-content: center;
         }
     </style>
-    <div class="centered-image">
-        <img src="LogoCidCOM.jpeg" width="150">
+    <div class="center-container">
+    """,
+    unsafe_allow_html=True
+)
+
+st.image("LogoCidCOM.jpeg", width=150)
+
+st.markdown(
+    """
     </div>
     """,
     unsafe_allow_html=True
 )
+
 
 
 
