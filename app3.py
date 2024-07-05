@@ -48,21 +48,11 @@ st.markdown(
         }
     </style>
     <div class="center-container">
-    """,
-    unsafe_allow_html=True
-)
-
-st.image("LogoCidCOM.jpeg", width=150)
-
-st.markdown(
-    """
+    <img src="LogoCidCOM.jpeg" width="150">
     </div>
     """,
     unsafe_allow_html=True
 )
-
-
-
 
 # Datos fijos del camión eléctrico (actualizados)
 electric_data = {
