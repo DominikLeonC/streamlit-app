@@ -28,31 +28,19 @@ st.markdown(
         .sidebar .sidebar-content {
             background-color: white;
         }
-        .logo-container {
+        .center {
             display: flex;
-            justify-content: flex-start;
-            align-items: center;
+            justify-content: center;
         }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# Agregar logo centrado usando st.image dentro de un contenedor HTML
-st.markdown(
-    """
-    <style>
-        .center-image {
-            display: flex;
-            justify-content: center;
-        }
-    </style>
-    <div class="center-image">
-        <img src="LogoCidCOM.jpeg" width="150">
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+# Agregar logo centrado
+st.markdown('<div class="center">', unsafe_allow_html=True)
+st.image("LogoCidCOM.jpeg", width=150)
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Datos fijos del camión eléctrico (actualizados)
 electric_data = {
@@ -369,9 +357,10 @@ st.divider()
 # Pie de página
 st.markdown("""
 <div style='text-align: center;'>
-<p>&copy; 2024 Comercializadora <span class='highlight'>CIDVID</span>. Todos los derechos reservados.</p>
+<p>&copy; 2024 Comercializadora <span class='highlight'>CIDVID</span> . Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
