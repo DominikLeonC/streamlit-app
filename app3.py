@@ -28,13 +28,25 @@ st.markdown(
         .sidebar .sidebar-content {
             background-color: white;
         }
+        .logo-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# Agregar logo
-st.image("LogoCidCOM.jpeg", width=150)
+# Agregar logo con contenedor
+st.markdown(
+    """
+    <div class="logo-container">
+        <img src="LogoCidCOM.jpeg" alt="Logo" width="150">
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # Datos fijos del camión eléctrico (actualizados)
 electric_data = {
@@ -351,10 +363,9 @@ st.divider()
 # Pie de página
 st.markdown("""
 <div style='text-align: center;'>
-<p>&copy; 2024 Comercializadora <span class='highlight'>CIDVID</span></h1> . Todos los derechos reservados.</p>
+<p>&copy; 2024 Comercializadora <span class='highlight'>CIDVID</span>. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
-
 
 
 
