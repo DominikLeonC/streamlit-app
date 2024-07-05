@@ -144,8 +144,8 @@ diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel
 diesel_consumption = 1 / diesel_km_per_liter
 
 # Gráfica del comportamiento del precio del diésel
-st.markdown("<h4 style='text-align: center;'>Comportamiento del Precio del Diésel en México (2018-2024)</h4>", unsafe_allow_html=True)
-# Datos de precios del diésel de 2018 a 2023
+st.markdown("<h4 style='text-align: center;'>Comportamiento del Precio del Diésel en México (2020-2024)</h4>", unsafe_allow_html=True)
+# Datos de precios del diésel de 2020 a 2024
 data = {
     "Fecha": [
         "2020-10", "2020-11", "2020-12",
@@ -170,7 +170,7 @@ df["Fecha"] = pd.to_datetime(df["Fecha"])
 # Configurar la gráfica de líneas
 plt.figure(figsize=(12, 6))
 plt.plot(df["Fecha"], df["Precio_Diesel"], marker='o', linestyle='-', color='b')
-plt.title('Comportamiento del Precio del Diésel en México (2018-2023)')
+plt.title('Comportamiento del Precio del Diésel en México (2020-2023)')
 plt.xlabel('Fecha')
 plt.ylabel('Precio (MXN por litro)')
 plt.grid(True)
