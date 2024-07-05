@@ -38,15 +38,21 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Agregar logo con contenedor
+# Agregar logo centrado
 st.markdown(
     """
-    <div class="logo-container">
-        <img src="LogoCidCOM.jpeg" alt="Logo" width="150">
-    </div>
+    <style>
+        .centered-image img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
     """,
     unsafe_allow_html=True
 )
+st.image("LogoCidCOM.jpeg", width=150, caption=" ", use_column_width='auto')
+
 
 # Datos fijos del camión eléctrico (actualizados)
 electric_data = {
