@@ -20,84 +20,51 @@ st.markdown(
             background-color: white;
         }
         h1, h2, h4 {
-            color: #34495E;
+            color: black;
         }
-        .logo {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+        .header-logo img {
             width: 150px;
+            margin-right: 20px;
+        }
+        .header-title {
+            flex: 1;
+            text-align: left;
+        }
+        .highlight {
+            color: #d4af37; /* Dorado */
         }
     </style>
     """,
     unsafe_allow_html=True
 )
 
+# URL del logo en GitHub
+logo_url = "https://raw.githubusercontent.com/DominikLeonC/Clase_Ing_Fin/main/LogoCidCOM.jpeg"
+
 # Agregar logo
 st.markdown(
-    """
-    <div class="logo">
-        <img src="LogoCidCOM.jpeg" alt="Logo">
+    f"""
+    <div class="header-logo">
+        <img src="{logo_url}" alt="Logo CidCom">
+        <div class="header-title">
+            <h1>Comercializadora <span class="highlight">CidCom</span></h1>
+        </div>
     </div>
     """,
     unsafe_allow_html=True
 )
 
-# Datos fijos del camión eléctrico (actualizados)
-electric_data = {
-    "model": "Sany FE601",
-    "cost_initial": 1350000 * 1.16,  # Incluyendo IVA
-    "battery_capacity_kwh": 84.48,
-    "consumption_percentage_per_km": 2.33 / 100,
-    "maintenance_annual": 4000,
-    "battery_replacement_cost": 10000,
-    "battery_replacement_frequency_years": 5,
-    "insurance_annual": 53000,  # Seguro anual para camión eléctrico
-    "distance_per_charge_km": 200
-}
-
-# Opciones de camiones diésel (Incluyendo IVA)
-diesel_trucks = {
-    "Hino J05E-US": {"cost_initial": 1320000 * 1.16, "km_per_liter": 6.5, "maintenance_annual": 8000, "capacidad_combustible": 200},
-    "JAC X350": {"cost_initial": 600000 * 1.16, "km_per_liter": 6, "maintenance_annual": 8000, "capacidad_combustible": 100},
-    "VolksWagen Delivery 6.160": {"cost_initial": 560000 * 1.16, "km_per_liter": 4, "maintenance_annual": 8000, "capacidad_combustible": 150},
-    "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 6.4, "maintenance_annual": 8000, "capacidad_combustible": 140}
-}
-
-# Función para calcular costos anuales del camión diésel seleccionado
-def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, years, apply_verification, verification_cost, apply_tax, tax_cost, insurance_cost, maintenance_annual):
-    costs = []
-    for year in range(1, years + 1):
-        adjusted_fuel_cost = diesel_fuel_cost + (fuel_increase_rate * (year - 1))
-        fuel_cost = (1 / selected_model["km_per_liter"]) * adjusted_fuel_cost * annual_kilometers
-        fixed_costs = 0
-        if apply_verification:
-            fixed_costs += verification_cost
-        if apply_tax:
-            fixed_costs += tax_cost
-        annual_cost = (fuel_cost + fixed_costs + insurance_cost + maintenance_annual) * num_trucks
-        costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
-    return costs
-
-# Función para calcular costos anuales del camión eléctrico
-def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks, inflation_rate, electric_increase_rate, years):
-    costs = []
-    for year in range(1, years + 1):
-        adjusted_cost_per_kwh = cost_per_kwh + (electric_increase_rate * (year - 1))
-        electricity_cost = (annual_kilometers / electric_data["distance_per_charge_km"]) * (adjusted_cost_per_kwh * electric_data["battery_capacity_kwh"])
-        annual_cost = (electricity_cost + electric_data["insurance_annual"] + electric_data["maintenance_annual"]) * num_trucks
-        costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
-    return costs
-
-# Título de la aplicación y nombre de la empresa
-st.markdown("<h1 style='text-align: center;'>Comercializadora <span style='color: gold;'>CIDVID</span></h1>", unsafe_allow_html=True)
 st.markdown("<h2 style='text-align: center;'>Camión Diésel vs. Camión Eléctrico</h2>", unsafe_allow_html=True)
 
 # Sección sobre la empresa
 st.markdown("""
 <div style='text-align: center;'>
 <h4>Sobre Nosotros</h4>
-<p>Comercializadora <span style='color: gold;'>CIDVID</span> se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
+<p>Comercializadora <span class="highlight">CidCom</span> se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -144,15 +111,21 @@ diesel_km_per_liter = st.number_input("Kilómetros por litro del camión diésel
 diesel_consumption = 1 / diesel_km_per_liter
 
 # Gráfica del comportamiento del precio del diésel
-st.markdown("<h4 style='text-align: center;'>Comportamiento del Precio del Diésel en México (2020-2024)</h4>", unsafe_allow_html=True)
-# Datos de precios del diésel de 2020 a 2024
+st.markdown("<h4 style='text-align: center;'>Comportamiento del Precio del Diésel en México (2018-2024)</h4>", unsafe_allow_html=True)
+# Datos de precios del diésel de 2018 a 2023
 data = {
     "Fecha": [
+        "2018-01", "2018-02", "2018-03", "2018-04", "2018-05", "2018-06", "2018-07", "2018-08", "2018-09", "2018-10", "2018-11", "2018-12",
+        "2019-01", "2019-02", "2019-03", "2019-04", "2019-05", "2019-06", "2019-07", "2019-08", "2019-09", "2019-10", "2019-11", "2019-12",
+        "2020-01", "2020-02", "2020-03", "2020-04", "2020-05", "2020-06", "2020-07", "2020-08", "2020-09", "2020-10", "2020-11", "2020-12",
         "2021-01", "2021-02", "2021-03", "2021-04", "2021-05", "2021-06", "2021-07", "2021-08", "2021-09", "2021-10", "2021-11", "2021-12",
         "2022-01", "2022-02", "2022-03", "2022-04", "2022-05", "2022-06", "2022-07", "2022-08", "2022-09", "2022-10", "2022-11", "2022-12",
         "2023-01", "2023-02", "2023-03", "2023-04", "2023-05", "2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12"
     ],
     "Precio_Diesel": [
+        17.16, 17.42, 17.57, 17.69, 17.80, 18.02, 18.25, 18.42, 18.55, 18.75, 19.14, 19.35,
+        19.52, 19.61, 19.65, 19.74, 19.87, 20.05, 20.25, 20.37, 20.48, 20.67, 20.88, 21.05,
+        21.10, 21.18, 20.95, 19.72, 19.34, 19.55, 19.78, 19.98, 20.12, 20.29, 20.45, 20.62,
         20.78, 20.93, 21.04, 21.18, 21.34, 21.55, 21.72, 21.89, 22.05, 22.20, 22.35, 22.50,
         22.60, 22.75, 22.90, 23.05, 23.20, 23.35, 23.50, 23.65, 23.80, 23.95, 24.10, 24.25,
         24.30, 24.45, 24.60, 24.75, 24.90, 25.05, 25.20, 25.35, 25.50, 25.65, 25.80, 25.95
@@ -168,7 +141,7 @@ df["Fecha"] = pd.to_datetime(df["Fecha"])
 # Configurar la gráfica de líneas
 plt.figure(figsize=(12, 6))
 plt.plot(df["Fecha"], df["Precio_Diesel"], marker='o', linestyle='-', color='b')
-plt.title('Comportamiento del Precio del Diésel en México (2020-2023)')
+plt.title('Comportamiento del Precio del Diésel en México (2018-2023)')
 plt.xlabel('Fecha')
 plt.ylabel('Precio (MXN por litro)')
 plt.grid(True)
@@ -331,7 +304,7 @@ st.divider()
 
 # Cálculo de la reducción de emisiones de CO2
 co2_emission_per_liter_diesel = 2.68  # kg de CO2 por litro de diésel
-total_diesel_fuel_consumed = diesel_consumption * annual_kilometers * num_trucks * years  # Consumo total de diésel en 5 años
+total_diesel_fuel_consumed = (1 / selected_model["km_per_liter"]) * diesel_fuel_cost * annual_kilometers * num_trucks * years  # Consumo total de diésel en 5 años
 total_co2_emissions_diesel = total_diesel_fuel_consumed * co2_emission_per_liter_diesel
 total_co2_emissions_electric = 0  # Asumimos cero emisiones de CO2 para camiones eléctricos
 percentage_reduction = ((total_co2_emissions_diesel - total_co2_emissions_electric) / total_co2_emissions_diesel) * 100
@@ -352,10 +325,9 @@ st.divider()
 # Pie de página
 st.markdown("""
 <div style='text-align: center;'>
-<p>&copy; 2024 Comercializadora  <span style='color: gold;'>CIDVID</span></h1>". Todos los derechos reservados.</p>
+<p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
-
 
 
 
