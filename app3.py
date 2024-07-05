@@ -34,7 +34,7 @@ st.markdown(
 )
 
 # Agregar logo
-st.image("LogoCidCOM.jpeg", width=150)
+st.image("LogoCidCOM.jpeg", width=150,  layout="centered")
 
 # Datos fijos del camión eléctrico (actualizados)
 electric_data = {
