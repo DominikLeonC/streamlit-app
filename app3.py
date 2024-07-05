@@ -38,17 +38,17 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Agregar logo centrado
+# Agregar logo centrado usando st.image dentro de un contenedor HTML
 st.markdown(
     """
     <style>
-        .center-container {
+        .center-image {
             display: flex;
             justify-content: center;
         }
     </style>
-    <div class="center-container">
-    <img src="LogoCidCOM.jpeg" width="150">
+    <div class="center-image">
+        <img src="LogoCidCOM.jpeg" width="150">
     </div>
     """,
     unsafe_allow_html=True
