@@ -20,10 +20,18 @@ st.markdown(
             background-color: white;
         }
         h1, h2, h4 {
-            color: #000000;
+            color: black;
         }
-        .highlight {
-            color: #D4AF37;
+        .logo-container {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+        }
+        .logo {
+            width: 150px;
+        }
+        .cidcom-highlight {
+            color: #D4AF37;  /* Color dorado */
         }
     </style>
     """,
@@ -87,14 +95,14 @@ def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num
     return costs
 
 # Título de la aplicación y nombre de la empresa
-st.markdown("<h1 style='text-align: center;'>Comercializadora <span class='highlight'>CidCom</span></h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>Comercializadora <span class='cidcom-highlight'>CidCom</span></h1>", unsafe_allow_html=True)
 st.markdown("<h2 style='text-align: center;'>Camión Diésel vs. Camión Eléctrico</h2>", unsafe_allow_html=True)
 
 # Sección sobre la empresa
 st.markdown("""
 <div style='text-align: center;'>
 <h4>Sobre Nosotros</h4>
-<p>Comercializadora <span class='highlight'>CidCom</span> se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
+<p>Comercializadora <span class='cidcom-highlight'>CidCom</span> se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -230,7 +238,7 @@ df = pd.DataFrame({
 st.divider()
 
 # Mostrar resultados
-st.markdown("<h4 style='text-align: center;'>Resultados Comparativos</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center; color: #34495E;'>Resultados Comparativos</h4>", unsafe_allow_html=True)
 st.table(df.style.format({"Costo Anual - Diésel": "{:,.2f}", "Costo Anual - Eléctrico": "{:,.2f}", "Costo Acumulado - Diésel": "{:,.2f}", "Costo Acumulado - Eléctrico": "{:,.2f}"}))
 
 st.markdown(f"""
@@ -301,7 +309,7 @@ def currency(x, pos):
 formatter = FuncFormatter(currency)
 
 # Gráfico de costos acumulados
-st.markdown("<h4 style='text-align: center;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center; color: #34495E;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
 fig, ax = plt.subplots()
 ax.plot(df["Año"], df["Costo Acumulado - Diésel"], label="Diésel", color='#3498DB', marker='o')
 ax.plot(df["Año"], df["Costo Acumulado - Eléctrico"], label="Eléctrico", color='#2ECC71', marker='o')
@@ -316,7 +324,7 @@ st.pyplot(fig)
 st.divider()
 
 # Resumen de ahorro de Combustible
-st.markdown("<h4 style='text-align: center;'>Resumen de ahorro de Combustible</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center; color: #34495E;'>Resumen de ahorro de Combustible</h4>", unsafe_allow_html=True)
 summary_data = {
     "Concepto": ["Costo Total - Diésel", "Costo Total - Eléctrico", "Ahorro"],
     "Valor ($)": [total_diesel_cost, total_electric_cost, savings]
@@ -334,7 +342,7 @@ st.divider()
 
 # Cálculo de la reducción de emisiones de CO2
 co2_emission_per_liter_diesel = 2.68  # kg de CO2 por litro de diésel
-total_diesel_fuel_consumed = (1 / diesel_km_per_liter) * diesel_fuel_cost * annual_kilometers * num_trucks * years  # Consumo total de diésel en 5 años
+total_diesel_fuel_consumed = (1 / selected_model["km_per_liter"]) * diesel_fuel_cost * annual_kilometers * num_trucks * years  # Consumo total de diésel en 5 años
 total_co2_emissions_diesel = total_diesel_fuel_consumed * co2_emission_per_liter_diesel
 total_co2_emissions_electric = 0  # Asumimos cero emisiones de CO2 para camiones eléctricos
 percentage_reduction = ((total_co2_emissions_diesel - total_co2_emissions_electric) / total_co2_emissions_diesel) * 100
