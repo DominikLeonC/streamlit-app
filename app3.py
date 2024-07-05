@@ -48,10 +48,13 @@ st.markdown(
             margin-right: auto;
         }
     </style>
+    <div class="centered-image">
+        <img src="LogoCidCOM.jpeg" width="150">
+    </div>
     """,
     unsafe_allow_html=True
 )
-st.image("LogoCidCOM.jpeg", width=100, caption=" ", use_column_width='100')
+
 
 
 # Datos fijos del camión eléctrico (actualizados)
