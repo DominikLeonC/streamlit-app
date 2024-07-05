@@ -20,38 +20,18 @@ st.markdown(
             background-color: white;
         }
         h1, h2, h4 {
-            color: black;
+            color: #000000;
         }
         .highlight {
-            color: gold;
-        }
-        .header-logo {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .header-logo img {
-            height: 80px;
+            color: #D4AF37;
         }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# Cargar el logo desde la ruta proporcionada
-logo_path = "/mnt/data/LogoCidCOM.jpeg"
-
-# Mostrar el logo y el título de la aplicación
-st.markdown(
-    f"""
-    <div class="header-logo">
-        <img src="{logo_path}" alt="Logo CidCom">
-        <h1>Comercializadora <span class='highlight'>CidCom</span></h1>
-    </div>
-    <h2 style='text-align: center;'>Camión Diésel vs. Camión Eléctrico</h2>
-    """,
-    unsafe_allow_html=True
-)
+# Agregar logo
+st.image("LogoCidCOM.jpeg", width=150)
 
 # Datos fijos del camión eléctrico (actualizados)
 electric_data = {
@@ -98,6 +78,10 @@ def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num
         annual_cost = (electricity_cost + electric_data["insurance_annual"] + electric_data["maintenance_annual"]) * num_trucks
         costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
     return costs
+
+# Título de la aplicación y nombre de la empresa
+st.markdown("<h1 style='text-align: center;'>Comercializadora <span class='highlight'>CidCom</span></h1>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center;'>Camión Diésel vs. Camión Eléctrico</h2>", unsafe_allow_html=True)
 
 # Sección sobre la empresa
 st.markdown("""
@@ -343,7 +327,7 @@ st.divider()
 
 # Cálculo de la reducción de emisiones de CO2
 co2_emission_per_liter_diesel = 2.68  # kg de CO2 por litro de diésel
-total_diesel_fuel_consumed = (1 / selected_model["km_per_liter"]) * annual_kilometers * num_trucks * years  # Consumo total de diésel en 5 años
+total_diesel_fuel_consumed = (1 / diesel_km_per_liter) * diesel_fuel_cost * annual_kilometers * num_trucks * years  # Consumo total de diésel en 5 años
 total_co2_emissions_diesel = total_diesel_fuel_consumed * co2_emission_per_liter_diesel
 total_co2_emissions_electric = 0  # Asumimos cero emisiones de CO2 para camiones eléctricos
 percentage_reduction = ((total_co2_emissions_diesel - total_co2_emissions_electric) / total_co2_emissions_diesel) * 100
