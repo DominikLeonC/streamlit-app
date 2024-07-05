@@ -19,52 +19,78 @@ st.markdown(
         .main {
             background-color: white;
         }
-        h1, h2, h4 {
+        h1, h2, h4, p, div, table {
             color: black;
         }
-        .header-logo {
-            display: flex;
-            align-items: center;
-        }
-        .header-logo img {
-            width: 150px;
-            margin-right: 20px;
-        }
-        .header-title {
-            flex: 1;
-            text-align: left;
-        }
         .highlight {
-            color: #d4af37; /* Dorado */
+            color: gold;
+        }
+        .sidebar .sidebar-content {
+            background-color: white;
         }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# URL del logo en GitHub
-logo_url = "https://raw.githubusercontent.com/DominikLeonC/Clase_Ing_Fin/main/LogoCidCOM.jpeg"
-
 # Agregar logo
-st.markdown(
-    f"""
-    <div class="header-logo">
-        <img src="{logo_url}" alt="Logo CidCom">
-        <div class="header-title">
-            <h1>Comercializadora <span class="highlight">CidCom</span></h1>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.image("LogoCidCOM.jpeg", width=150)
 
+# Datos fijos del camión eléctrico (actualizados)
+electric_data = {
+    "model": "Sany FE601",
+    "cost_initial": 1350000 * 1.16,  # Incluyendo IVA
+    "battery_capacity_kwh": 84.48,
+    "consumption_percentage_per_km": 2.33 / 100,
+    "maintenance_annual": 4000,
+    "battery_replacement_cost": 10000,
+    "battery_replacement_frequency_years": 5,
+    "insurance_annual": 53000,  # Seguro anual para camión eléctrico
+    "distance_per_charge_km": 200
+}
+
+# Opciones de camiones diésel (Incluyendo IVA)
+diesel_trucks = {
+    "Hino J05E-US": {"cost_initial": 1320000 * 1.16, "km_per_liter": 6.5, "maintenance_annual": 8000, "capacidad_combustible": 200},
+    "JAC X350": {"cost_initial": 600000 * 1.16, "km_per_liter": 6, "maintenance_annual": 8000, "capacidad_combustible": 100},
+    "VolksWagen Delivery 6.160": {"cost_initial": 560000 * 1.16, "km_per_liter": 4, "maintenance_annual": 8000, "capacidad_combustible": 150},
+    "ISUZU ELF600": {"cost_initial": 1050000 * 1.16, "km_per_liter": 6.4, "maintenance_annual": 8000, "capacidad_combustible": 140}
+}
+
+# Función para calcular costos anuales del camión diésel seleccionado
+def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, years, apply_verification, verification_cost, apply_tax, tax_cost, insurance_cost, maintenance_annual):
+    costs = []
+    for year in range(1, years + 1):
+        adjusted_fuel_cost = diesel_fuel_cost + (fuel_increase_rate * (year - 1))
+        fuel_cost = (1 / selected_model["km_per_liter"]) * adjusted_fuel_cost * annual_kilometers
+        fixed_costs = 0
+        if apply_verification:
+            fixed_costs += verification_cost
+        if apply_tax:
+            fixed_costs += tax_cost
+        annual_cost = (fuel_cost + fixed_costs + insurance_cost + maintenance_annual) * num_trucks
+        costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
+    return costs
+
+# Función para calcular costos anuales del camión eléctrico
+def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks, inflation_rate, electric_increase_rate, years):
+    costs = []
+    for year in range(1, years + 1):
+        adjusted_cost_per_kwh = cost_per_kwh + (electric_increase_rate * (year - 1))
+        electricity_cost = (annual_kilometers / electric_data["distance_per_charge_km"]) * (adjusted_cost_per_kwh * electric_data["battery_capacity_kwh"])
+        annual_cost = (electricity_cost + electric_data["insurance_annual"] + electric_data["maintenance_annual"]) * num_trucks
+        costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
+    return costs
+
+# Título de la aplicación y nombre de la empresa
+st.markdown("<h1 style='text-align: center;'>Comercializadora <span class='highlight'>CidCom</span></h1>", unsafe_allow_html=True)
 st.markdown("<h2 style='text-align: center;'>Camión Diésel vs. Camión Eléctrico</h2>", unsafe_allow_html=True)
 
 # Sección sobre la empresa
 st.markdown("""
 <div style='text-align: center;'>
 <h4>Sobre Nosotros</h4>
-<p>Comercializadora <span class="highlight">CidCom</span> se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
+<p>Comercializadora <span class='highlight'>CidCom</span> se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -200,7 +226,7 @@ df = pd.DataFrame({
 st.divider()
 
 # Mostrar resultados
-st.markdown("<h4 style='text-align: center; color: black;'>Resultados Comparativos</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center;'>Resultados Comparativos</h4>", unsafe_allow_html=True)
 st.table(df.style.format({"Costo Anual - Diésel": "{:,.2f}", "Costo Anual - Eléctrico": "{:,.2f}", "Costo Acumulado - Diésel": "{:,.2f}", "Costo Acumulado - Eléctrico": "{:,.2f}"}))
 
 st.markdown(f"""
@@ -271,7 +297,7 @@ def currency(x, pos):
 formatter = FuncFormatter(currency)
 
 # Gráfico de costos acumulados
-st.markdown("<h4 style='text-align: center; color: black;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
 fig, ax = plt.subplots()
 ax.plot(df["Año"], df["Costo Acumulado - Diésel"], label="Diésel", color='#3498DB', marker='o')
 ax.plot(df["Año"], df["Costo Acumulado - Eléctrico"], label="Eléctrico", color='#2ECC71', marker='o')
@@ -286,7 +312,7 @@ st.pyplot(fig)
 st.divider()
 
 # Resumen de ahorro de Combustible
-st.markdown("<h4 style='text-align: center; color: black;'>Resumen de ahorro de Combustible</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center;'>Resumen de ahorro de Combustible</h4>", unsafe_allow_html=True)
 summary_data = {
     "Concepto": ["Costo Total - Diésel", "Costo Total - Eléctrico", "Ahorro"],
     "Valor ($)": [total_diesel_cost, total_electric_cost, savings]
@@ -304,7 +330,7 @@ st.divider()
 
 # Cálculo de la reducción de emisiones de CO2
 co2_emission_per_liter_diesel = 2.68  # kg de CO2 por litro de diésel
-total_diesel_fuel_consumed = (1 / selected_model["km_per_liter"]) * diesel_fuel_cost * annual_kilometers * num_trucks * years  # Consumo total de diésel en 5 años
+total_diesel_fuel_consumed = (1 / selected_model["km_per_liter"]) * annual_kilometers * num_trucks * years  # Consumo total de diésel en 5 años
 total_co2_emissions_diesel = total_diesel_fuel_consumed * co2_emission_per_liter_diesel
 total_co2_emissions_electric = 0  # Asumimos cero emisiones de CO2 para camiones eléctricos
 percentage_reduction = ((total_co2_emissions_diesel - total_co2_emissions_electric) / total_co2_emissions_diesel) * 100
