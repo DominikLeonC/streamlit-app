@@ -77,14 +77,14 @@ def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num
     return costs
 
 # Título de la aplicación y nombre de la empresa
-st.markdown("<h1 style='text-align: center;'>Comercializadora <span class='highlight'>CidCom</span></h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>Comercializadora <span class='highlight'>CIDCOM</span></h1>", unsafe_allow_html=True)
 st.markdown("<h2 style='text-align: center;'>Camión Diésel vs. Camión Eléctrico</h2>", unsafe_allow_html=True)
 
 # Sección sobre la empresa
 st.markdown("""
 <div style='text-align: center;'>
 <h4>Sobre Nosotros</h4>
-<p>Comercializadora <span class='highlight'>CidCom</span> se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
+<p>Comercializadora <span class='highlight'>CIDCOM</span> se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -345,7 +345,7 @@ st.divider()
 # Pie de página
 st.markdown("""
 <div style='text-align: center;'>
-<p>&copy; 2024 Comercializadora <span class='highlight'>CidCom</span>. Todos los derechos reservados.</p>
+<p>&copy; 2024 Comercializadora <span class='highlight'>CIDCOM</span>. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
 
