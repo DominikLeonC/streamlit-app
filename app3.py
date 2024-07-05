@@ -51,7 +51,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-st.image("LogoCidCOM.jpeg", width=150, caption=" ", use_column_width='auto')
+st.image("LogoCidCOM.jpeg", width=100, caption=" ", use_column_width='100')
 
 
 # Datos fijos del camión eléctrico (actualizados)
