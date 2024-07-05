@@ -19,8 +19,11 @@ st.markdown(
         .main {
             background-color: white;
         }
-        h1, h2, h4 {
-            color: #34495E;
+        h1, h2, h4, p {
+            color: black;
+        }
+        .highlight {
+            color: #DAA520;  /* Dorado */
         }
     </style>
     """,
@@ -74,14 +77,14 @@ def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num
     return costs
 
 # Título de la aplicación y nombre de la empresa
-st.markdown("<h1 style='text-align: center;'>Comercializadora CidCom</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>Comercializadora <span class='highlight'>CidCom</span></h1>", unsafe_allow_html=True)
 st.markdown("<h2 style='text-align: center;'>Camión Diésel vs. Camión Eléctrico</h2>", unsafe_allow_html=True)
 
 # Sección sobre la empresa
 st.markdown("""
 <div style='text-align: center;'>
 <h4>Sobre Nosotros</h4>
-<p>Comercializadora CidCom se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
+<p>Comercializadora <span class='highlight'>CidCom</span> se dedica a la venta de camiones eléctricos, ofreciendo las mejores opciones del mercado para que tu negocio sea más sostenible y eficiente. Nos comprometemos a brindar productos de alta calidad y un servicio excepcional a nuestros clientes.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -217,7 +220,7 @@ df = pd.DataFrame({
 st.divider()
 
 # Mostrar resultados
-st.markdown("<h4 style='text-align: center; color: #34495E;'>Resultados Comparativos</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center; color: black;'>Resultados Comparativos</h4>", unsafe_allow_html=True)
 st.table(df.style.format({"Costo Anual - Diésel": "{:,.2f}", "Costo Anual - Eléctrico": "{:,.2f}", "Costo Acumulado - Diésel": "{:,.2f}", "Costo Acumulado - Eléctrico": "{:,.2f}"}))
 
 st.markdown(f"""
@@ -288,7 +291,7 @@ def currency(x, pos):
 formatter = FuncFormatter(currency)
 
 # Gráfico de costos acumulados
-st.markdown("<h4 style='text-align: center; color: #34495E;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center; color: black;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
 fig, ax = plt.subplots()
 ax.plot(df["Año"], df["Costo Acumulado - Diésel"], label="Diésel", color='#3498DB', marker='o')
 ax.plot(df["Año"], df["Costo Acumulado - Eléctrico"], label="Eléctrico", color='#2ECC71', marker='o')
@@ -303,7 +306,7 @@ st.pyplot(fig)
 st.divider()
 
 # Resumen de ahorro de Combustible
-st.markdown("<h4 style='text-align: center; color: #34495E;'>Resumen de ahorro de Combustible</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center; color: black;'>Resumen de ahorro de Combustible</h4>", unsafe_allow_html=True)
 summary_data = {
     "Concepto": ["Costo Total - Diésel", "Costo Total - Eléctrico", "Ahorro"],
     "Valor ($)": [total_diesel_cost, total_electric_cost, savings]
@@ -342,9 +345,10 @@ st.divider()
 # Pie de página
 st.markdown("""
 <div style='text-align: center;'>
-<p>&copy; 2024 Comercializadora Sany. Todos los derechos reservados.</p>
+<p>&copy; 2024 Comercializadora <span class='highlight'>CidCom</span>. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
