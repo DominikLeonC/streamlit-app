@@ -30,8 +30,15 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Agregar logo
-st.image("LogoCidCOM.jpeg", width=150)
+# Mostrar el logo en la esquina superior izquierda
+st.markdown(
+    """
+    <div class="logo-container">
+        <img src="LogoCidCOM.jpeg" class="logo">
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # Datos fijos del camión eléctrico (actualizados)
 electric_data = {
