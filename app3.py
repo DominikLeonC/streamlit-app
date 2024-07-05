@@ -37,8 +37,24 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Agregar logo
-st.markdown("<div class='center'><img src='LogoCidCOM.jpeg' width='150'></div>", unsafe_allow_html=True)
+st.markdown(
+    """
+    <style>
+        .centered {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Agregar logo centrado
+st.markdown("<div class='centered'>", unsafe_allow_html=True)
+st.image("LogoCidCOM.jpeg", width=150)
+st.markdown("</div>", unsafe_allow_html=True)
 
 # Datos fijos del camión eléctrico (actualizados)
 electric_data = {
