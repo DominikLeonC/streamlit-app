@@ -281,22 +281,54 @@ comparison_data = {
 
 comparison_df = pd.DataFrame(comparison_data)
 comparison_df = comparison_df.applymap(lambda x: f"{x:,.2f}" if isinstance(x, (int, float)) else x)
+
+# Calcular el ahorro total
+total_insurance_diesel = comparison_df.loc[comparison_df["Concepto"] == "Seguro anual", "Acumulado a 5 años (Diésel)"].values[0]
+total_insurance_electric = comparison_df.loc[comparison_df["Concepto"] == "Seguro anual", "Acumulado a 5 años (Eléctrico)"].values[0]
+
+total_tax_diesel = comparison_df.loc[comparison_df["Concepto"] == "Refrendo", "Acumulado a 5 años (Diésel)"].values[0]
+total_tax_electric = comparison_df.loc[comparison_df["Concepto"] == "Refrendo", "Acumulado a 5 años (Eléctrico)"].values[0]
+
+total_maintenance_diesel = comparison_df.loc[comparison_df["Concepto"] == "Mantenimiento (Anual o cada 40K km)", "Acumulado a 5 años (Diésel)"].values[0]
+total_maintenance_electric = comparison_df.loc[comparison_df["Concepto"] == "Mantenimiento (Anual o cada 40K km)", "Acumulado a 5 años (Eléctrico)"].values[0]
+
+total_verification_diesel = comparison_df.loc[comparison_df["Concepto"] == "Verificación anual", "Acumulado a 5 años (Diésel)"].values[0]
+total_verification_electric = comparison_df.loc[comparison_df["Concepto"] == "Verificación anual", "Acumulado a 5 años (Eléctrico)"].values[0]
+
+total_fuel_diesel = comparison_df.loc[comparison_df["Concepto"] == "Combustible anual promedio", "Acumulado a 5 años (Diésel)"].values[0]
+total_fuel_electric = comparison_df.loc[comparison_df["Concepto"] == "Combustible anual promedio", "Acumulado a 5 años (Eléctrico)"].values[0]
+
+total_savings = (total_insurance_diesel - total_insurance_electric) + (total_tax_diesel - total_tax_electric) + (total_maintenance_diesel - total_maintenance_electric) + (total_verification_diesel - total_verification_electric) + (total_fuel_diesel - total_fuel_electric)
+
+# Mostrar la tabla comparativa final con el ahorro total
+comparison_data["Ahorro Total"] = ["-", "-", "-", "-", total_savings]
+
 st.markdown("<h4 style='text-align: center;'>Tabla Comparativa Final</h4>", unsafe_allow_html=True)
 st.table(comparison_df)
 
 st.divider()
 
-# Cálculo del ahorro
-total_diesel_cost = df["Costo Acumulado - Diésel"].iloc[-1]
-total_electric_cost = df["Costo Acumulado - Eléctrico"].iloc[-1]
-savings = total_diesel_cost - total_electric_cost
+# Resumen de ahorro de Combustible
+st.markdown("<h4 style='text-align: center;'>Resumen de ahorro de Combustible</h4>", unsafe_allow_html=True)
+summary_data = {
+    "Concepto": ["Costo Total - Diésel", "Costo Total - Eléctrico", "Ahorro", "Ahorro Total"],
+    "Valor ($)": [total_diesel_cost, total_electric_cost, savings, total_savings]
+}
+summary_df = pd.DataFrame(summary_data)
 
-# Formateador de moneda
-def currency(x, pos):
-    'The two args are the value and tick position'
-    return "${:,.0f}".format(x)
+st.table(summary_df)
 
-formatter = FuncFormatter(currency)
+if savings > 0:
+    st.success(f"El camión eléctrico ahorra ${savings:,.2f} en comparación con el camión diésel seleccionado en {years} años.")
+else:
+    st.warning(f"El camión diésel seleccionado es más económico por ${-savings:,.2f} en comparación con el camión eléctrico en {years} años.")
+
+if total_savings > 0:
+    st.success(f"El ahorro total incluyendo seguro, refrendo, mantenimiento, verificación anual y combustible anual promedio es de ${total_savings:,.2f} en {years} años.")
+else:
+    st.warning(f"El camión diésel seleccionado es más económico por ${-total_savings:,.2f} en comparación con el camión eléctrico incluyendo todos los costos en {years} años.")
+
+st.divider()
 
 # Gráfico de costos acumulados
 st.markdown("<h4 style='text-align: center;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
@@ -310,23 +342,6 @@ ax.legend()
 ax.yaxis.set_major_formatter(formatter)
 
 st.pyplot(fig)
-
-st.divider()
-
-# Resumen de ahorro de Combustible
-st.markdown("<h4 style='text-align: center;'>Resumen de ahorro de Combustible</h4>", unsafe_allow_html=True)
-summary_data = {
-    "Concepto": ["Costo Total - Diésel", "Costo Total - Eléctrico", "Ahorro"],
-    "Valor ($)": [total_diesel_cost, total_electric_cost, savings]
-}
-summary_df = pd.DataFrame(summary_data)
-
-st.table(summary_df)
-
-if savings > 0:
-    st.success(f"El camión eléctrico ahorra ${savings:,.2f} en comparación con el camión diésel seleccionado en {years} años.")
-else:
-    st.warning(f"El camión diésel seleccionado es más económico por ${-savings:,.2f} en comparación con el camión eléctrico en {years} años.")
 
 st.divider()
 
@@ -345,6 +360,7 @@ st.markdown(f"""
 <p><b>Costo Total - Diésel</b>: ${total_diesel_cost:,.2f}</p>
 <p><b>Costo Total - Eléctrico</b>: ${total_electric_cost:,.2f}</p>
 <p><b>Ahorro</b>: ${savings:,.2f}</p>
+<p><b>Ahorro Total</b> incluyendo seguro, refrendo, mantenimiento, verificación anual y combustible anual promedio: ${total_savings:,.2f}</p>
 </div>
 """, unsafe_allow_html=True)
 
