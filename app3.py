@@ -241,6 +241,17 @@ st.markdown(f"""
 st.divider()
 
 # Tabla comparativa final
+total_insurance_diesel = insurance_cost * num_trucks * years
+total_insurance_electric = electric_data["insurance_annual"] * num_trucks * years
+total_tax_diesel = tax_cost * num_trucks * years if apply_tax else 0
+total_tax_electric = 0
+total_maintenance_diesel = selected_model["maintenance_annual"] * num_trucks * years
+total_maintenance_electric = electric_data["maintenance_annual"] * num_trucks * years
+total_verification_diesel = verification_cost * num_trucks * years if apply_verification else 0
+total_verification_electric = 0
+total_fuel_diesel = sum(diesel_annual_costs)
+total_fuel_electric = sum(electric_annual_costs)
+
 comparison_data = {
     "Concepto": [
         "Seguro anual",
@@ -264,60 +275,49 @@ comparison_data = {
         electric_annual_costs[0]
     ],
     "Acumulado a 5 años (Diésel)": [
-        insurance_cost * num_trucks * years,
-        tax_cost * num_trucks * years if apply_tax else 0,
-        selected_model["maintenance_annual"] * num_trucks * years,
-        verification_cost * num_trucks * years if apply_verification else 0,
-        sum(diesel_annual_costs)
+        total_insurance_diesel,
+        total_tax_diesel,
+        total_maintenance_diesel,
+        total_verification_diesel,
+        total_fuel_diesel
     ],
     "Acumulado a 5 años (Eléctrico)": [
-        electric_data["insurance_annual"] * num_trucks * years,
-        0,
-        electric_data["maintenance_annual"] * num_trucks * years,
-        0,
-        sum(electric_annual_costs)
+        total_insurance_electric,
+        total_tax_electric,
+        total_maintenance_electric,
+        total_verification_electric,
+        total_fuel_electric
     ]
 }
 
 comparison_df = pd.DataFrame(comparison_data)
 comparison_df = comparison_df.applymap(lambda x: f"{x:,.2f}" if isinstance(x, (int, float)) else x)
-comparison_df["Ahorro Total"] = comparison_df.apply(
-    lambda row: float(row["Año 1 (Diésel)"].replace(',', '')) + float(row["Acumulado a 5 años (Diésel)"].replace(',', '')) - 
-                (float(row["Año 1 (Eléctrico)"].replace(',', '')) + float(row["Acumulado a 5 años (Eléctrico)"].replace(',', ''))), axis=1)
 
 st.markdown("<h4 style='text-align: center;'>Tabla Comparativa Final</h4>", unsafe_allow_html=True)
 st.table(comparison_df)
 
-st.divider()
+# Desglose de ahorros
+insurance_savings = total_insurance_diesel - total_insurance_electric
+tax_savings = total_tax_diesel - total_tax_electric
+maintenance_savings = total_maintenance_diesel - total_maintenance_electric
+verification_savings = total_verification_diesel - total_verification_electric
+fuel_savings = total_fuel_diesel - total_fuel_electric
+total_savings = insurance_savings + tax_savings + maintenance_savings + verification_savings + fuel_savings
 
-# Cálculo del ahorro
-total_diesel_cost = df["Costo Acumulado - Diésel"].iloc[-1]
-total_electric_cost = df["Costo Acumulado - Eléctrico"].iloc[-1]
-total_savings = comparison_df["Ahorro Total"].sum()
-
-# Formateador de moneda
-def currency(x, pos):
-    'The two args are the value and tick position'
-    return "${:,.0f}".format(x)
-
-formatter = FuncFormatter(currency)
-
-# Gráfico de costos acumulados
-st.markdown("<h4 style='text-align: center;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
-fig, ax = plt.subplots()
-ax.plot(df["Año"], df["Costo Acumulado - Diésel"], label="Diésel", color='#3498DB', marker='o')
-ax.plot(df["Año"], df["Costo Acumulado - Eléctrico"], label="Eléctrico", color='#2ECC71', marker='o')
-ax.set_ylabel("Costo Acumulado ($)")
-ax.set_xlabel("Año")
-ax.set_title("Comparación de Costos Acumulados")
-ax.legend()
-ax.yaxis.set_major_formatter(formatter)
-
-st.pyplot(fig)
+st.markdown(f"""
+<div style='text-align: center;'>
+    <p><b>Ahorro en Seguro Anual:</b> ${insurance_savings:,.2f}</p>
+    <p><b>Ahorro en Refrendo:</b> ${tax_savings:,.2f}</p>
+    <p><b>Ahorro en Mantenimiento:</b> ${maintenance_savings:,.2f}</p>
+    <p><b>Ahorro en Verificación:</b> ${verification_savings:,.2f}</p>
+    <p><b>Ahorro en Combustible:</b> ${fuel_savings:,.2f}</p>
+    <p><b>Ahorro Total:</b> ${total_savings:,.2f}</p>
+</div>
+""", unsafe_allow_html=True)
 
 st.divider()
 
-# Resumen de ahorro de Combustible
+# Cálculo del ahorro total y resumen de ahorro de combustible
 st.markdown("<h4 style='text-align: center;'>Resumen de ahorro de Combustible</h4>", unsafe_allow_html=True)
 summary_data = {
     "Concepto": ["Costo Total - Diésel", "Costo Total - Eléctrico", "Ahorro"],
@@ -360,6 +360,7 @@ st.markdown("""
 <p>&copy; 2024 Comercializadora <span class='highlight'>CIDVID</span>. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
