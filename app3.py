@@ -4,7 +4,10 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
 # Configuración de la página
-st.set_page_config(page_title="Camión Diésel vs. Camión Eléctrico", layout="centered")
+st.set_page_config(
+    page_title="Camión Diésel vs. Camión Eléctrico",
+    layout="centered"
+)
 
 # Estilo personalizado para la aplicación
 st.markdown(
@@ -38,6 +41,7 @@ st.markdown(
 st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
 st.image("LogoCidCOM.jpeg", width=150)
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 # Datos fijos del camión eléctrico (actualizados)
 electric_data = {
@@ -280,37 +284,67 @@ comparison_df = comparison_df.applymap(lambda x: f"{x:,.2f}" if isinstance(x, (i
 st.markdown("<h4 style='text-align: center;'>Tabla Comparativa Final</h4>", unsafe_allow_html=True)
 st.table(comparison_df)
 
-# Calcular ahorros
-total_insurance_diesel = insurance_cost * num_trucks * years
-total_insurance_electric = electric_data["insurance_annual"] * num_trucks * years
-total_tax_diesel = tax_cost * num_trucks * years if apply_tax else 0
-total_tax_electric = 0
-total_maintenance_diesel = selected_model["maintenance_annual"] * num_trucks * years
-total_maintenance_electric = electric_data["maintenance_annual"] * num_trucks * years
-total_verification_diesel = verification_cost * num_trucks * years if apply_verification else 0
-total_verification_electric = 0
-total_fuel_diesel = sum(diesel_annual_costs)
-total_fuel_electric = sum(electric_annual_costs)
-
-total_savings = (
-    (total_insurance_diesel - total_insurance_electric) +
-    (total_tax_diesel - total_tax_electric) +
-    (total_maintenance_diesel - total_maintenance_electric) +
-    (total_verification_diesel - total_verification_electric) +
-    (total_fuel_diesel - total_fuel_electric)
-)
+# Desglose de ahorros
+insurance_savings = insurance_cost * num_trucks * years - electric_data["insurance_annual"] * num_trucks * years
+tax_savings = tax_cost * num_trucks * years if apply_tax else 0
+maintenance_savings = selected_model["maintenance_annual"] * num_trucks * years - electric_data["maintenance_annual"] * num_trucks * years
+verification_savings = verification_cost * num_trucks * years if apply_verification else 0
+fuel_savings = sum(diesel_annual_costs) - sum(electric_annual_costs)
+total_savings = insurance_savings + tax_savings + maintenance_savings + verification_savings + fuel_savings
 
 st.markdown(f"""
-<h4 style='text-align: center;'>Resumen de Ahorros</h4>
 <div style='text-align: center;'>
-<p><b>Ahorro en seguro:</b> ${total_insurance_diesel - total_insurance_electric:,.2f}</p>
-<p><b>Ahorro en refrendo:</b> ${total_tax_diesel - total_tax_electric:,.2f}</p>
-<p><b>Ahorro en mantenimiento:</b> ${total_maintenance_diesel - total_maintenance_electric:,.2f}</p>
-<p><b>Ahorro en verificación:</b> ${total_verification_diesel - total_verification_electric:,.2f}</p>
-<p><b>Ahorro en combustible:</b> ${total_fuel_diesel - total_fuel_electric:,.2f}</p>
-<p><b>Ahorro Total:</b> ${total_savings:,.2f}</p>
+    <p><b>Ahorro en seguro anual :</b> ${insurance_savings:,.2f}</p>
+    <p><b>Ahorro en refrendo :</b> ${tax_savings:,.2f}</p>
+    <p><b>Ahorro en mantenimiento :</b> ${maintenance_savings:,.2f}</p>
+    <p><b>Ahorro en verificación anual :</b> ${verification_savings:,.2f}</p>
+    <p><b>Ahorro en combustible :</b> ${fuel_savings:,.2f}</p>
+    <p><b>Ahorro total :</b> ${total_savings:,.2f}</p>
 </div>
 """, unsafe_allow_html=True)
+
+st.divider()
+
+# Cálculo del ahorro
+total_diesel_cost = df["Costo Acumulado - Diésel"].iloc[-1]
+total_electric_cost = df["Costo Acumulado - Eléctrico"].iloc[-1]
+
+# Formateador de moneda
+def currency(x, pos):
+    'The two args are the value and tick position'
+    return "${:,.0f}".format(x)
+
+formatter = FuncFormatter(currency)
+
+# Gráfico de costos acumulados
+st.markdown("<h4 style='text-align: center;'>Gráfico de Costos Acumulados</h4>", unsafe_allow_html=True)
+fig, ax = plt.subplots()
+ax.plot(df["Año"], df["Costo Acumulado - Diésel"], label="Diésel", color='#3498DB', marker='o')
+ax.plot(df["Año"], df["Costo Acumulado - Eléctrico"], label="Eléctrico", color='#2ECC71', marker='o')
+ax.set_ylabel("Costo Acumulado ($)")
+ax.set_xlabel("Año")
+ax.set_title("Comparación de Costos Acumulados")
+ax.legend()
+ax.yaxis.set_major_formatter(formatter)
+
+st.pyplot(fig)
+
+st.divider()
+
+# Resumen de ahorro de Combustible
+st.markdown("<h4 style='text-align: center;'>Resumen de ahorro de Combustible</h4>", unsafe_allow_html=True)
+summary_data = {
+    "Concepto": ["Costo Total - Diésel", "Costo Total - Eléctrico", "Ahorro"],
+    "Valor ($)": [total_diesel_cost, total_electric_cost, total_savings]
+}
+summary_df = pd.DataFrame(summary_data)
+
+st.table(summary_df)
+
+if total_savings > 0:
+    st.success(f"El camión eléctrico ahorra ${total_savings:,.2f} en comparación con el camión diésel seleccionado en {years} años.")
+else:
+    st.warning(f"El camión diésel seleccionado es más económico por ${-total_savings:,.2f} en comparación con el camión eléctrico en {years} años.")
 
 st.divider()
 
@@ -328,7 +362,7 @@ st.markdown(f"""
 <p>La gráfica de costos acumulados muestra la diferencia en los costos totales entre el camión diésel y el camión eléctrico a lo largo de {years} años.</p>
 <p><b>Costo Total - Diésel</b>: ${total_diesel_cost:,.2f}</p>
 <p><b>Costo Total - Eléctrico</b>: ${total_electric_cost:,.2f}</p>
-<p><b>Ahorro</b>: ${savings:,.2f}</p>
+<p><b>Ahorro total:</b> ${total_savings:,.2f}</p>
 </div>
 """, unsafe_allow_html=True)
 
