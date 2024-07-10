@@ -294,12 +294,12 @@ total_savings = insurance_savings + tax_savings + maintenance_savings + verifica
 
 st.markdown(f"""
 <div style='text-align: center;'>
-    <p><b>Ahorro en seguro anual (5 años):</b> ${insurance_savings:,.2f}</p>
-    <p><b>Ahorro en refrendo (5 años):</b> ${tax_savings:,.2f}</p>
-    <p><b>Ahorro en mantenimiento (5 años):</b> ${maintenance_savings:,.2f}</p>
-    <p><b>Ahorro en verificación anual (5 años):</b> ${verification_savings:,.2f}</p>
-    <p><b>Ahorro en combustible (5 años):</b> ${fuel_savings:,.2f}</p>
-    <p><b>Ahorro total (5 años):</b> ${total_savings:,.2f}</p>
+    <p><b>Ahorro en seguro anual :</b> ${insurance_savings:,.2f}</p>
+    <p><b>Ahorro en refrendo :</b> ${tax_savings:,.2f}</p>
+    <p><b>Ahorro en mantenimiento :</b> ${maintenance_savings:,.2f}</p>
+    <p><b>Ahorro en verificación anual :</b> ${verification_savings:,.2f}</p>
+    <p><b>Ahorro en combustible :</b> ${fuel_savings:,.2f}</p>
+    <p><b>Ahorro total :</b> ${total_savings:,.2f}</p>
 </div>
 """, unsafe_allow_html=True)
 
