@@ -362,7 +362,7 @@ st.markdown(f"""
 <p>La gráfica de costos acumulados muestra la diferencia en los costos totales entre el camión diésel y el camión eléctrico a lo largo de {years} años.</p>
 <p><b>Costo Total - Diésel</b>: ${total_diesel_cost:,.2f}</p>
 <p><b>Costo Total - Eléctrico</b>: ${total_electric_cost:,.2f}</p>
-<p><b>Ahorro total (5 años):</b> ${total_savings:,.2f}</p>
+<p><b>Ahorro total:</b> ${total_savings:,.2f}</p>
 </div>
 """, unsafe_allow_html=True)
 
