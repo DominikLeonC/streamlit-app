@@ -67,9 +67,11 @@ diesel_trucks = {
 # Función para calcular costos anuales del camión diésel seleccionado
 def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, years, apply_verification, verification_cost, apply_tax, tax_cost, insurance_cost, maintenance_annual, km_per_liter):
     costs = []
+    fuel_costs = []
     for year in range(1, years + 1):
         adjusted_fuel_cost = diesel_fuel_cost + (fuel_increase_rate * (year - 1))
         fuel_cost = (1 / km_per_liter) * adjusted_fuel_cost * annual_kilometers
+        fuel_costs.append(round(fuel_cost * num_trucks * ((1 + inflation_rate) ** (year - 1)), 2))
         fixed_costs = 0
         if apply_verification:
             fixed_costs += verification_cost
@@ -77,17 +79,19 @@ def calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, 
             fixed_costs += tax_cost
         annual_cost = (fuel_cost + fixed_costs + insurance_cost + maintenance_annual) * num_trucks
         costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
-    return costs
+    return costs, fuel_costs
 
 # Función para calcular costos anuales del camión eléctrico
 def calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks, inflation_rate, electric_increase_rate, years):
     costs = []
+    fuel_costs = []
     for year in range(1, years + 1):
         adjusted_cost_per_kwh = cost_per_kwh + (electric_increase_rate * (year - 1))
         electricity_cost = (annual_kilometers / electric_data["distance_per_charge_km"]) * (adjusted_cost_per_kwh * electric_data["battery_capacity_kwh"])
+        fuel_costs.append(round(electricity_cost * num_trucks * ((1 + inflation_rate) ** (year - 1)), 2))
         annual_cost = (electricity_cost + electric_data["insurance_annual"] + electric_data["maintenance_annual"]) * num_trucks
         costs.append(round(annual_cost * ((1 + inflation_rate) ** (year - 1)), 2))
-    return costs
+    return costs, fuel_costs
 
 # Título de la aplicación y nombre de la empresa
 st.markdown("<h1 style='text-align: center;'>Comercializadora <span class='highlight'>CIDVID</span></h1>", unsafe_allow_html=True)
@@ -213,8 +217,8 @@ electric_increase_rate = st.number_input("Incremento anual del precio de la elec
 years = st.number_input("Número de años a proyectar:", value=5, min_value=1)
 
 # Calcular costos anuales
-diesel_annual_costs = calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, years, apply_verification, verification_cost, apply_tax, tax_cost, insurance_cost, selected_model["maintenance_annual"], diesel_km_per_liter)
-electric_annual_costs = calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks, inflation_rate, electric_increase_rate, years)
+diesel_annual_costs, diesel_fuel_costs = calculate_diesel_costs(selected_model, diesel_fuel_cost, annual_kilometers, num_trucks, inflation_rate, fuel_increase_rate, years, apply_verification, verification_cost, apply_tax, tax_cost, insurance_cost, selected_model["maintenance_annual"], diesel_km_per_liter)
+electric_annual_costs, electric_fuel_costs = calculate_electric_costs(electric_data, cost_per_kwh, annual_kilometers, num_trucks, inflation_rate, electric_increase_rate, years)
 
 # Crear DataFrame para mostrar los resultados
 df = pd.DataFrame({
@@ -222,14 +226,23 @@ df = pd.DataFrame({
     "Costo Anual - Diésel": diesel_annual_costs,
     "Costo Anual - Eléctrico": electric_annual_costs,
     "Costo Acumulado - Diésel": pd.Series(diesel_annual_costs).cumsum(),
-    "Costo Acumulado - Eléctrico": pd.Series(electric_annual_costs).cumsum()
+    "Costo Acumulado - Eléctrico": pd.Series(electric_annual_costs).cumsum(),
+    "Combustible Anual - Diésel": diesel_fuel_costs,
+    "Combustible Anual - Eléctrico": electric_fuel_costs
 })
 
 st.divider()
 
 # Mostrar resultados
 st.markdown("<h4 style='text-align: center;'>Resultados Comparativos</h4>", unsafe_allow_html=True)
-st.table(df.style.format({"Costo Anual - Diésel": "{:,.2f}", "Costo Anual - Eléctrico": "{:,.2f}", "Costo Acumulado - Diésel": "{:,.2f}", "Costo Acumulado - Eléctrico": "{:,.2f}"}))
+st.table(df.style.format({
+    "Costo Anual - Diésel": "{:,.2f}",
+    "Costo Anual - Eléctrico": "{:,.2f}",
+    "Costo Acumulado - Diésel": "{:,.2f}",
+    "Costo Acumulado - Eléctrico": "{:,.2f}",
+    "Combustible Anual - Diésel": "{:,.2f}",
+    "Combustible Anual - Eléctrico": "{:,.2f}"
+}))
 
 st.markdown(f"""
 <div style='text-align: center;'>
@@ -254,28 +267,28 @@ comparison_data = {
         tax_cost * num_trucks if apply_tax else 0,
         selected_model["maintenance_annual"] * num_trucks,
         verification_cost * num_trucks if apply_verification else 0,
-        diesel_annual_costs[0]
+        diesel_fuel_costs[0]
     ],
     "Año 1 (Eléctrico)": [
         electric_data["insurance_annual"] * num_trucks,
         0,
         electric_data["maintenance_annual"] * num_trucks,
         0,
-        electric_annual_costs[0]
+        electric_fuel_costs[0]
     ],
     "Acumulado a 5 años (Diésel)": [
         insurance_cost * num_trucks * years,
         tax_cost * num_trucks * years if apply_tax else 0,
         selected_model["maintenance_annual"] * num_trucks * years,
         verification_cost * num_trucks * years if apply_verification else 0,
-        sum(diesel_annual_costs)
+        sum(diesel_fuel_costs)
     ],
     "Acumulado a 5 años (Eléctrico)": [
         electric_data["insurance_annual"] * num_trucks * years,
         0,
         electric_data["maintenance_annual"] * num_trucks * years,
         0,
-        sum(electric_annual_costs)
+        sum(electric_fuel_costs)
     ]
 }
 
@@ -289,7 +302,7 @@ insurance_savings = insurance_cost * num_trucks * years - electric_data["insuran
 tax_savings = tax_cost * num_trucks * years if apply_tax else 0
 maintenance_savings = selected_model["maintenance_annual"] * num_trucks * years - electric_data["maintenance_annual"] * num_trucks * years
 verification_savings = verification_cost * num_trucks * years if apply_verification else 0
-fuel_savings = sum(diesel_annual_costs) - sum(electric_annual_costs)
+fuel_savings = sum(diesel_fuel_costs) - sum(electric_fuel_costs)
 total_savings = insurance_savings + tax_savings + maintenance_savings + verification_savings + fuel_savings
 
 st.markdown(f"""
