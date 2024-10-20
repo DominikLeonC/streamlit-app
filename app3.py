@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+from fpdf import FPDF
+import io
 
 # Título de la aplicación
 st.title("Distribuciones L: Cotizador de Productos Médicos")
@@ -38,7 +40,6 @@ if agregar:
         "Precio Unitario": precio_unitario,
         "Subtotal": subtotal
     }
-    # Usamos pd.concat en lugar de append, ya que append está obsoleto
     st.session_state['cotizacion'] = pd.concat(
         [st.session_state['cotizacion'], pd.DataFrame([nuevo_producto])],
         ignore_index=True
@@ -69,10 +70,60 @@ if not st.session_state['cotizacion'].empty:
 else:
     st.write("No has agregado productos a la cotización.")
 
+# Función para generar PDF
+def generar_pdf(df, total_sin_iva, iva, total_con_iva):
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # Título del documento
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(200, 10, "Distribuciones L: Cotización de Productos Médicos", ln=True, align='C')
+    
+    pdf.ln(10)
+    
+    # Tabla de productos
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(50, 10, "Producto", border=1)
+    pdf.cell(40, 10, "Cantidad", border=1)
+    pdf.cell(50, 10, "Precio Unitario", border=1)
+    pdf.cell(50, 10, "Subtotal", border=1)
+    pdf.ln(10)
+    
+    pdf.set_font("Arial", '', 12)
+    for index, row in df.iterrows():
+        pdf.cell(50, 10, row['Producto'], border=1)
+        pdf.cell(40, 10, str(int(row['Cantidad'])), border=1)
+        pdf.cell(50, 10, f"${row['Precio Unitario']:.2f}", border=1)
+        pdf.cell(50, 10, f"${row['Subtotal']:.2f}", border=1)
+        pdf.ln(10)
+    
+    # Totales
+    pdf.ln(10)
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(50, 10, f"Total sin IVA: ${total_sin_iva:.2f}")
+    pdf.ln(10)
+    pdf.cell(50, 10, f"IVA (16%): ${iva:.2f}")
+    pdf.ln(10)
+    pdf.cell(50, 10, f"Total con IVA: ${total_con_iva:.2f}")
+    
+    # Generar archivo PDF
+    return pdf.output(dest='S').encode('latin1')
+
+# Botón para descargar la cotización en PDF
+if st.button("Descargar cotización en PDF"):
+    pdf_content = generar_pdf(df, total_sin_iva, iva, total_con_iva)
+    st.download_button(
+        label="Descargar PDF",
+        data=pdf_content,
+        file_name="cotizacion.pdf",
+        mime="application/pdf"
+    )
+
 # Botón para reiniciar la cotización
 if st.button("Reiniciar cotización"):
     st.session_state['cotizacion'] = pd.DataFrame(columns=["Producto", "Cantidad", "Precio Unitario", "Subtotal"])
     st.success("La cotización ha sido reiniciada.")
+
 
 
 
