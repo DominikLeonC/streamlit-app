@@ -1,9 +1,10 @@
 import streamlit as st
 import pandas as pd
 from fpdf import FPDF
+from datetime import datetime
 
-# Título de la aplicación
-st.title("Distribuciones L: Cotizador de Productos Médicos")
+# Título centrado de la aplicación
+st.markdown("<h1 style='text-align: center; color: black;'>Distribuciones L: Cotizador de Productos Médicos</h1>", unsafe_allow_html=True)
 
 # Crear un diccionario de productos y sus precios
 productos = {
@@ -17,7 +18,6 @@ productos = {
     "Tensiómetro Digital": 1800,
     "Cubrebocas Triple Filtro (Caja de 50)": 100,
     "Alcohol en Gel 1L": 120,
-    # Hexyn con condición especial de precios
     "Hexyn Antiséptico Médico": None  # Se asignará dinámicamente
 }
 
@@ -70,33 +70,46 @@ if not st.session_state['cotizacion'].empty:
     iva = total_sin_iva * 0.16
     total_con_iva = total_sin_iva + iva
 
+    # Formateo de tabla y totales
     st.table(df.style.format({
         "Cantidad": "{:.0f}",
         "Precio Unitario": "${:,.2f}",
         "Subtotal": "${:,.2f}"
-    }))
+    }).set_properties(**{'text-align': 'center'}))
 
     col_total1, col_total2, col_total3 = st.columns(3)
     with col_total1:
-        st.write(f"**Total sin IVA:**\n${total_sin_iva:,.2f}")
+        st.markdown(f"<b style='color: black;'>Total sin IVA:</b>\n${total_sin_iva:,.2f}", unsafe_allow_html=True)
     with col_total2:
-        st.write(f"**IVA (16%):**\n${iva:,.2f}")
+        st.markdown(f"<b style='color: black;'>IVA (16%):</b>\n${iva:,.2f}", unsafe_allow_html=True)
     with col_total3:
-        st.write(f"**Total con IVA:**\n${total_con_iva:,.2f}")
+        st.markdown(f"<b style='color: black;'>Total con IVA:</b>\n${total_con_iva:,.2f}", unsafe_allow_html=True)
 else:
     st.write("No has agregado productos a la cotización.")
 
-# Función para generar PDF
+# Generar PDF más profesional con folio y fecha
 def generar_pdf(df, total_sin_iva, iva, total_con_iva):
     pdf = FPDF()
     pdf.add_page()
     
-    # Título del documento
+    # Datos de la empresa y cotización
     pdf.set_font("Arial", 'B', 16)
-    pdf.cell(200, 10, "Distribuciones L: Cotización de Productos Médicos", ln=True, align='C')
+    pdf.cell(200, 10, "Distribuciones L: Productos Médicos", ln=True, align='C')
+    
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(200, 10, f"Folio de Cotización: {int(datetime.now().timestamp())}", ln=True, align='C')
+    pdf.cell(200, 10, f"Fecha: {datetime.now().strftime('%Y-%m-%d')}", ln=True, align='C')
     
     pdf.ln(10)
-    
+
+    # Detalle del cliente
+    pdf.set_font("Arial", '', 12)
+    pdf.cell(200, 10, "Cliente: _______________________________", ln=True)
+    pdf.cell(200, 10, "Dirección: ______________________________", ln=True)
+    pdf.cell(200, 10, "Teléfono: _______________________________", ln=True)
+
+    pdf.ln(10)
+
     # Tabla de productos
     pdf.set_font("Arial", 'B', 12)
     pdf.cell(50, 10, "Producto", border=1)
@@ -122,6 +135,12 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva):
     pdf.ln(10)
     pdf.cell(50, 10, f"Total con IVA: ${total_con_iva:.2f}")
     
+    # Términos y condiciones
+    pdf.ln(20)
+    pdf.set_font("Arial", '', 10)
+    pdf.multi_cell(200, 10, "Términos y condiciones: Esta cotización es válida por 15 días. Los precios pueden variar sin previo aviso. "
+                            "El cliente es responsable de revisar las especificaciones del producto antes de la compra.")
+
     # Generar archivo PDF
     return pdf.output(dest='S').encode('latin1')
 
@@ -131,7 +150,7 @@ if st.button("Descargar cotización en PDF"):
     st.download_button(
         label="Descargar PDF",
         data=pdf_content,
-        file_name="cotizacion.pdf",
+        file_name="cotizacion_distribuciones_l.pdf",
         mime="application/pdf"
     )
 
