@@ -1,19 +1,35 @@
 import streamlit as st
 import pandas as pd
 from fpdf import FPDF
-import io
 
 # Título de la aplicación
 st.title("Distribuciones L: Cotizador de Productos Médicos")
 
 # Crear un diccionario de productos y sus precios
 productos = {
-    "Guantes Médicos": 100,
-    "Mascarillas": 50,
-    "Gel Antibacterial": 30,
-    "Batas Quirúrgicas": 150,
-    "Jeringas": 10
+    "Guantes de Nitrilo (Caja 100 unidades)": 350,
+    "Mascarilla KN95 (Paquete de 10)": 150,
+    "Gel Antibacterial 500ml": 80,
+    "Bata Descartable (Paquete de 5)": 400,
+    "Jeringas 5ml (Caja de 100 unidades)": 500,
+    "Termómetro Infrarrojo": 1200,
+    "Oxímetro de Pulso": 950,
+    "Tensiómetro Digital": 1800,
+    "Cubrebocas Triple Filtro (Caja de 50)": 100,
+    "Alcohol en Gel 1L": 120,
+    # Hexyn con condición especial de precios
+    "Hexyn Antiséptico Médico": None  # Se asignará dinámicamente
 }
+
+# Función para obtener el precio del producto
+def obtener_precio(producto, cantidad):
+    if producto == "Hexyn Antiséptico Médico":
+        if cantidad > 30:
+            return 241  # Precio con descuento
+        else:
+            return 258.62  # Precio sin descuento
+    else:
+        return productos[producto]
 
 st.header("Cotización")
 
@@ -32,7 +48,7 @@ with st.form(key='formulario_producto'):
 
 # Agregar producto a la cotización
 if agregar:
-    precio_unitario = productos[producto_seleccionado]
+    precio_unitario = obtener_precio(producto_seleccionado, cantidad)
     subtotal = precio_unitario * cantidad
     nuevo_producto = {
         "Producto": producto_seleccionado,
@@ -123,8 +139,6 @@ if st.button("Descargar cotización en PDF"):
 if st.button("Reiniciar cotización"):
     st.session_state['cotizacion'] = pd.DataFrame(columns=["Producto", "Cantidad", "Precio Unitario", "Subtotal"])
     st.success("La cotización ha sido reiniciada.")
-
-
 
 
 
