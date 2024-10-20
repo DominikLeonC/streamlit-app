@@ -87,7 +87,11 @@ if not st.session_state['cotizacion'].empty:
 else:
     st.write("No has agregado productos a la cotización.")
 
-# Generar PDF más profesional con folio y fecha
+# Mostrar los datos de contacto en la app
+st.markdown("<h4 style='text-align: center; color: black;'>Teléfono: +52 33 25 36 10 73</h4>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center; color: black;'>Correo electrónico: DistribucionesMedLeon@gmail.com</h4>", unsafe_allow_html=True)
+
+# Generar PDF más profesional con folio, fecha y datos de contacto
 def generar_pdf(df, total_sin_iva, iva, total_con_iva):
     pdf = FPDF()
     pdf.add_page()
@@ -140,6 +144,14 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva):
     pdf.set_font("Arial", '', 10)
     pdf.multi_cell(200, 10, "Términos y condiciones: Esta cotización es válida por 15 días. Los precios pueden variar sin previo aviso. "
                             "El cliente es responsable de revisar las especificaciones del producto antes de la compra.")
+
+    # Datos de contacto
+    pdf.ln(10)
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(200, 10, "Contacto:", ln=True, align='L')
+    pdf.set_font("Arial", '', 12)
+    pdf.cell(200, 10, "Teléfono: +52 33 25 36 10 73", ln=True, align='L')
+    pdf.cell(200, 10, "Correo electrónico: DistribucionesMedLeon@gmail.com", ln=True, align='L')
 
     # Generar archivo PDF
     return pdf.output(dest='S').encode('latin1')
