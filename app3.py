@@ -2,23 +2,21 @@ import streamlit as st
 import pandas as pd
 from fpdf import FPDF
 from datetime import datetime
-from PIL import Image
 
 # Configuración de la página
 st.set_page_config(page_title="Distribuciones L", layout="wide")
 
-# Función para generar el PDF con el logo ajustado
-def generar_pdf(df, total_sin_iva, iva, total_con_iva, logo_image):
+# Función para generar el PDF con logo ajustado
+def generar_pdf(df, total_sin_iva, iva, total_con_iva):
     pdf = FPDF()
     pdf.add_page()
 
-    # Guardar el logo como un archivo temporal para agregarlo al PDF
-    logo_path = "logo_temp.png"
-    logo_image.save(logo_path)
+    # Ruta del logo guardado en tu entorno de Streamlit
+    logo_path = "/mnt/data/LOGOLEON.png"
 
     # Agregar logo más pequeño y en la parte superior sin interferir con el texto
-    pdf.image(logo_path, x=80, y=10, w=50)  # Ajuste de tamaño y posición del logo
-    pdf.ln(30)  # Espacio debajo del logo para que el texto no lo toque
+    pdf.image(logo_path, x=85, y=10, w=40)  # Logo más pequeño y bien posicionado
+    pdf.ln(40)  # Aumentar el espacio debajo del logo para que no se superponga con el texto
 
     # Datos de la empresa
     pdf.set_font("Arial", 'B', 16)
@@ -66,9 +64,9 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva, logo_image):
     return pdf.output(dest='S').encode('latin1')
 
 # Página de inicio (Home)
-def mostrar_home(logo_image):
-    # Mostrar el logo centrado
-    st.image(logo_image, use_column_width=True)
+def mostrar_home():
+    # Mostrar el logo ya cargado directamente desde tu entorno
+    st.image("/mnt/data/LOGOLEON.png", use_column_width=True)
 
     # Después del logo, el contenido de la página
     st.markdown("<h1 style='text-align: center; color: black;'>Bienvenidos a Distribuciones L: Productos Médicos</h1>", unsafe_allow_html=True)
@@ -83,7 +81,7 @@ def mostrar_home(logo_image):
     st.markdown("<h4 style='text-align: center; color: black;'>Correo electrónico: DistribucionesMedLeon@gmail.com</h4>", unsafe_allow_html=True)
 
 # Página de cotización con acceso restringido por contraseña
-def mostrar_cotizacion(logo_image):
+def mostrar_cotizacion():
     st.header("Cotización")
     
     # Continuamos con la funcionalidad de la cotización
@@ -153,7 +151,7 @@ def mostrar_cotizacion(logo_image):
 
         # Botón para descargar PDF
         if st.button("Descargar cotización en PDF"):
-            pdf_content = generar_pdf(df, total_sin_iva, iva, total_con_iva, logo_image)
+            pdf_content = generar_pdf(df, total_sin_iva, iva, total_con_iva)
             st.download_button(
                 label="Descargar PDF",
                 data=pdf_content,
@@ -167,26 +165,21 @@ def mostrar_cotizacion(logo_image):
         st.success("La cotización ha sido reiniciada.")
 
 # Manejo de navegación
-def acceso_cotizacion(logo_image):
+def acceso_cotizacion():
     password = st.text_input("Introduce la contraseña", type="password")
     if password == "Leon2125":
-        mostrar_cotizacion(logo_image)
+        mostrar_cotizacion()
     elif password != "":
         st.error("Contraseña incorrecta")
 
-# Cargar el logo de la app desde el archivo subido por el usuario
-uploaded_file = st.file_uploader("Sube tu logo", type=["png", "jpg", "jpeg"])
+# Barra de navegación en la parte superior izquierda
+menu = st.sidebar.selectbox("Navegación", ["Home", "Cotización"])
 
-if uploaded_file is not None:
-    logo_image = Image.open(uploaded_file)
+if menu == "Home":
+    mostrar_home()
+elif menu == "Cotización":
+    acceso_cotizacion()
 
-    # Barra de navegación en la parte superior izquierda
-    menu = st.sidebar.selectbox("Navegación", ["Home", "Cotización"])
-
-    if menu == "Home":
-        mostrar_home(logo_image)
-    elif menu == "Cotización":
-        acceso_cotizacion(logo_image)
 
 
 
