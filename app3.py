@@ -65,16 +65,20 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva):
 
 # Página de inicio (Home)
 def mostrar_home():
-    # Mostrar el logo ya cargado directamente desde tu entorno
-    st.image("LOGOLEON.png", use_column_width=True)
+    # Título
+    st.markdown("<h1 style='text-align: center; color: black;'>Bienvenidos a Distribuciones L: Productos Médicos</h1>", unsafe_allow_html=True)
+
+    # Mostrar el logo más pequeño debajo del título
+    st.image("LOGOLEON.png", width=150)
 
     # Después del logo, el contenido de la página
-    st.markdown("<h1 style='text-align: center; color: black;'>Bienvenidos a Distribuciones L: Productos Médicos</h1>", unsafe_allow_html=True)
     st.markdown("<h3 style='text-align: center; color: black;'>Nos especializamos en la venta de productos médicos de alta calidad.</h3>", unsafe_allow_html=True)
 
-    # Información del producto Hexyn Antiséptico Médico
-    st.markdown("<h4 style='color: black;'>Producto que ofrecemos:</h4>", unsafe_allow_html=True)
+    # Información de los productos
+    st.markdown("<h4 style='color: black;'>Productos que ofrecemos:</h4>", unsafe_allow_html=True)
     st.write("- **Hexyn Antiséptico Médico**: Desde $241 MXN (para compras mayores a 30 unidades).")
+    st.write("- **Jabón Clorexi de 1L (Automático)**: $470 MXN (IVA incluido).")
+    st.write("- **Jabón Clorexi de 1L (Manual)**: $420 MXN (IVA incluido).")
 
     # Información de contacto
     st.markdown("<h4 style='text-align: center; color: black;'>Teléfono: +52 33 25 36 10 73</h4>", unsafe_allow_html=True)
@@ -88,31 +92,27 @@ def mostrar_cotizacion():
     if 'cotizacion' not in st.session_state:
         st.session_state['cotizacion'] = pd.DataFrame(columns=["Producto", "Cantidad", "Precio Unitario", "Subtotal"])
 
-    # Solo se muestra Hexyn Antiséptico Médico
-    productos = {
-        "Hexyn Antiséptico Médico": None  # Se asignará dinámicamente
-    }
-
     # Función para obtener el precio del producto
-    def obtener_precio(cantidad):
-        if cantidad > 30:
-            return 241  # Precio con descuento
-        else:
-            return 258.62  # Precio sin descuento
+    def obtener_precio(producto, cantidad):
+        if producto == "Hexyn Antiséptico Médico":
+            return 241 if cantidad > 30 else 258.62
+        elif producto == "Jabón Clorexi de 1L (Automático)":
+            return 470  # Precio con IVA incluido
+        elif producto == "Jabón Clorexi de 1L (Manual)":
+            return 420  # Precio con IVA incluido
 
     # Formulario para agregar productos
     with st.form(key='formulario_producto'):
         col1, col2 = st.columns(2)
         with col1:
-            producto_seleccionado = "Hexyn Antiséptico Médico"
-            st.markdown(f"**Producto seleccionado**: {producto_seleccionado}")
+            producto_seleccionado = st.selectbox("Selecciona el producto", ["Hexyn Antiséptico Médico", "Jabón Clorexi de 1L (Automático)", "Jabón Clorexi de 1L (Manual)"])
         with col2:
             cantidad = st.number_input("Cantidad", min_value=1, value=1)
         agregar = st.form_submit_button("Agregar a la cotización")
 
     # Agregar producto a la cotización
     if agregar:
-        precio_unitario = obtener_precio(cantidad)
+        precio_unitario = obtener_precio(producto_seleccionado, cantidad)
         subtotal = precio_unitario * cantidad
         nuevo_producto = {
             "Producto": producto_seleccionado,
@@ -179,6 +179,7 @@ if menu == "Home":
     mostrar_home()
 elif menu == "Cotización":
     acceso_cotizacion()
+
 
 
 
