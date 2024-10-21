@@ -91,15 +91,23 @@ else:
 st.markdown("<h4 style='text-align: center; color: black;'>Teléfono: +52 33 25 36 10 73</h4>", unsafe_allow_html=True)
 st.markdown("<h4 style='text-align: center; color: black;'>Correo electrónico: DistribucionesMedLeon@gmail.com</h4>", unsafe_allow_html=True)
 
-# Generar PDF más profesional con folio, fecha y datos de contacto
+# Generar PDF más profesional con formato mejorado
 def generar_pdf(df, total_sin_iva, iva, total_con_iva):
     pdf = FPDF()
     pdf.add_page()
     
-    # Datos de la empresa y cotización
+    # Datos de la empresa (arriba a la izquierda con fuente más atractiva)
     pdf.set_font("Arial", 'B', 16)
-    pdf.cell(200, 10, "Distribuciones L: Productos Médicos", ln=True, align='C')
+    pdf.cell(100, 10, "Distribuciones L: Productos Médicos", ln=False, align='L')
+
+    # Datos de contacto (arriba a la derecha en tamaño más pequeño)
+    pdf.set_font("Arial", '', 10)
+    pdf.cell(0, 10, "Teléfono: +52 33 25 36 10 73", ln=True, align='R')
+    pdf.cell(0, 10, "Correo: DistribucionesMedLeon@gmail.com", ln=True, align='R')
     
+    pdf.ln(10)
+
+    # Folio y fecha de cotización
     pdf.set_font("Arial", 'B', 12)
     pdf.cell(200, 10, f"Folio de Cotización: {int(datetime.now().timestamp())}", ln=True, align='C')
     pdf.cell(200, 10, f"Fecha: {datetime.now().strftime('%Y-%m-%d')}", ln=True, align='C')
@@ -145,14 +153,6 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva):
     pdf.multi_cell(200, 10, "Términos y condiciones: Esta cotización es válida por 15 días. Los precios pueden variar sin previo aviso. "
                             "El cliente es responsable de revisar las especificaciones del producto antes de la compra.")
 
-    # Datos de contacto
-    pdf.ln(10)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(200, 10, "Contacto:", ln=True, align='L')
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(200, 10, "Teléfono: +52 33 25 36 10 73", ln=True, align='L')
-    pdf.cell(200, 10, "Correo electrónico: DistribucionesMedLeon@gmail.com", ln=True, align='L')
-
     # Generar archivo PDF
     return pdf.output(dest='S').encode('latin1')
 
@@ -170,6 +170,7 @@ if st.button("Descargar cotización en PDF"):
 if st.button("Reiniciar cotización"):
     st.session_state['cotizacion'] = pd.DataFrame(columns=["Producto", "Cantidad", "Precio Unitario", "Subtotal"])
     st.success("La cotización ha sido reiniciada.")
+
 
 
 
