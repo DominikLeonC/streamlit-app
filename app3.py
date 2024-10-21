@@ -6,34 +6,23 @@ from datetime import datetime
 # Configuración de la página
 st.set_page_config(page_title="Distribuciones L", layout="wide")
 
-# Función para generar el PDF de cotización
+# Función para generar el PDF con logo
 def generar_pdf(df, total_sin_iva, iva, total_con_iva):
     pdf = FPDF()
     pdf.add_page()
 
-    # Datos de la empresa (arriba a la izquierda con fuente más atractiva)
+    # Agregar logo centrado en la parte superior
+    pdf.image("/mnt/data/LOGOLEON.png", x=60, y=10, w=90)  # Ajusta las coordenadas y el tamaño del logo según lo necesites
+    pdf.ln(30)  # Espacio debajo del logo
+
+    # Datos de la empresa
     pdf.set_font("Arial", 'B', 16)
-    pdf.cell(100, 10, "Distribuciones L: Productos Médicos", ln=False, align='L')
+    pdf.cell(200, 10, "Distribuciones L: Productos Médicos", ln=True, align='C')
 
-    # Datos de contacto (arriba a la derecha en tamaño más pequeño)
+    # Datos de contacto
     pdf.set_font("Arial", '', 10)
-    pdf.cell(0, 10, "Teléfono: +52 33 25 36 10 73", ln=True, align='R')
-    pdf.cell(0, 10, "Correo: DistribucionesMedLeon@gmail.com", ln=True, align='R')
-
-    pdf.ln(10)
-
-    # Folio y fecha de cotización
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(200, 10, f"Folio de Cotización: {int(datetime.now().timestamp())}", ln=True, align='C')
-    pdf.cell(200, 10, f"Fecha: {datetime.now().strftime('%Y-%m-%d')}", ln=True, align='C')
-
-    pdf.ln(10)
-
-    # Detalle del cliente
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(200, 10, "Cliente: _______________________________", ln=True)
-    pdf.cell(200, 10, "Dirección: ______________________________", ln=True)
-    pdf.cell(200, 10, "Teléfono: _______________________________", ln=True)
+    pdf.cell(200, 10, "Teléfono: +52 33 25 36 10 73", ln=True, align='C')
+    pdf.cell(200, 10, "Correo: DistribucionesMedLeon@gmail.com", ln=True, align='C')
 
     pdf.ln(10)
 
@@ -73,6 +62,10 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva):
 
 # Página de inicio (Home)
 def mostrar_home():
+    # Agregar el logo centrado en la parte superior
+    st.image("/mnt/data/LOGOLEON.png", use_column_width=True)
+
+    # Después del logo, el contenido de la página
     st.markdown("<h1 style='text-align: center; color: black;'>Bienvenidos a Distribuciones L: Productos Médicos</h1>", unsafe_allow_html=True)
     st.markdown("<h3 style='text-align: center; color: black;'>Nos especializamos en la venta de productos médicos de alta calidad.</h3>", unsafe_allow_html=True)
 
