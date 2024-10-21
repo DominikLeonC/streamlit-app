@@ -177,7 +177,12 @@ def acceso_cotizacion():
         st.error("Contraseña incorrecta")
 
 # Barra de navegación en la parte superior izquierda
-menu = st.sidebar.selectbox
+menu = st.sidebar.selectbox("Navegación", ["Home", "Cotización"])
+
+if menu == "Home":
+    mostrar_home()
+elif menu == "Cotización":
+    acceso_cotizacion()
 
 
 
