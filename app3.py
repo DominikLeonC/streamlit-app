@@ -68,7 +68,7 @@ def mostrar_home():
     # Centrar contenido con HTML para asegurar un formato correcto
     st.markdown("""
         <div style="text-align: center;">
-            <h1 style='color: black;'>Bienvenidos a Distribuciones L: Productos Médicos</h1>
+            <h1 style='color: black;'>Bienvenidos a Distribuciones L Productos Médicos</h1>
         </div>
         """, unsafe_allow_html=True)
 
@@ -80,7 +80,7 @@ def mostrar_home():
         st.error("El archivo del logo no se encontró. Asegúrate de que esté en el directorio correcto.")
 
     # Después del logo, el contenido de la página
-    st.markdown("<h3 style='text-align: center; color: black;'>Nos especializamos en la venta de productos médicos de alta calidad.</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: black;'>Nos especializamos en la venta de productos médicos de la más alta calidad y 100% Mexicanos.</h3>", unsafe_allow_html=True)
 
     # Información de los productos y sus fichas técnicas como imágenes centradas
     st.markdown("<h4 style='text-align: center; color: black;'>Productos que ofrecemos:</h4>", unsafe_allow_html=True)
@@ -88,7 +88,7 @@ def mostrar_home():
     # Producto Hexyn con ficha técnica como imagen centrada
     st.markdown("""
         <div style="text-align: center;">
-            <p><b>Hexyn Antiséptico Médico</b>: Desde $241 MXN (para compras mayores a 30 unidades).</p>
+            <p><b>Hexyn Antiséptico Médico</b>: Desde $241 MXN (sin IVA) (para compras mayores a 40 unidades).</p>
             <p>Ficha técnica del producto:</p>
         </div>
         """, unsafe_allow_html=True)
