@@ -69,10 +69,18 @@ def mostrar_home():
     st.markdown("""
         <div style="text-align: center;">
             <h1 style='color: black;'>Bienvenidos a Distribuciones L: Productos Médicos</h1>
-            <img src='LOGOLEON.png' width='150' />
-            <h3 style='color: black;'>Nos especializamos en la venta de productos médicos de alta calidad.</h3>
         </div>
         """, unsafe_allow_html=True)
+
+    # Mostrar el logo centrado debajo del título
+    try:
+        logo = Image.open("LOGOLEON.png")  # Asegúrate de que el archivo del logo esté en el directorio adecuado
+        st.image(logo, use_column_width=False, width=150)
+    except FileNotFoundError:
+        st.error("El archivo del logo no se encontró. Asegúrate de que esté en el directorio correcto.")
+
+    # Después del logo, el contenido de la página
+    st.markdown("<h3 style='text-align: center; color: black;'>Nos especializamos en la venta de productos médicos de alta calidad.</h3>", unsafe_allow_html=True)
 
     # Información de los productos y sus fichas técnicas como imágenes centradas
     st.markdown("<h4 style='text-align: center; color: black;'>Productos que ofrecemos:</h4>", unsafe_allow_html=True)
@@ -82,18 +90,28 @@ def mostrar_home():
         <div style="text-align: center;">
             <p><b>Hexyn Antiséptico Médico</b>: Desde $241 MXN (para compras mayores a 30 unidades).</p>
             <p>Ficha técnica del producto:</p>
-            <img src='FichaTHexyn.png' width='500' />
         </div>
         """, unsafe_allow_html=True)
+
+    try:
+        ficha_hexyn = Image.open("FichaTHexyn.png")  # Asegúrate de que el archivo de la ficha técnica esté en el directorio adecuado
+        st.image(ficha_hexyn, use_column_width=False, width=500)  # Ajuste de tamaño
+    except FileNotFoundError:
+        st.error("El archivo de la ficha técnica de Hexyn no se encontró. Asegúrate de que esté en el directorio correcto.")
 
     # Producto Jabón Clorexi con ficha técnica como imagen centrada
     st.markdown("""
         <div style="text-align: center;">
             <p><b>Jabón Clorexi de 1L (Automático)</b>: $470 MXN (IVA incluido).</p>
             <p>Ficha técnica del producto:</p>
-            <img src='FichaTJab.png' width='500' />
         </div>
         """, unsafe_allow_html=True)
+
+    try:
+        ficha_jabon = Image.open("FichaTJab.png")  # Asegúrate de que el archivo de la ficha técnica esté en el directorio adecuado
+        st.image(ficha_jabon, use_column_width=False, width=500)  # Ajuste de tamaño
+    except FileNotFoundError:
+        st.error("El archivo de la ficha técnica de Jabón Clorexi no se encontró. Asegúrate de que esté en el directorio correcto.")
 
     st.markdown("""
         <div style="text-align: center;">
