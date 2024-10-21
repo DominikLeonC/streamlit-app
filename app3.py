@@ -12,7 +12,7 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva):
     pdf.add_page()
 
     # Ruta del logo guardado en tu entorno de Streamlit
-    logo_path = "/mnt/data/LOGOLEON.png"
+    logo_path = "LOGOLEON.png"
 
     # Agregar logo más pequeño y en la parte superior sin interferir con el texto
     pdf.image(logo_path, x=85, y=10, w=40)  # Logo más pequeño y bien posicionado
@@ -66,7 +66,7 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva):
 # Página de inicio (Home)
 def mostrar_home():
     # Mostrar el logo ya cargado directamente desde tu entorno
-    st.image("/mnt/data/LOGOLEON.png", use_column_width=True)
+    st.image("LOGOLEON.png", use_column_width=True)
 
     # Después del logo, el contenido de la página
     st.markdown("<h1 style='text-align: center; color: black;'>Bienvenidos a Distribuciones L: Productos Médicos</h1>", unsafe_allow_html=True)
@@ -179,7 +179,6 @@ if menu == "Home":
     mostrar_home()
 elif menu == "Cotización":
     acceso_cotizacion()
-
 
 
 
