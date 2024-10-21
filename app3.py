@@ -139,10 +139,8 @@ def mostrar_cotizacion():
     def obtener_precio(producto, cantidad):
         if producto == "Hexyn Antiséptico Médico":
             return 241 if cantidad > 30 else 258.62
-        elif producto == "Jabón Clorexi de 1L (Automático)":
-            return 470  # Precio con IVA incluido
-        elif producto == "Jabón Clorexi de 1L (Manual)":
-            return 420  # Precio con IVA incluido
+        elif producto == "Jabón Clorexi de 1L (Automático)" or producto == "Jabón Clorexi de 1L (Manual)":
+            return 470 if producto == "Jabón Clorexi de 1L (Automático)" else 420  # Precio con IVA incluido, sin recalculación de IVA
 
     # Formulario para agregar productos
     with st.form(key='formulario_producto'):
@@ -173,8 +171,8 @@ def mostrar_cotizacion():
     st.subheader("Detalle de la cotización:")
     if not st.session_state['cotizacion'].empty:
         df = st.session_state['cotizacion']
-        total_sin_iva = df['Subtotal'].sum()
-        iva = total_sin_iva * 0.16
+        total_sin_iva = df['Subtotal'].sum() if producto_seleccionado == "Hexyn Antiséptico Médico" else df['Subtotal'].sum()  # IVA ya incluido en los otros productos
+        iva = total_sin_iva * 0.16 if producto_seleccionado == "Hexyn Antiséptico Médico" else 0
         total_con_iva = total_sin_iva + iva
 
         # Formateo de tabla y totales
