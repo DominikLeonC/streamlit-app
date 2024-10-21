@@ -2,13 +2,12 @@ import streamlit as st
 import pandas as pd
 from fpdf import FPDF
 from datetime import datetime
-from io import BytesIO
 from PIL import Image
 
 # Configuración de la página
 st.set_page_config(page_title="Distribuciones L", layout="wide")
 
-# Función para generar el PDF con logo
+# Función para generar el PDF con el logo ajustado
 def generar_pdf(df, total_sin_iva, iva, total_con_iva, logo_image):
     pdf = FPDF()
     pdf.add_page()
@@ -17,9 +16,9 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva, logo_image):
     logo_path = "logo_temp.png"
     logo_image.save(logo_path)
 
-    # Agregar logo centrado en la parte superior
-    pdf.image(logo_path, x=60, y=10, w=90)  # Ajusta las coordenadas y el tamaño del logo según lo necesites
-    pdf.ln(30)  # Espacio debajo del logo
+    # Agregar logo más pequeño y en la parte superior sin interferir con el texto
+    pdf.image(logo_path, x=80, y=10, w=50)  # Ajuste de tamaño y posición del logo
+    pdf.ln(30)  # Espacio debajo del logo para que el texto no lo toque
 
     # Datos de la empresa
     pdf.set_font("Arial", 'B', 16)
