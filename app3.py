@@ -68,16 +68,33 @@ def mostrar_home():
     # Título
     st.markdown("<h1 style='text-align: center; color: black;'>Bienvenidos a Distribuciones L: Productos Médicos</h1>", unsafe_allow_html=True)
 
-    # Mostrar el logo más pequeño debajo del título
-    st.image("LOGOLEON.png", width=150)
+    # Mostrar el logo centrado debajo del título
+    st.markdown("<div style='text-align: center;'><img src='LOGOLEON.png' width='150'></div>", unsafe_allow_html=True)
 
     # Después del logo, el contenido de la página
-    st.markdown("<h3 style='text-align: center; color: black;'>Nos especializamos en la venta de productos médicos de alta calidad 100% Mexicanos.</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: black;'>Nos especializamos en la venta de productos médicos de alta calidad.</h3>", unsafe_allow_html=True)
 
-    # Información de los productos
+    # Información de los productos y sus fichas técnicas
     st.markdown("<h4 style='color: black;'>Productos que ofrecemos:</h4>", unsafe_allow_html=True)
-    st.write("- **Hexyn Antiséptico Médico**: Desde $241 MXN (para compras mayores a 40 unidades).")
+
+    # Producto Hexyn con ficha técnica (PDF)
+    st.write("- **Hexyn Antiséptico Médico**: Desde $241 MXN (para compras mayores a 30 unidades).")
+    with st.expander("Ficha técnica Hexyn Antiséptico Médico"):
+        st.write("Ficha técnica disponible en el siguiente documento:")
+        with open("/mnt/data/FichaTecnicaHexyn.pdf", "rb") as pdf_file:
+            pdf_bytes = pdf_file.read()
+            st.download_button(label="Descargar Ficha Técnica Hexyn", data=pdf_bytes, file_name="FichaTecnicaHexyn.pdf")
+            st.pdf("/mnt/data/FichaTecnicaHexyn.pdf")
+
+    # Producto Jabón Clorexi con ficha técnica (Automático y Manual)
     st.write("- **Jabón Clorexi de 1L (Automático)**: $470 MXN (IVA incluido).")
+    with st.expander("Ficha técnica Jabón Clorexi de 1L (Automático)"):
+        st.write("Ficha técnica disponible en el siguiente documento:")
+        with open("/mnt/data/FichaTecnicaJab.pdf", "rb") as pdf_file:
+            pdf_bytes = pdf_file.read()
+            st.download_button(label="Descargar Ficha Técnica Jabón Clorexi", data=pdf_bytes, file_name="FichaTecnicaJab.pdf")
+            st.pdf("/mnt/data/FichaTecnicaJab.pdf")
+
     st.write("- **Jabón Clorexi de 1L (Manual)**: $420 MXN (IVA incluido).")
 
     # Información de contacto
@@ -95,7 +112,7 @@ def mostrar_cotizacion():
     # Función para obtener el precio del producto
     def obtener_precio(producto, cantidad):
         if producto == "Hexyn Antiséptico Médico":
-            return 241 if cantidad > 40 else 258.62
+            return 241 if cantidad > 30 else 258.62
         elif producto == "Jabón Clorexi de 1L (Automático)":
             return 470  # Precio con IVA incluido
         elif producto == "Jabón Clorexi de 1L (Manual)":
@@ -179,6 +196,7 @@ if menu == "Home":
     mostrar_home()
 elif menu == "Cotización":
     acceso_cotizacion()
+
 
 
 
