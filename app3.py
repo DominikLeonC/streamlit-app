@@ -76,24 +76,9 @@ def mostrar_home():
     st.markdown("<h1 style='text-align: center; color: black;'>Bienvenidos a Distribuciones L: Productos Médicos</h1>", unsafe_allow_html=True)
     st.markdown("<h3 style='text-align: center; color: black;'>Nos especializamos en la venta de productos médicos de alta calidad.</h3>", unsafe_allow_html=True)
 
-    # Lista de productos que maneja la empresa
-    productos = {
-        "Guantes de Nitrilo (Caja 100 unidades)": "$350 MXN",
-        "Mascarilla KN95 (Paquete de 10)": "$150 MXN",
-        "Gel Antibacterial 500ml": "$80 MXN",
-        "Bata Descartable (Paquete de 5)": "$400 MXN",
-        "Jeringas 5ml (Caja de 100 unidades)": "$500 MXN",
-        "Termómetro Infrarrojo": "$1,200 MXN",
-        "Oxímetro de Pulso": "$950 MXN",
-        "Tensiómetro Digital": "$1,800 MXN",
-        "Cubrebocas Triple Filtro (Caja de 50)": "$100 MXN",
-        "Alcohol en Gel 1L": "$120 MXN",
-        "Hexyn Antiséptico Médico": "Desde $241 MXN"
-    }
-
-    st.markdown("<h4 style='color: black;'>Productos que ofrecemos:</h4>", unsafe_allow_html=True)
-    for producto, precio in productos.items():
-        st.write(f"- **{producto}**: {precio}")
+    # Información del producto Hexyn Antiséptico Médico
+    st.markdown("<h4 style='color: black;'>Producto que ofrecemos:</h4>", unsafe_allow_html=True)
+    st.write("- **Hexyn Antiséptico Médico**: Desde $241 MXN (para compras mayores a 30 unidades).")
 
     # Información de contacto
     st.markdown("<h4 style='text-align: center; color: black;'>Teléfono: +52 33 25 36 10 73</h4>", unsafe_allow_html=True)
@@ -109,30 +94,17 @@ def mostrar_cotizacion():
         if 'cotizacion' not in st.session_state:
             st.session_state['cotizacion'] = pd.DataFrame(columns=["Producto", "Cantidad", "Precio Unitario", "Subtotal"])
 
-        # Formulario para agregar productos
+        # Solo se muestra Hexyn Antiséptico Médico
         productos = {
-            "Guantes de Nitrilo (Caja 100 unidades)": 350,
-            "Mascarilla KN95 (Paquete de 10)": 150,
-            "Gel Antibacterial 500ml": 80,
-            "Bata Descartable (Paquete de 5)": 400,
-            "Jeringas 5ml (Caja de 100 unidades)": 500,
-            "Termómetro Infrarrojo": 1200,
-            "Oxímetro de Pulso": 950,
-            "Tensiómetro Digital": 1800,
-            "Cubrebocas Triple Filtro (Caja de 50)": 100,
-            "Alcohol en Gel 1L": 120,
             "Hexyn Antiséptico Médico": None  # Se asignará dinámicamente
         }
 
         # Función para obtener el precio del producto
-        def obtener_precio(producto, cantidad):
-            if producto == "Hexyn Antiséptico Médico":
-                if cantidad > 30:
-                    return 241  # Precio con descuento
-                else:
-                    return 258.62  # Precio sin descuento
+        def obtener_precio(cantidad):
+            if cantidad > 30:
+                return 241  # Precio con descuento
             else:
-                return productos[producto]
+                return 258.62  # Precio sin descuento
 
         st.header("Cotización")
 
@@ -140,14 +112,15 @@ def mostrar_cotizacion():
         with st.form(key='formulario_producto'):
             col1, col2 = st.columns(2)
             with col1:
-                producto_seleccionado = st.selectbox("Selecciona un producto", list(productos.keys()))
+                producto_seleccionado = "Hexyn Antiséptico Médico"
+                st.markdown(f"**Producto seleccionado**: {producto_seleccionado}")
             with col2:
                 cantidad = st.number_input("Cantidad", min_value=1, value=1)
             agregar = st.form_submit_button("Agregar a la cotización")
 
         # Agregar producto a la cotización
         if agregar:
-            precio_unitario = obtener_precio(producto_seleccionado, cantidad)
+            precio_unitario = obtener_precio(cantidad)
             subtotal = precio_unitario * cantidad
             nuevo_producto = {
                 "Producto": producto_seleccionado,
@@ -201,15 +174,25 @@ def mostrar_cotizacion():
     else:
         st.error("Contraseña incorrecta")
 
-# Opciones de la página
-st.sidebar.title("Navegación")
-opcion = st.sidebar.selectbox("Selecciona una opción", ["Home", "Cotización"])
+# Diseño con dos botones en la parte superior izquierda
+st.markdown("""
+    <style>
+    div.stButton > button:first-child {
+        margin-left: 10px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-# Lógica para cambiar entre módulos
-if opcion == "Home":
-    mostrar_home()
-elif opcion == "Cotización":
-    mostrar_cotizacion()
+col1, col2 = st.columns([1,1])
+
+with col1:
+    if st.button("Home"):
+        mostrar_home()
+
+with col2:
+    if st.button("Cotización"):
+        mostrar_cotizacion()
+
 
 
 
