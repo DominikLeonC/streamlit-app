@@ -65,36 +65,49 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva):
 
 # Página de inicio (Home)
 def mostrar_home():
-    # Título
-    st.markdown("<h1 style='text-align: center; color: black;'>Bienvenidos a Distribuciones L: Productos Médicos</h1>", unsafe_allow_html=True)
+    # Centrar contenido con HTML para asegurar un formato correcto
+    st.markdown("""
+        <div style="text-align: center;">
+            <h1 style='color: black;'>Bienvenidos a Distribuciones L: Productos Médicos</h1>
+            <img src='LOGOLEON.png' width='150' />
+            <h3 style='color: black;'>Nos especializamos en la venta de productos médicos de alta calidad.</h3>
+        </div>
+        """, unsafe_allow_html=True)
 
-    # Mostrar el logo centrado debajo del título
-    logo = Image.open("LOGOLEON.png")  # Asegúrate de que el archivo del logo esté en el directorio adecuado
-    st.image(logo, use_column_width=False, width=150)
+    # Información de los productos y sus fichas técnicas como imágenes centradas
+    st.markdown("<h4 style='text-align: center; color: black;'>Productos que ofrecemos:</h4>", unsafe_allow_html=True)
 
-    # Después del logo, el contenido de la página
-    st.markdown("<h3 style='text-align: center; color: black;'>Nos especializamos en la venta de productos médicos de alta calidad.</h3>", unsafe_allow_html=True)
+    # Producto Hexyn con ficha técnica como imagen centrada
+    st.markdown("""
+        <div style="text-align: center;">
+            <p><b>Hexyn Antiséptico Médico</b>: Desde $241 MXN (para compras mayores a 30 unidades).</p>
+            <p>Ficha técnica del producto:</p>
+            <img src='FichaTHexyn.png' width='500' />
+        </div>
+        """, unsafe_allow_html=True)
 
-    # Información de los productos y sus fichas técnicas como imágenes
-    st.markdown("<h4 style='color: black;'>Productos que ofrecemos:</h4>", unsafe_allow_html=True)
+    # Producto Jabón Clorexi con ficha técnica como imagen centrada
+    st.markdown("""
+        <div style="text-align: center;">
+            <p><b>Jabón Clorexi de 1L (Automático)</b>: $470 MXN (IVA incluido).</p>
+            <p>Ficha técnica del producto:</p>
+            <img src='FichaTJab.png' width='500' />
+        </div>
+        """, unsafe_allow_html=True)
 
-    # Producto Hexyn con ficha técnica como imagen
-    st.write("- **Hexyn Antiséptico Médico**: Desde $241 MXN (para compras mayores a 30 unidades).")
-    st.write("Ficha técnica del producto:")
-    ficha_hexyn = Image.open("FichaTHexyn.png")  # Asegúrate de que el archivo de la ficha técnica esté en el directorio adecuado
-    st.image(ficha_hexyn, use_column_width=False, width=500)  # Ajuste de tamaño
+    st.markdown("""
+        <div style="text-align: center;">
+            <p><b>Jabón Clorexi de 1L (Manual)</b>: $420 MXN (IVA incluido).</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-    # Producto Jabón Clorexi con ficha técnica como imagen
-    st.write("- **Jabón Clorexi de 1L (Automático)**: $470 MXN (IVA incluido).")
-    st.write("Ficha técnica del producto:")
-    ficha_jabon = Image.open("FichaTJab.png")  # Asegúrate de que el archivo de la ficha técnica esté en el directorio adecuado
-    st.image(ficha_jabon, use_column_width=False, width=500)  # Ajuste de tamaño
-
-    st.write("- **Jabón Clorexi de 1L (Manual)**: $420 MXN (IVA incluido).")
-
-    # Información de contacto
-    st.markdown("<h4 style='text-align: center; color: black;'>Teléfono: +52 33 25 36 10 73</h4>", unsafe_allow_html=True)
-    st.markdown("<h4 style='text-align: center; color: black;'>Correo electrónico: DistribucionesMedLeon@gmail.com</h4>", unsafe_allow_html=True)
+    # Información de contacto centrada
+    st.markdown("""
+        <div style="text-align: center;">
+            <h4>Teléfono: +52 33 25 36 10 73</h4>
+            <h4>Correo electrónico: DistribucionesMedLeon@gmail.com</h4>
+        </div>
+        """, unsafe_allow_html=True)
 
 # Página de cotización con acceso restringido por contraseña
 def mostrar_cotizacion():
@@ -191,7 +204,6 @@ if menu == "Home":
     mostrar_home()
 elif menu == "Cotización":
     acceso_cotizacion()
-
 
 
 
