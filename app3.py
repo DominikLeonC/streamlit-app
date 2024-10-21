@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from fpdf import FPDF
-from datetime import datetime
+from PIL import Image
 
 # Configuración de la página
 st.set_page_config(page_title="Distribuciones L", layout="wide")
@@ -69,25 +69,26 @@ def mostrar_home():
     st.markdown("<h1 style='text-align: center; color: black;'>Bienvenidos a Distribuciones L: Productos Médicos</h1>", unsafe_allow_html=True)
 
     # Mostrar el logo centrado debajo del título
-    st.markdown("<div style='text-align: center;'><img src='LOGOLEON.png' width='150'></div>", unsafe_allow_html=True)
+    logo = Image.open("LOGOLEON.png")  # Asegúrate de que el archivo del logo esté en el directorio adecuado
+    st.image(logo, use_column_width=False, width=150)
 
     # Después del logo, el contenido de la página
     st.markdown("<h3 style='text-align: center; color: black;'>Nos especializamos en la venta de productos médicos de alta calidad.</h3>", unsafe_allow_html=True)
 
-    # Información de los productos y sus fichas técnicas
+    # Información de los productos y sus fichas técnicas como imágenes
     st.markdown("<h4 style='color: black;'>Productos que ofrecemos:</h4>", unsafe_allow_html=True)
 
-    # Producto Hexyn con ficha técnica (PDF)
+    # Producto Hexyn con ficha técnica como imagen
     st.write("- **Hexyn Antiséptico Médico**: Desde $241 MXN (para compras mayores a 30 unidades).")
-    with st.expander("Ficha técnica Hexyn Antiséptico Médico"):
-        st.write("Ficha técnica disponible en el siguiente documento:")
-        st.download_button(label="Descargar Ficha Técnica Hexyn", data="FichaTecnicaHexyn.pdf", file_name="FichaTecnicaHexyn.pdf")
+    st.write("Ficha técnica del producto:")
+    ficha_hexyn = Image.open("FichaTHexyn.png")  # Asegúrate de que el archivo de la ficha técnica esté en el directorio adecuado
+    st.image(ficha_hexyn, use_column_width=False, width=500)  # Ajuste de tamaño
 
-    # Producto Jabón Clorexi con ficha técnica (Automático y Manual)
+    # Producto Jabón Clorexi con ficha técnica como imagen
     st.write("- **Jabón Clorexi de 1L (Automático)**: $470 MXN (IVA incluido).")
-    with st.expander("Ficha técnica Jabón Clorexi de 1L (Automático)"):
-        st.write("Ficha técnica disponible en el siguiente documento:")
-        st.download_button(label="Descargar Ficha Técnica Jabón Clorexi", data="FichaTecnicaJab.pdf", file_name="FichaTecnicaJab.pdf")
+    st.write("Ficha técnica del producto:")
+    ficha_jabon = Image.open("FichaTJab.png")  # Asegúrate de que el archivo de la ficha técnica esté en el directorio adecuado
+    st.image(ficha_jabon, use_column_width=False, width=500)  # Ajuste de tamaño
 
     st.write("- **Jabón Clorexi de 1L (Manual)**: $420 MXN (IVA incluido).")
 
