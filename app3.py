@@ -2,12 +2,13 @@ import streamlit as st
 import pandas as pd
 from fpdf import FPDF
 from PIL import Image
+from datetime import datetime
 
 # Configuración de la página
 st.set_page_config(page_title="Distribuciones L", layout="wide")
 
-# Función para generar el PDF con el nombre del cliente, ajuste de cuadro y términos al final
-def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente):
+# Función para generar el PDF con las mejoras añadidas
+def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente, folio, direccion_envio):
     pdf = FPDF()
     pdf.add_page()
 
@@ -15,8 +16,8 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente):
     logo_path = "LOGOLEON.png"
 
     # Agregar logo más pequeño y en la parte superior sin interferir con el texto
-    pdf.image(logo_path, x=85, y=10, w=40)  # Logo más pequeño y bien posicionado
-    pdf.ln(40)  # Aumentar el espacio debajo del logo para que no se superponga con el texto
+    pdf.image(logo_path, x=85, y=10, w=40)
+    pdf.ln(40)
 
     # Datos de la empresa
     pdf.set_font("Arial", 'B', 16)
@@ -27,11 +28,17 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente):
     pdf.cell(200, 10, "Teléfono: +52 33 25 36 10 73", ln=True, align='C')
     pdf.cell(200, 10, "Correo: DistribucionesMedLeon@gmail.com", ln=True, align='C')
 
+    # Número de cotización y fecha de emisión
     pdf.ln(10)
+    pdf.cell(200, 10, f"Folio: {folio}", ln=True, align='C')
+    fecha_emision = datetime.now().strftime('%d-%m-%Y')
+    pdf.cell(200, 10, f"Fecha de emisión: {fecha_emision}", ln=True, align='C')
 
-    # Nombre del cliente
+    # Nombre del cliente y dirección de envío
+    pdf.ln(10)
     pdf.set_font("Arial", '', 12)
     pdf.cell(200, 10, f"Cliente: {cliente}", ln=True, align='C')
+    pdf.cell(200, 10, f"Dirección de envío: {direccion_envio}", ln=True, align='C')
 
     pdf.ln(10)
 
@@ -45,9 +52,8 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente):
 
     pdf.set_font("Arial", '', 12)
     for index, row in df.iterrows():
-        # Ajustamos el multi_cell solo a la primera columna (Producto) para evitar solapamientos
-        pdf.multi_cell(80, 10, row['Producto'], border=1)  # Ajuste de texto en la columna Producto
-        pdf.set_xy(90, pdf.get_y() - 10)  # Reposicionar para las otras celdas en la misma fila
+        pdf.multi_cell(80, 10, row['Producto'], border=1)
+        pdf.set_xy(90, pdf.get_y() - 10)
         pdf.cell(30, 10, str(int(row['Cantidad'])), border=1)
         pdf.cell(40, 10, f"${row['Precio Unitario']:.2f}", border=1)
         pdf.cell(40, 10, f"${row['Subtotal']:.2f}", border=1)
@@ -62,11 +68,52 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente):
     pdf.ln(10)
     pdf.cell(50, 10, f"Total con IVA: ${total_con_iva:.2f}")
 
-    # Términos y condiciones al final
+    # Descuentos o promociones
+    pdf.ln(10)
+    descuento = total_sin_iva * 0.05  # Ejemplo de un descuento del 5%
+    pdf.cell(50, 10, f"Descuento aplicado: ${descuento:.2f}")
+    pdf.ln(10)
+    pdf.cell(50, 10, f"Total después del descuento: ${total_con_iva - descuento:.2f}")
+
+    # Resumen del pedido
+    pdf.ln(20)
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(200, 10, "Resumen del Pedido", ln=True, align='C')
+    pdf.ln(10)
+    pdf.set_font("Arial", '', 10)
+    pdf.multi_cell(200, 10, f"Cliente: {cliente}\n"
+                            f"Total sin IVA: ${total_sin_iva:.2f}\n"
+                            f"IVA: ${iva:.2f}\n"
+                            f"Descuento: ${descuento:.2f}\n"
+                            f"Total con IVA: ${total_con_iva - descuento:.2f}")
+
+    # Métodos de pago
+    pdf.ln(10)
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(200, 10, "Métodos de pago", ln=True, align='C')
+    pdf.set_font("Arial", '', 10)
+    pdf.multi_cell(200, 10, "Aceptamos los siguientes métodos de pago:\n"
+                            "Transferencia bancaria, tarjeta de crédito, PayPal.")
+
+    # Política de devoluciones o cancelaciones
+    pdf.ln(10)
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(200, 10, "Política de devoluciones", ln=True, align='C')
+    pdf.set_font("Arial", '', 10)
+    pdf.multi_cell(200, 10, "Las devoluciones serán aceptadas dentro de los primeros 30 días, "
+                            "siempre y cuando los productos se encuentren en perfectas condiciones y con su empaque original.")
+
+    # Firma o sello digital
     pdf.ln(20)
     pdf.set_font("Arial", '', 10)
-    pdf.multi_cell(200, 10, "Términos y condiciones: Esta cotización es válida por 15 días. Los precios pueden variar sin previo aviso. "
-                            "El cliente es responsable de revisar las especificaciones del producto antes de la compra.")
+    pdf.cell(200, 10, "Firma del representante: _____________________", ln=True, align='C')
+    pdf.cell(200, 10, "Sello de la empresa: _________________________", ln=True, align='C')
+
+    # Términos y condiciones
+    pdf.ln(20)
+    pdf.set_font("Arial", '', 10)
+    pdf.multi_cell(200, 10, "Términos y condiciones: Esta cotización es válida por 15 días. "
+                            "Los precios pueden variar sin previo aviso. El cliente es responsable de revisar las especificaciones del producto antes de la compra.")
 
     # Generar archivo PDF
     return pdf.output(dest='S').encode('latin1')
@@ -88,7 +135,7 @@ def mostrar_home():
         st.error("El archivo del logo no se encontró. Asegúrate de que esté en el directorio correcto.")
 
     # Después del logo, el contenido de la página
-    st.markdown("<h3 style='text-align: center; color: black;'>Nos especializamos en la venta de productos médicos de la más alta calidad y 100% Mexicanos.</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: black;'>Nos especializamos en la venta de productos médicos de alta calidad.</h3>", unsafe_allow_html=True)
 
     # Información de los productos y sus fichas técnicas como imágenes centradas
     st.markdown("<h4 style='text-align: center; color: black;'>Productos que ofrecemos:</h4>", unsafe_allow_html=True)
@@ -96,14 +143,14 @@ def mostrar_home():
     # Producto Hexyn con ficha técnica como imagen centrada
     st.markdown("""
         <div style="text-align: center;">
-            <p><b>Hexyn Antiséptico Médico</b>: Desde $241 MXN (sin IVA) (para compras mayores a 40 unidades).</p>
+            <p><b>Hexyn Antiséptico Médico</b>: Desde $241 MXN (para compras mayores a 30 unidades).</p>
             <p>Ficha técnica del producto:</p>
         </div>
         """, unsafe_allow_html=True)
 
     try:
         ficha_hexyn = Image.open("FichaTHexyn.png")  # Asegúrate de que el archivo de la ficha técnica esté en el directorio adecuado
-        st.image(ficha_hexyn, use_column_width=False, width=500)  # Ajuste de tamaño
+        st.image(ficha_hexyn, use_column_width=False, width=500)
     except FileNotFoundError:
         st.error("El archivo de la ficha técnica de Hexyn no se encontró. Asegúrate de que esté en el directorio correcto.")
 
@@ -117,7 +164,7 @@ def mostrar_home():
 
     try:
         ficha_jabon = Image.open("FichaTJab.png")  # Asegúrate de que el archivo de la ficha técnica esté en el directorio adecuado
-        st.image(ficha_jabon, use_column_width=False, width=500)  # Ajuste de tamaño
+        st.image(ficha_jabon, use_column_width=False, width=500)
     except FileNotFoundError:
         st.error("El archivo de la ficha técnica de Jabón Clorexi no se encontró. Asegúrate de que esté en el directorio correcto.")
 
@@ -141,6 +188,9 @@ def mostrar_cotizacion():
     
     # Campo para ingresar el nombre del cliente
     cliente = st.text_input("Nombre del cliente")
+    
+    # Campo para ingresar la dirección de envío
+    direccion_envio = st.text_input("Dirección de envío")
 
     # Continuamos con la funcionalidad de la cotización
     if 'cotizacion' not in st.session_state:
@@ -149,7 +199,7 @@ def mostrar_cotizacion():
     # Función para obtener el precio del producto
     def obtener_precio(producto, cantidad):
         if producto == "Hexyn Antiséptico Médico":
-            return 241 if cantidad > 40 else 258.62
+            return 241 if cantidad > 30 else 258.62
         elif producto == "Jabón Clorexi de 1L (Automático)":
             return 405.17  # Precio sin IVA
         elif producto == "Jabón Clorexi de 1L (Manual)":
@@ -203,13 +253,16 @@ def mostrar_cotizacion():
         with col_total3:
             st.markdown(f"<b style='color: black;'>Total con IVA:</b>\n${total_con_iva:,.2f}", unsafe_allow_html=True)
 
+        # Generar folio único para cada cotización
+        folio = f"DL-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+
         # Botón para descargar PDF
         if st.button("Descargar cotización en PDF"):
-            pdf_content = generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente)
+            pdf_content = generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente, folio, direccion_envio)
             st.download_button(
                 label="Descargar PDF",
                 data=pdf_content,
-                file_name="cotizacion_distribuciones_l.pdf",
+                file_name=f"cotizacion_{folio}.pdf",
                 mime="application/pdf"
             )
 
