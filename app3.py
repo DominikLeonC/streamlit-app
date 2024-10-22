@@ -6,8 +6,8 @@ from PIL import Image
 # Configuración de la página
 st.set_page_config(page_title="Distribuciones L", layout="wide")
 
-# Función para generar el PDF con logo ajustado
-def generar_pdf(df, total_sin_iva, iva, total_con_iva):
+# Función para generar el PDF con el nombre del cliente, ajuste de cuadro y términos al final
+def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente):
     pdf = FPDF()
     pdf.add_page()
 
@@ -23,26 +23,32 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva):
     pdf.cell(200, 10, "Distribuciones L: Productos Médicos", ln=True, align='C')
 
     # Datos de contacto
-    pdf.set_font("Arial", '', 8)
+    pdf.set_font("Arial", '', 10)
     pdf.cell(200, 10, "Teléfono: +52 33 25 36 10 73", ln=True, align='C')
     pdf.cell(200, 10, "Correo: DistribucionesMedLeon@gmail.com", ln=True, align='C')
 
     pdf.ln(10)
 
+    # Nombre del cliente
+    pdf.set_font("Arial", '', 12)
+    pdf.cell(200, 10, f"Cliente: {cliente}", ln=True, align='C')
+
+    pdf.ln(10)
+
     # Tabla de productos
     pdf.set_font("Arial", 'B', 12)
-    pdf.cell(50, 10, "Producto", border=1)
+    pdf.cell(90, 10, "Producto", border=1)
     pdf.cell(40, 10, "Cantidad", border=1)
-    pdf.cell(50, 10, "Precio Unitario", border=1)
-    pdf.cell(50, 10, "Subtotal", border=1)
+    pdf.cell(30, 10, "Precio Unitario", border=1)
+    pdf.cell(30, 10, "Subtotal", border=1)
     pdf.ln(10)
 
     pdf.set_font("Arial", '', 12)
     for index, row in df.iterrows():
-        pdf.cell(50, 10, row['Producto'], border=1)
-        pdf.cell(40, 10, str(int(row['Cantidad'])), border=1)
-        pdf.cell(50, 10, f"${row['Precio Unitario']:.2f}", border=1)
-        pdf.cell(50, 10, f"${row['Subtotal']:.2f}", border=1)
+        pdf.multi_cell(90, 10, row['Producto'], border=1)  # Ajuste del ancho de celda para evitar que el texto se salga
+        pdf.cell(40, -10, str(int(row['Cantidad'])), border=1)
+        pdf.cell(30, -10, f"${row['Precio Unitario']:.2f}", border=1)
+        pdf.cell(30, -10, f"${row['Subtotal']:.2f}", border=1)
         pdf.ln(10)
 
     # Totales
@@ -54,7 +60,7 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva):
     pdf.ln(10)
     pdf.cell(50, 10, f"Total con IVA: ${total_con_iva:.2f}")
 
-    # Términos y condiciones
+    # Términos y condiciones al final
     pdf.ln(20)
     pdf.set_font("Arial", '', 10)
     pdf.multi_cell(200, 10, "Términos y condiciones: Esta cotización es válida por 15 días. Los precios pueden variar sin previo aviso. "
@@ -68,7 +74,7 @@ def mostrar_home():
     # Centrar contenido con HTML para asegurar un formato correcto
     st.markdown("""
         <div style="text-align: center;">
-            <h1 style='color: black;'>Bienvenidos a Distribuciones L Productos Médicos</h1>
+            <h1 style='color: black;'>Bienvenidos a Distribuciones L: Productos Médicos</h1>
         </div>
         """, unsafe_allow_html=True)
 
@@ -80,7 +86,7 @@ def mostrar_home():
         st.error("El archivo del logo no se encontró. Asegúrate de que esté en el directorio correcto.")
 
     # Después del logo, el contenido de la página
-    st.markdown("<h3 style='text-align: center; color: black;'>Nos especializamos en la venta de productos médicos de la más alta calidad y 100% Mexicanos.</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: black;'>Nos especializamos en la venta de productos médicos de alta calidad.</h3>", unsafe_allow_html=True)
 
     # Información de los productos y sus fichas técnicas como imágenes centradas
     st.markdown("<h4 style='text-align: center; color: black;'>Productos que ofrecemos:</h4>", unsafe_allow_html=True)
@@ -88,7 +94,7 @@ def mostrar_home():
     # Producto Hexyn con ficha técnica como imagen centrada
     st.markdown("""
         <div style="text-align: center;">
-            <p><b>Hexyn Antiséptico Médico</b>: Desde $241 MXN (sin IVA) (para compras mayores a 40 unidades).</p>
+            <p><b>Hexyn Antiséptico Médico</b>: Desde $241 MXN (para compras mayores a 30 unidades).</p>
             <p>Ficha técnica del producto:</p>
         </div>
         """, unsafe_allow_html=True)
@@ -131,6 +137,9 @@ def mostrar_home():
 def mostrar_cotizacion():
     st.header("Cotización")
     
+    # Campo para ingresar el nombre del cliente
+    cliente = st.text_input("Nombre del cliente")
+
     # Continuamos con la funcionalidad de la cotización
     if 'cotizacion' not in st.session_state:
         st.session_state['cotizacion'] = pd.DataFrame(columns=["Producto", "Cantidad", "Precio Unitario", "Subtotal"])
@@ -194,7 +203,7 @@ def mostrar_cotizacion():
 
         # Botón para descargar PDF
         if st.button("Descargar cotización en PDF"):
-            pdf_content = generar_pdf(df, total_sin_iva, iva, total_con_iva)
+            pdf_content = generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente)
             st.download_button(
                 label="Descargar PDF",
                 data=pdf_content,
@@ -222,8 +231,6 @@ if menu == "Home":
     mostrar_home()
 elif menu == "Cotización":
     acceso_cotizacion()
-
-
 
 
 
