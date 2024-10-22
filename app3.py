@@ -35,7 +35,7 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente):
 
     pdf.ln(10)
 
-    # Tabla de productos
+    # Tabla de productos con ajuste de líneas
     pdf.set_font("Arial", 'B', 12)
     pdf.cell(80, 10, "Producto", border=1)  # Ajustar el ancho de las celdas
     pdf.cell(30, 10, "Cantidad", border=1)
@@ -45,10 +45,12 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente):
 
     pdf.set_font("Arial", '', 12)
     for index, row in df.iterrows():
-        pdf.multi_cell(80, 10, row['Producto'], border=1)  # Ajuste del ancho de celda para evitar que el texto se salga
-        pdf.cell(30, -10, str(int(row['Cantidad'])), border=1, ln=0)
-        pdf.cell(40, -10, f"${row['Precio Unitario']:.2f}", border=1, ln=0)
-        pdf.cell(40, -10, f"${row['Subtotal']:.2f}", border=1, ln=1)
+        # Ajustamos el multi_cell solo a la primera columna (Producto) para evitar solapamientos
+        pdf.multi_cell(80, 10, row['Producto'], border=1)  # Ajuste de texto en la columna Producto
+        pdf.set_xy(90, pdf.get_y() - 10)  # Reposicionar para las otras celdas en la misma fila
+        pdf.cell(30, 10, str(int(row['Cantidad'])), border=1)
+        pdf.cell(40, 10, f"${row['Precio Unitario']:.2f}", border=1)
+        pdf.cell(40, 10, f"${row['Subtotal']:.2f}", border=1)
         pdf.ln(10)
 
     # Totales
@@ -231,4 +233,5 @@ if menu == "Home":
     mostrar_home()
 elif menu == "Cotización":
     acceso_cotizacion()
+
 
