@@ -37,18 +37,18 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente):
 
     # Tabla de productos
     pdf.set_font("Arial", 'B', 12)
-    pdf.cell(90, 10, "Producto", border=1)
-    pdf.cell(40, 10, "Cantidad", border=1)
-    pdf.cell(30, 10, "Precio Unitario", border=1)
-    pdf.cell(30, 10, "Subtotal", border=1)
+    pdf.cell(80, 10, "Producto", border=1)  # Ajustar el ancho de las celdas
+    pdf.cell(30, 10, "Cantidad", border=1)
+    pdf.cell(40, 10, "Precio Unitario", border=1)
+    pdf.cell(40, 10, "Subtotal", border=1)
     pdf.ln(10)
 
     pdf.set_font("Arial", '', 12)
     for index, row in df.iterrows():
-        pdf.multi_cell(90, 10, row['Producto'], border=1)  # Ajuste del ancho de celda para evitar que el texto se salga
-        pdf.cell(40, -10, str(int(row['Cantidad'])), border=1)
-        pdf.cell(30, -10, f"${row['Precio Unitario']:.2f}", border=1)
-        pdf.cell(30, -10, f"${row['Subtotal']:.2f}", border=1)
+        pdf.multi_cell(80, 10, row['Producto'], border=1)  # Ajuste del ancho de celda para evitar que el texto se salga
+        pdf.cell(30, -10, str(int(row['Cantidad'])), border=1, ln=0)
+        pdf.cell(40, -10, f"${row['Precio Unitario']:.2f}", border=1, ln=0)
+        pdf.cell(40, -10, f"${row['Subtotal']:.2f}", border=1, ln=1)
         pdf.ln(10)
 
     # Totales
@@ -231,17 +231,4 @@ if menu == "Home":
     mostrar_home()
 elif menu == "Cotización":
     acceso_cotizacion()
-
-
-
-
-
-
-
-
-
-
-
-
-
 
