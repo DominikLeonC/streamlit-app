@@ -88,7 +88,7 @@ def mostrar_home():
         st.error("El archivo del logo no se encontró. Asegúrate de que esté en el directorio correcto.")
 
     # Después del logo, el contenido de la página
-    st.markdown("<h3 style='text-align: center; color: black;'>Nos especializamos en la venta de productos médicos de alta calidad.</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: black;'>Nos especializamos en la venta de productos médicos de la más alta calidad y 100% Mexicanos.</h3>", unsafe_allow_html=True)
 
     # Información de los productos y sus fichas técnicas como imágenes centradas
     st.markdown("<h4 style='text-align: center; color: black;'>Productos que ofrecemos:</h4>", unsafe_allow_html=True)
@@ -96,7 +96,7 @@ def mostrar_home():
     # Producto Hexyn con ficha técnica como imagen centrada
     st.markdown("""
         <div style="text-align: center;">
-            <p><b>Hexyn Antiséptico Médico</b>: Desde $241 MXN (para compras mayores a 30 unidades).</p>
+            <p><b>Hexyn Antiséptico Médico</b>: Desde $241 MXN (sin IVA) (para compras mayores a 40 unidades).</p>
             <p>Ficha técnica del producto:</p>
         </div>
         """, unsafe_allow_html=True)
@@ -149,7 +149,7 @@ def mostrar_cotizacion():
     # Función para obtener el precio del producto
     def obtener_precio(producto, cantidad):
         if producto == "Hexyn Antiséptico Médico":
-            return 241 if cantidad > 30 else 258.62
+            return 241 if cantidad > 40 else 258.62
         elif producto == "Jabón Clorexi de 1L (Automático)":
             return 405.17  # Precio sin IVA
         elif producto == "Jabón Clorexi de 1L (Manual)":
