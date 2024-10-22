@@ -23,7 +23,7 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva):
     pdf.cell(200, 10, "Distribuciones L: Productos Médicos", ln=True, align='C')
 
     # Datos de contacto
-    pdf.set_font("Arial", '', 10)
+    pdf.set_font("Arial", '', 8)
     pdf.cell(200, 10, "Teléfono: +52 33 25 36 10 73", ln=True, align='C')
     pdf.cell(200, 10, "Correo: DistribucionesMedLeon@gmail.com", ln=True, align='C')
 
