@@ -8,7 +8,7 @@ from datetime import datetime
 st.set_page_config(page_title="Distribuciones L", layout="wide")
 
 # Función para generar el PDF con las modificaciones solicitadas
-def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente, folio, descuento):
+def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente, folio, descuento_porcentaje):
     pdf = FPDF()
     pdf.add_page()
 
@@ -67,26 +67,12 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente, folio, descuento
     pdf.ln(10)
     pdf.cell(50, 10, f"Total con IVA: ${total_con_iva:.2f}")
 
-    # Descuento (opcional)
-    if descuento > 0:
-        pdf.ln(10)
-        pdf.cell(50, 10, f"Descuento aplicado: ${descuento:.2f}")
-        pdf.ln(10)
-        pdf.cell(50, 10, f"Total después del descuento: ${total_con_iva - descuento:.2f}")
-
-    # Métodos de pago
+    # Descuento en porcentaje aplicado al total
+    descuento_aplicado = total_con_iva * (descuento_porcentaje / 100)
     pdf.ln(10)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(200, 10, "Métodos de pago", ln=True, align='C')
-    pdf.set_font("Arial", '', 10)
-    pdf.multi_cell(200, 10, "Aceptamos los siguientes métodos de pago:\n"
-                            "Transferencia bancaria, tarjeta de crédito, PayPal.")
-
-    # Firma o sello digital
-    pdf.ln(20)
-    pdf.set_font("Arial", '', 10)
-    pdf.cell(200, 10, "Firma del representante: _____________________", ln=True, align='C')
-    pdf.cell(200, 10, "Sello de la empresa: _________________________", ln=True, align='C')
+    pdf.cell(50, 10, f"Descuento aplicado ({descuento_porcentaje}%): -${descuento_aplicado:.2f}")
+    pdf.ln(10)
+    pdf.cell(50, 10, f"Total después del descuento: ${total_con_iva - descuento_aplicado:.2f}")
 
     # Términos y condiciones
     pdf.ln(20)
@@ -168,8 +154,8 @@ def mostrar_cotizacion():
     # Campo para ingresar el nombre del cliente
     cliente = st.text_input("Nombre del cliente")
     
-    # Campo opcional para aplicar un descuento
-    descuento = st.number_input("Descuento (MXN)", min_value=0.0, value=0.0)
+    # Campo opcional para aplicar un descuento en porcentaje
+    descuento_porcentaje = st.number_input("Descuento (%)", min_value=0.0, value=0.0)
 
     # Continuamos con la funcionalidad de la cotización
     if 'cotizacion' not in st.session_state:
@@ -237,7 +223,7 @@ def mostrar_cotizacion():
 
         # Botón para descargar PDF
         if st.button("Descargar cotización en PDF"):
-            pdf_content = generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente, folio, descuento)
+            pdf_content = generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente, folio, descuento_porcentaje)
             st.download_button(
                 label="Descargar PDF",
                 data=pdf_content,
