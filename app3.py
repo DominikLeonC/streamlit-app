@@ -7,8 +7,8 @@ from datetime import datetime
 # Configuración de la página
 st.set_page_config(page_title="Distribuciones L", layout="wide")
 
-# Función para generar el PDF con las mejoras añadidas
-def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente, folio, direccion_envio):
+# Función para generar el PDF con las modificaciones solicitadas
+def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente, folio, descuento):
     pdf = FPDF()
     pdf.add_page()
 
@@ -34,11 +34,10 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente, folio, direccion
     fecha_emision = datetime.now().strftime('%d-%m-%Y')
     pdf.cell(200, 10, f"Fecha de emisión: {fecha_emision}", ln=True, align='C')
 
-    # Nombre del cliente y dirección de envío
+    # Nombre del cliente
     pdf.ln(10)
     pdf.set_font("Arial", '', 12)
     pdf.cell(200, 10, f"Cliente: {cliente}", ln=True, align='C')
-    pdf.cell(200, 10, f"Dirección de envío: {direccion_envio}", ln=True, align='C')
 
     pdf.ln(10)
 
@@ -68,24 +67,12 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente, folio, direccion
     pdf.ln(10)
     pdf.cell(50, 10, f"Total con IVA: ${total_con_iva:.2f}")
 
-    # Descuentos o promociones
-    pdf.ln(10)
-    descuento = total_sin_iva * 0.05  # Ejemplo de un descuento del 5%
-    pdf.cell(50, 10, f"Descuento aplicado: ${descuento:.2f}")
-    pdf.ln(10)
-    pdf.cell(50, 10, f"Total después del descuento: ${total_con_iva - descuento:.2f}")
-
-    # Resumen del pedido
-    pdf.ln(20)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(200, 10, "Resumen del Pedido", ln=True, align='C')
-    pdf.ln(10)
-    pdf.set_font("Arial", '', 10)
-    pdf.multi_cell(200, 10, f"Cliente: {cliente}\n"
-                            f"Total sin IVA: ${total_sin_iva:.2f}\n"
-                            f"IVA: ${iva:.2f}\n"
-                            f"Descuento: ${descuento:.2f}\n"
-                            f"Total con IVA: ${total_con_iva - descuento:.2f}")
+    # Descuento (opcional)
+    if descuento > 0:
+        pdf.ln(10)
+        pdf.cell(50, 10, f"Descuento aplicado: ${descuento:.2f}")
+        pdf.ln(10)
+        pdf.cell(50, 10, f"Total después del descuento: ${total_con_iva - descuento:.2f}")
 
     # Métodos de pago
     pdf.ln(10)
@@ -94,14 +81,6 @@ def generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente, folio, direccion
     pdf.set_font("Arial", '', 10)
     pdf.multi_cell(200, 10, "Aceptamos los siguientes métodos de pago:\n"
                             "Transferencia bancaria, tarjeta de crédito, PayPal.")
-
-    # Política de devoluciones o cancelaciones
-    pdf.ln(10)
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(200, 10, "Política de devoluciones", ln=True, align='C')
-    pdf.set_font("Arial", '', 10)
-    pdf.multi_cell(200, 10, "Las devoluciones serán aceptadas dentro de los primeros 30 días, "
-                            "siempre y cuando los productos se encuentren en perfectas condiciones y con su empaque original.")
 
     # Firma o sello digital
     pdf.ln(20)
@@ -189,8 +168,8 @@ def mostrar_cotizacion():
     # Campo para ingresar el nombre del cliente
     cliente = st.text_input("Nombre del cliente")
     
-    # Campo para ingresar la dirección de envío
-    direccion_envio = st.text_input("Dirección de envío")
+    # Campo opcional para aplicar un descuento
+    descuento = st.number_input("Descuento (MXN)", min_value=0.0, value=0.0)
 
     # Continuamos con la funcionalidad de la cotización
     if 'cotizacion' not in st.session_state:
@@ -258,7 +237,7 @@ def mostrar_cotizacion():
 
         # Botón para descargar PDF
         if st.button("Descargar cotización en PDF"):
-            pdf_content = generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente, folio, direccion_envio)
+            pdf_content = generar_pdf(df, total_sin_iva, iva, total_con_iva, cliente, folio, descuento)
             st.download_button(
                 label="Descargar PDF",
                 data=pdf_content,
@@ -286,5 +265,4 @@ if menu == "Home":
     mostrar_home()
 elif menu == "Cotización":
     acceso_cotizacion()
-
 
