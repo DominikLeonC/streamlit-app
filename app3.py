@@ -11,6 +11,7 @@ import cvxpy as cp
 
 # ===================== FUNCIONES =====================
 
+
 def get_stock_data(symbols, start_date, end_date):
     data = pd.DataFrame()
     for symbol in symbols:
