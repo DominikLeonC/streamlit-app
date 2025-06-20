@@ -11,7 +11,6 @@ import cvxpy as cp
 
 # ===================== FUNCIONES =====================
 
-
 def get_stock_data(symbols, start_date, end_date):
     data = pd.DataFrame()
     for symbol in symbols:
@@ -33,11 +32,15 @@ def markowitz_analysis(log_returns):
     mu = log_returns.mean() * 252
     sigma = log_returns.cov() * 252
 
+    mu_np = mu.values
+    sigma_np = sigma.values
+
     w = cp.Variable(n)
-    ret = mu.T @ w
-    risk = cp.quad_form(w, sigma)
-    gamma = cp.Parameter(nonneg=True)  # tradeoff risk vs return
+    ret = mu_np.T @ w
+    risk = cp.quad_form(w, sigma_np)
+    gamma = cp.Parameter(nonneg=True)
     gamma.value = 1
+
     prob = cp.Problem(cp.Maximize(ret - gamma * risk), [cp.sum(w) == 1, w >= 0])
     prob.solve()
 
@@ -51,11 +54,13 @@ def markowitz_analysis(log_returns):
 
 def plot_efficient_frontier(mu, sigma, n_points=50):
     n = len(mu)
+    mu_np = mu.values
+    sigma_np = sigma.values
     results = []
     for alpha in np.linspace(0, 1, n_points):
         w = cp.Variable(n)
-        ret = mu.T @ w
-        risk = cp.quad_form(w, sigma)
+        ret = mu_np.T @ w
+        risk = cp.quad_form(w, sigma_np)
         prob = cp.Problem(cp.Maximize(alpha * ret - (1 - alpha) * risk), [cp.sum(w) == 1, w >= 0])
         prob.solve()
         results.append((np.sqrt(risk.value), ret.value))
