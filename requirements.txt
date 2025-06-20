@@ -1,8 +1,8 @@
 streamlit 
 yfinance 
 pandas 
- numpy 
+numpy 
 matplotlib.pyplot 
- seaborn 
+seaborn 
 plotly.express 
- cvxpy 
+cvxpy
