@@ -14,9 +14,17 @@ import cvxpy as cp
 def get_stock_data(symbols, start_date, end_date):
     data = pd.DataFrame()
     for symbol in symbols:
-        df = yf.download(symbol, start=start_date, end=end_date)[['Adj Close']]
-        df.columns = [symbol]
-        data = pd.concat([data, df], axis=1)
+        try:
+            df = yf.download(symbol, start=start_date, end=end_date, auto_adjust=True)
+            if 'Adj Close' not in df.columns and 'Close' in df.columns:
+                df['Adj Close'] = df['Close']
+            if 'Adj Close' in df.columns:
+                df = df[['Adj Close']].rename(columns={'Adj Close': symbol})
+                data = pd.concat([data, df], axis=1)
+            else:
+                st.warning(f"No se pudo obtener datos válidos para {symbol}. Verifica el símbolo.")
+        except Exception as e:
+            st.error(f"Error al descargar datos para {symbol}: {e}")
     return data.dropna()
 
 def markowitz_analysis(log_returns):
@@ -122,3 +130,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
