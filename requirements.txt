@@ -1,8 +1,8 @@
-streamlit
-pandas
-numpy
-matplotlib
-fpdf
-yfinance
-seaborn
-cvxpy
+streamlit 
+yfinance 
+pandas 
+ numpy 
+matplotlib.pyplot 
+ seaborn 
+plotly.express 
+ cvxpy 
