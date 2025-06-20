@@ -2,7 +2,7 @@ streamlit
 yfinance
 pandas
 numpy
-matplotlib.pyplot
+matplotlib
 seaborn
-plotly.express
+plotly
 cvxpy
